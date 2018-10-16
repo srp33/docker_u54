@@ -6,6 +6,7 @@ SAMPLES=()
 FILE_EXTENSIONS=()
 NEEDED_FILES=(amb ann bwt pac sa)
 REF_INDEXED=0
+PATH_TO_INDEXED=/data/ref_index
 
 for filename in /data/ref_index/*; do
 	echo "${filename##*.}"
@@ -19,12 +20,16 @@ done
 
 echo ${REF_INDEXED}
 
-if [[ REF_INDEXED == 1 ]]; then
+if [[ ${REF_INDEXED} == 1 ]]; then
 
-    read -p "The reference does not contain the proper index files. Run bwa index? [y/n]" -n 1 -s to_index
+    read -p "The reference does not contain the proper index files. Run bwa index? [y/n] " -n 1 -s to_index
 
-    if [ "$to_index" -eq "y" ]; then
-        bwa index /data/ref_index/${REF_GENOME}
+    echo ${to_index}
+
+    if [ "$to_index" = "y" ]; then
+	cp /data/ref_index/${REF_GENOME} /data/results/${REF_GENOME}
+        bwa index /data/results/${REF_GENOME}
+	PATH_TO_INDEXED=/data/results
     else
         echo "Index files for reference genome are required to run bwa mem"
         exit 1
@@ -38,7 +43,7 @@ done
 SAMPLES=($(echo ${SAMPLES[@]} | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
 for sample in ${SAMPLES[@]}; do
-    bwa mem -t ${BWA_THREADS} /data/ref_index/${REF_GENOME} \
+    bwa mem -t ${BWA_THREADS} ${PATH_TO_INDEXED}/${REF_GENOME} \
         /data/sample_data/${sample}.1.fastq.gz /data/sample_data/${sample}.2.fastq.gz | \
         samtools view -S -b > /data/results/${sample}.bam
 done
