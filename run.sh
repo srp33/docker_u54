@@ -9,9 +9,7 @@ REF_INDEXED=0
 PATH_TO_INDEXED=/data/ref_index
 
 for filename in /data/ref_index/*; do
-	echo "${filename##*.}"
     FILE_EXTENSIONS+=($(echo "${filename##*.}"))
-    echo ${FILE_EXTENSIONS[@]}
 done
 
 for NEEDED_EXT in ${NEEDED_FILES[@]}; do
@@ -24,12 +22,10 @@ if [[ ${REF_INDEXED} == 1 ]]; then
 
     read -p "The reference does not contain the proper index files. Run bwa index? [y/n] " -n 1 -s to_index
 
-    echo ${to_index}
-
     if [ "$to_index" = "y" ]; then
-	cp /data/ref_index/${REF_GENOME} /data/results/${REF_GENOME}
+	    cp /data/ref_index/${REF_GENOME} /data/results/${REF_GENOME}
         bwa index /data/results/${REF_GENOME}
-	PATH_TO_INDEXED=/data/results
+	    PATH_TO_INDEXED=/data/results
     else
         echo "Index files for reference genome are required to run bwa mem"
         exit 1
