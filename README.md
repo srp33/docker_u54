@@ -2,34 +2,38 @@
 
 ## Description
 
-* This container performs the `bwa mem` and `samtools view` commands within an isolated environment
+This Docker image applies the `bwa mem` and `samtools view` commands to next-generation sequencing data (FASTQ files) within an isolated environment. It is designed to process data for one paired-end sample at a time. It also uses environment variables, which allow you to customize settings for these tools (for example, the reference genome that you wish to use or the number of threads you use). It assumes you have placed FASTQ files for a biological sample (two FASTQ files because they are paired-end reads) in a directory and that you wish to save the output file (BAM) for that sample to a different directory.
 
 ## Usage
 
+When 
+
 ###### Command Reference
 
-`docker run -v <location of reference genome>:/data/ref_index 
+```
+docker run -v <location of reference genome>:/data/ref_index 
 -v <location of reads>:/data/sample_data
 -v <location of output directory>:/data/results
 --user <user id> -it [additional options]
 -e REF_GENOME=<name of reference genome file>
-srp33/bwamtools:latest`
+srp33/bwamtools:latest
+```
 
-The command for this container can seem rather daunting at first:
+Below is an example (using example values) of how you might execute this command.
 
-`docker run -v /Applications/U54/ref_index:/data/ref_index 
+```
+docker run -v /Applications/U54/ref_index:/data/ref_index 
 -v /Applications/U54/in_use:/data/sample_data 
 -v /Applications/U54/OutputData:/data/results 
 --user 1001 
 -e REF_GENOME=ucsc.hg19.fasta.gz
--it --rm srp33/bwamtools:latest`
+-it --rm srp33/bwamtools:latest
+```
 
-I will step through each piece of this command so using it will be smooth and simple.
+This command can seem rather daunting at first. Below is a description of each argument.
 
 * `-v`
-  * This flag allows the user to connect a directory or folder to an identical directory or folder
-  in the container. There are three important volumes that are required for proper use of the
-  bwamtools container
+  * This flag allows the user to connect a directory on the host computer to a directory within the container. These paths are separated by a colon. Three different volumes must be specified. These are described below.
   
 1. `<location of reference genome>:/data/ref_index`
 
