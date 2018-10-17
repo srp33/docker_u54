@@ -6,8 +6,6 @@ This Docker image applies the `bwa mem` and `samtools view` commands to next-gen
 
 ## Usage
 
-When 
-
 ###### Command Reference
 
 ```
