@@ -6,19 +6,20 @@ FROM biocontainers/biocontainers:latest
 MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
 
 ################## SET VARIABLES ######################
-ENV BWA_THREADS=100
-ENV REF_GENOME=ucsc.hg19.fasta.gz
+ENV THREADS=1
+ENV REF_GENOME=Null
+ENV SAMPLE=Null
 
 ################## ADD SCRIPT #########################
 ADD run.sh /data/
+ADD check_permissions.py /data/
 
 ################## INSTALL TOOLS ######################
 RUN conda install bwa
 RUN conda install samtools
 
 ################## SETUP WORKDIR #######################
-WORKDIR /data/results
 WORKDIR /data
 
 ##################### RUN BWA #########################
-CMD ./run.sh $REF_GENOME $BWA_THREADS
+CMD ./run.sh $REF_GENOME $THREADS $SAMPLE

@@ -1,45 +1,58 @@
 #! /bin/bash
 
 REF_GENOME=$1
-BWA_THREADS=$2
-SAMPLES=()
-FILE_EXTENSIONS=()
-NEEDED_FILES=(amb ann bwt pac sa)
+THREADS=$2
+SAMPLE=$3
+REF_INDEX_FILES=()
+NEEDED_FILES=(${REF_GENOME}.amb ${REF_GENOME}.ann ${REF_GENOME}.bwt ${REF_GENOME}.pac ${REF_GENOME}.sa)
 REF_INDEXED=0
-PATH_TO_INDEXED=/data/ref_index
+MISSING_VOLUMES=()
+EXIT_CODE=0
+
+# Since the default value for REF_GENOME and SAMPLE is "Null", we can check if those have been changed
+
+[ ${REF_GENOME} != "Null" ] || { echo "ERROR: REF_GENOME environment variable must be provided" && exit 1; }
+[ ${SAMPLE} != "Null" ] || { echo "ERROR: SAMPLE environment variable must be provided" && exit 1; }
+
+# Checks for the necessary directories which are only created by volumes
+
+[ -d /data/ref_index ] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
+[ -d /data/sample_data ] || { MISSING_VOLUMES+=(/data/sample_data) && EXIT_CODE=1; }
+[ -d /data/results ] || { MISSING_VOLUMES+=(/data/results) && EXIT_CODE=1; }
+
+if [ ${EXIT_CODE} = 1 ]; then
+    echo "The following volumes are missing: ${MISSING_VOLUMES[@]}" && exit 1
+fi
+
+# Check permissions of each directory
+
+python check_permissions.py /data/ref_index Read ${REF_GENOME} || exit 1
+python check_permissions.py /data/sample_data Read ${SAMPLE}.1.fastq.gz || exit 1
+python check_permissions.py /data/results ReadWrite || exit 1
+
+# Check for necessary index files in ref_index directory
+#   If one of the files is missing, bwa index will be run
 
 for filename in /data/ref_index/*; do
-    FILE_EXTENSIONS+=($(echo "${filename##*.}"))
+    REF_INDEX_FILES+=($(echo "${filename##*/}"))
 done
 
-for NEEDED_EXT in ${NEEDED_FILES[@]}; do
-    [[ " ${FILE_EXTENSIONS[@]} " =~ " ${NEEDED_EXT} " ]] || REF_INDEXED=1
+for NEEDED_FILE in ${NEEDED_FILES[@]}; do
+    [[ " ${REF_INDEX_FILES[@]} " =~ " ${NEEDED_FILE} " ]] || REF_INDEXED=1
 done
 
-echo ${REF_INDEXED}
 
 if [[ ${REF_INDEXED} == 1 ]]; then
 
-    read -p "The reference does not contain the proper index files. Run bwa index? [y/n] " -n 1 -s to_index
+    echo "The reference does not contain the proper index files. Running bwa index"
 
-    if [ "$to_index" = "y" ]; then
-	    cp /data/ref_index/${REF_GENOME} /data/results/${REF_GENOME}
-        bwa index /data/results/${REF_GENOME}
-	    PATH_TO_INDEXED=/data/results
-    else
-        echo "Index files for reference genome are required to run bwa mem"
-        exit 1
-    fi
+    python check_permissions.py /data/ref_index ReadWrite || \
+       { echo "Please ensure you are passing in directory and not just a file volume" && exit 1; }
+
+    bwa index -t ${THREADS} /data/ref_index/${REF_GENOME}
 fi
 
-for i in /data/sample_data/*; do
-    SAMPLES+=($(echo ${i} | cut -d '/' -f 4 |  cut -d '.' -f 1))
-done
+bwa mem -t ${THREADS} /data/ref_index/${REF_GENOME} \
+    /data/sample_data/${SAMPLE}.1.fastq.gz /data/sample_data/${SAMPLE}.2.fastq.gz | \
+    samtools view -@ ${THREADS} -S -b > /data/results/${SAMPLE}.bam
 
-SAMPLES=($(echo ${SAMPLES[@]} | tr ' ' '\n' | sort -u | tr '\n' ' '))
-
-for sample in ${SAMPLES[@]}; do
-    bwa mem -t ${BWA_THREADS} ${PATH_TO_INDEXED}/${REF_GENOME} \
-        /data/sample_data/${sample}.1.fastq.gz /data/sample_data/${sample}.2.fastq.gz | \
-        samtools view -S -b > /data/results/${sample}.bam
-done
