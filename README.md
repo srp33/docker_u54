@@ -53,11 +53,9 @@ docker run \
 -v <location of reads>:/data/sample_data \
 -v <location of output directory>:/data/results \
 --user <user id> -it [additional options] \
--e REF_GENOME=<name of reference genome file> \
--e SAMPLE=<sample id of reads> \
--e THREADS=<number of threads> \
 --rm \
-srp33/bwamtools:latest
+srp33/u54:latest \
+<command> <args...>
 ```
 
 The command for this container can seem rather daunting at first:

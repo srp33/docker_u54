@@ -1,8 +1,28 @@
 #! /bin/bash
 
-REF_GENOME=$1
-THREADS=$2
-SAMPLE=$3
+REF_GENOME=Null
+THREADS=1
+SAMPLE=Null
+
+while getopts "t:r:s:" opt; do
+  case ${opt} in
+    t )
+      THREADS=${OPTARG}
+      ;;
+    r )
+      REF_GENOME=${OPTARG}
+      ;;
+    s )
+      SAMPLE=${OPTARG}
+      ;;
+    \? )
+      echo "Invalid option: -${OPTARG}" 1>&2
+      exit 1
+      ;;
+  esac
+done
+
+
 REF_INDEX_FILES=()
 NEEDED_FILES=(${REF_GENOME}.amb ${REF_GENOME}.ann ${REF_GENOME}.bwt ${REF_GENOME}.pac ${REF_GENOME}.sa)
 REF_INDEXED=0
@@ -11,7 +31,7 @@ EXIT_CODE=0
 
 # Since the default value for REF_GENOME and SAMPLE is "Null", we can check if those have been changed
 
-[ ${REF_GENOME} != "Null" ] || { echo "ERROR: REF_GENOME environment variable must be provided" && exit 1; }
+[ ${REF_GENOME} != "Null" ] || { echo "ERROR: REF_GENOME (-r <arg>) environment variable must be provided" && exit 1; }
 [ ${SAMPLE} != "Null" ] || { echo "ERROR: SAMPLE environment variable must be provided" && exit 1; }
 
 # Checks for the necessary directories which are only created by volumes
@@ -21,14 +41,14 @@ EXIT_CODE=0
 [ -d /data/results ] || { MISSING_VOLUMES+=(/data/results) && EXIT_CODE=1; }
 
 if [ ${EXIT_CODE} = 1 ]; then
-    echo "The following volumes are missing: ${MISSING_VOLUMES[@]}" && exit 1
+    echo "The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
 # Check permissions of each directory
 
-python check_permissions.py /data/ref_index Read ${REF_GENOME} || exit 1
-python check_permissions.py /data/sample_data Read ${SAMPLE}.1.fastq.gz || exit 1
-python check_permissions.py /data/results ReadWrite || exit 1
+python /check_permissions.py /data/ref_index Read ${REF_GENOME} || exit 1
+python /check_permissions.py /data/sample_data Read ${SAMPLE}.1.fastq.gz || exit 1
+python /check_permissions.py /data/results ReadWrite || exit 1
 
 # Check for necessary index files in ref_index directory
 #   If one of the files is missing, bwa index will be run
