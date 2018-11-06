@@ -31,16 +31,16 @@ EXIT_CODE=0
 
 # Since the default value for REF_GENOME and SAMPLE is "Null", we can check if those have been changed
 
-[ ${REF_GENOME} != "Null" ] || { echo "ERROR: REF_GENOME (-r <arg>) environment variable must be provided" && exit 1; }
-[ ${SAMPLE} != "Null" ] || { echo "ERROR: SAMPLE environment variable must be provided" && exit 1; }
+[[ ${REF_GENOME} != "Null" ]] || { echo "ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && exit 1; }
+[[ ${SAMPLE} != "Null" ]] || { echo "ERROR: SAMPLE (-s <arg>) argument must be provided" && exit 1; }
 
 # Checks for the necessary directories which are only created by volumes
 
-[ -d /data/ref_index ] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
-[ -d /data/sample_data ] || { MISSING_VOLUMES+=(/data/sample_data) && EXIT_CODE=1; }
-[ -d /data/results ] || { MISSING_VOLUMES+=(/data/results) && EXIT_CODE=1; }
+[[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
+[[ -d /data/sample_data ]] || { MISSING_VOLUMES+=(/data/sample_data) && EXIT_CODE=1; }
+[[ -d /data/results ]] || { MISSING_VOLUMES+=(/data/results) && EXIT_CODE=1; }
 
-if [ ${EXIT_CODE} = 1 ]; then
+if [[ ${EXIT_CODE} = 1 ]]; then
     echo "The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 

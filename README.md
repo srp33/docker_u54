@@ -60,25 +60,25 @@ srp33/u54:latest \
 
 The command for this container can seem rather daunting at first:
 
-```
+```{bash}
 docker run \
 -v /Applications/U54/ref_index:/data/ref_index \ 
 -v /Applications/U54/in_use:/data/sample_data \
 -v /Applications/U54/OutputData:/data/results \
---user 1001 \
--e REF_GENOME=ucsc.hg19.fasta.gz \
--e SAMPLE=101024 \
--e THREADS=1 \
+--user 1001:1001 \
 --rm \
-srp33/bwamtools:latest
+srp33/bwamtools:latest \
+align \
+-t 10 \
+-r ucsc.hg19.fasta.gz \
+-s 101024
 ```
 
 I will attempt to break this down and make sense of each argument.
 
 * `-v`
   * This flag allows the user to connect a directory or folder to an identical directory or folder
-  in the container. There are three important volumes that are required for proper use of the
-  bwamtools container
+  in the container. There are three important volumes that may be required to use certain commands:
   
     1. `<location of reference genome>:/data/ref_index`
     
@@ -201,8 +201,49 @@ I will attempt to break this down and make sense of each argument.
 
   * Any options that the user deems necessary for `docker run`.
   
-* `srp33/bwamtools:latest`
+* __Deprecated:__ `srp33/bwamtools:latest` __Use:__ `srp33/u54:latest`
 
   * This should always be the last piece to the `docker run` command
   
+## Supported Commands
+
+> A comprehensive list of commands that will replace the need for environmental variables. U54 currently
+does not currently support whole word flags. It should also be noted that there are no positional arguments
+to these commands. __All arguments must be preceded by a flag.__
+
+* `align`
+
+  * Uses `bwa` and `samtools` to align reads using a reference genome. There are two required arguments:
+  
+    * `-r`
     
+      * Name of reference genome file
+      
+    * `-s`
+    
+      * Sample id of reads
+      
+    There is an additional optional argument that may be used
+    
+    * `-t`
+    
+      * Number of threads to use. __Default:__ 1
+    
+* `index_bam`
+
+  * Uses `sambamba` to index a `bam` file
+  
+    * `-b`
+    
+      * Name of bam file to be indexed
+      
+    Optional:
+    
+    * `-t`
+    
+      * Number of threads. __Default:__ 1
+      
+* `sort_bam`
+
+  * Uses `sambamba` to sort a `bam` file. __NOTE:__ `bam` file must have been previously indexed and 
+  index file (`*.bai`) must be in same directory as `bam` file

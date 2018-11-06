@@ -1,12 +1,14 @@
 #! /bin/bash
 
+dummy_var=()
+
 while getopts "t:n:" opt; do
   case ${opt} in
     t )
       threads="$OPTARG"
       ;;
     n )
-      dummy_var="$OPTARG"
+      dummy_var+=("/bin/bash/${OPTARG}")
       ;;
     \? )
       echo "Invalid option: -$OPTARG" 1>&2
@@ -15,4 +17,4 @@ while getopts "t:n:" opt; do
 done
 
 echo ${threads}
-echo ${dummy_var}
+echo ${dummy_var[@]}

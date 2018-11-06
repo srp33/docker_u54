@@ -8,8 +8,13 @@ MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
 ################## ADD SCRIPT #########################
 ADD align.sh /usr/local/bin/align
 ADD echo_usage.sh /usr/local/bin/echo_usage
+ADD call_gatk_variants.sh /usr/local/bin/call_gatk_variants
+ADD index_bam.sh /usr/local/bin/index_bam
+ADD mark_duplicates.sh /usr/local/bin/mark_duplicates
+ADD merge_bams.sh /usr/local/bin/merge_bams
+ADD slice_bam.sh /usr/local/bin/slice_bam
+ADD sort_bam.sh /usr/local/bin/sort_bam
 ADD check_permissions.py /
-ADD echo_tester.sh /usr/local/bin/echo_tester
 
 ################## INSTALL TOOLS ######################
 RUN conda config --add channels bioconda
@@ -23,4 +28,4 @@ RUN conda install strelka
 WORKDIR /data
 
 ##################### RUN BWA #########################
-CMD ./run.sh $REF_GENOME $THREADS $SAMPLE
+CMD echo_usage
