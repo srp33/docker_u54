@@ -9,11 +9,14 @@ MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
 ADD align.sh /usr/local/bin/align
 ADD echo_usage.sh /usr/local/bin/echo_usage
 ADD call_gatk_variants.sh /usr/local/bin/call_gatk_variants
+ADD call_somatic_variants_strelka.sh /usr/local/bin/call_somatic_variants_strelka
+ADD call_somatic_variants_varscan.sh /usr/local/bin/call_somatic_variants_varscan
 ADD index_bam.sh /usr/local/bin/index_bam
 ADD mark_duplicates.sh /usr/local/bin/mark_duplicates
 ADD merge_bams.sh /usr/local/bin/merge_bams
 ADD slice_bam.sh /usr/local/bin/slice_bam
 ADD sort_bam.sh /usr/local/bin/sort_bam
+ADD strelka.sh /usr/local/bin/strelka
 ADD check_permissions.py /
 
 ################## INSTALL TOOLS ######################

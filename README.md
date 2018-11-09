@@ -213,7 +213,8 @@ to these commands. __All arguments must be preceded by a flag.__
 
 * `align`
 
-  * Uses `bwa` and `samtools` to align reads using a reference genome. There are two required arguments:
+  * Uses `bwa` and `samtools` to align reads using a reference genome. 
+  There are two required arguments:
   
     * `-r`
     
@@ -246,4 +247,76 @@ to these commands. __All arguments must be preceded by a flag.__
 * `sort_bam`
 
   * Uses `sambamba` to sort a `bam` file. __NOTE:__ `bam` file must have been previously indexed and 
-  index file (`*.bai`) must be in same directory as `bam` file
+  index file (`*.bai`) must be in same directory as `bam` file.
+  
+    * `-b`
+    
+       * Name of bam file to be sorted
+       
+    Optional:
+    
+    * `-t`
+    
+       * Number of threads. __Default:__ 1
+       
+* `mark_duplicates`
+
+  * Uses `sambamba` to mark duplicates in a `bam` file.
+  
+    * `-b`
+    
+      * Name of bam file to be read
+      
+    * `-o`
+    
+      * Name of output file
+      * Saved into `results` directory
+      
+    Optional:
+    
+    * '-t'
+    
+      * Threads
+      
+* `merge_bams`
+
+  * Uses `sambamba` to merge multiple `bam` files.
+  
+    * `-b`
+    
+      * Bam file to be merged with others
+      * __NOTE:__ there must be two or more `bam` files for this to run correctly. Each
+      `bam` file must be preceded by `-b`.
+      
+    * `-o`
+    
+      * Name of output, saved to `bam_files` directory
+      
+    Optional:
+    
+    * `-t`
+    
+      * Thread count
+      
+* `slice_bam`
+
+  * `sambamba slice`, essentially
+  
+    * `-b`
+    
+      * `bam` file to be sliced
+      
+    * `-r`
+    
+      * Region to be sliced out of the `bam` file
+      
+    * `-o`
+    
+      * Output file, saved to `results` directory
+      
+    Optional:
+    
+    * `-t`
+    
+      * Thread count
+      
