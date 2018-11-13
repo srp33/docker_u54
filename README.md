@@ -7,7 +7,7 @@ calling on Illumina sequencing data. We package software within a Docker image a
 user to execute the software via commands that pass data into and out of a Docker container. 
 Currently, we support the following commands:
 
-* `align` (align FASTA files to a reference genome using `bwa mem`)
+* `bwa_mem_align` (align FASTA files to a reference genome using `bwa mem`)
 * `index_bam` (index a BAM file using `sambamba`)
 * `mark_duplicates` (mark duplicates in a BAM file using `sambamba`)
 * `merge_bams` (merge BAM files using `sambamba`)
@@ -15,53 +15,36 @@ Currently, we support the following commands:
 * `sort_bam` (sort a BAM file using `sambamba`)
 * `call_gatk_variants` (call variants using GATK)
 
-The default behavior of the docker container is to display the usage and available commands,
-so if the user simply runs
+The default behavior of the docker container is to display the usage and available commands. If the user executes the following command, usage information will be displayed.
 
 ```
 docker run --rm srp33/u54:latest
 ```
 
-usage and available commands will be displayed.
-
-
-With any of the supported commands, the user can give the `-h` flag to view available options for 
-that command, as follows:
+For any of the supported commands, the user can specify the `-h` flag to view available options for 
+that command. For example, the following command would provide usage information for the `bwa_mem_align` command, which uses `bwa mem` to align sequencing reads to a reference genome.
 
 ```
-docker run --rm srp33/u54:latest align -h
+docker run --rm srp33/u54:latest bwa_mem_align -h
 ```
 
-this will display the usage for the `align` command as follows:
-
-```
-align
-Options:
--t <number of threads> (Optional)
--r <name of reference genome fasta file>
--s <sample id>
-```
-
-
-The `align` command runs as follows:
+Below is an example of how the `bwa_mem_align` command might be executed. A variety of arguments must be specified. The first three arguments (each beginning with `-v`) specify [volumes](https://docs.docker.com/storage/volumes). Volumes enable data to be shared between the host operating system and the Docker container. The path specified before each colon indicates a directory on the host; the path specified after the colon indicates the corresponding directory within the container (this is static). In the example below, the first volume specifies the location of the reference genome. The second volume specifies the location where input files are stored (in this case, FASTQ files). The third volume specifies the location where output files will be stored after the container's software has been executed. The `--user` argument indicates the user under which the container should be executed on the host (before the colon) and within the container (after the colon). The `--rm` argument indicates that Docker should automatically clean up the container and remove its file system when the container exits. `srp33/u54` is the name of the Docker image; `latest` is the version tag associated with this image. The remaining arguments are specific to the task of using `bwa mem` to align FASTQ files to the reference genome. The first argument (`-r`) indicates the name of a FASTA file that the user wishes to use as a reference genome. The `-s1` and `-s2` arguments indicate the names of the FASTQ files that will be aligned; these files should be stored in the volume specified above and should represent the first and second side of the paired-end reads, respectively. Finally, the `-t` argument indicates the number of threads/cores that should be used during alignment; this argument is optional.
 
 ```
 docker run \
--v /Applications/U54/ref_index:/data/ref_index \ 
--v /Applications/U54/in_use:/data/sample_data \
--v /Applications/U54/OutputData:/data/results \
---user root:root \
---rm \
-srp33/u54:latest \
-align \
--t 10 \
--r ucsc.hg19.fasta.gz \
--s 101024
+  -v /MyData/Reference_Genomes/hg19:/data/ref_genome \ 
+  -v /MyData/FASTQ:/data/input_data \
+  -v /MyData/BAM:/data/output_data \
+  --user root:root \
+  --rm \
+  srp33/u54:latest \
+  bwa_mem_align \
+    -r ucsc.hg19.fasta.gz \
+    -s1 101024.1.fastq.gz \
+    -s2 101024.2.fastq.gz \
+    -t 10
 ```
 
-as listed above, the option `-t` is optional, however, the command will throw an error if `-r` or
-`-s` are missing. Also note that certain volumes are required for the `align` command to run properly.
-Volumes are described in greater detail below.
 
 
 
