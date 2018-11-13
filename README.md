@@ -1,16 +1,29 @@
-# Docker U54
+# Framework for performing whole-genome variant calling across dispersed computing environments
 
 ## Description
 
-This Docker image applies the bwa mem and samtools view commands to next-generation sequencing 
-data (FASTQ files) within an isolated environment. It is designed to process data for one 
-paired-end sample at a time. It also uses environment variables, which allow you to customize 
-settings for these tools (for example, the reference genome that you wish to use or the number 
-of threads you use). It assumes you have placed FASTQ files for a biological sample (two FASTQ 
-files because they are paired-end reads) in a directory and that you wish to save the output 
-file (BAM) for that sample to a different directory.
+This repository contains scripts that enable researchers to perform whole-genome variant calling on Illumina sequencing data. We package software within a Docker image and enable the user to execute the software via commands that pass data into and out of a Docker container. Currently, we support the following commands:
 
-## The Big Picture
+* `align.sh` (align FASTA files to a reference genome using `bwa mem`)
+* `index_bam.sh` (index a BAM file using `sambamba`)
+* `mark_duplicates.sh` (mark duplicates in a BAM file using `sambamba`)
+* `merge_bams.sh` (merge BAM files using `sambamba`)
+* `slice_bam.sh` (slice/split a BAM file using `sambamba`)
+* `sort_bam.sh` (sort a BAM file using `sambamba`)
+* `call_gatk_variants.sh` (call variants using GATK)
+
+ZAC: Please put an example here of how to display the available commands.
+
+ZAC: Please put an example here of how to view the help documentation for `align.sh`.
+
+ZAC: Please put an example here of how to execute `align.sh`.
+
+
+
+
+
+
+
 
 Remember a few things:
 
