@@ -4,7 +4,7 @@ REF_GENOME=Null
 THREADS=1
 SAMPLE=Null
 
-while getopts "t:r:s:" opt; do
+while getopts "t:r:s:h" opt; do
   case ${opt} in
     t )
       THREADS=${OPTARG}
@@ -14,6 +14,10 @@ while getopts "t:r:s:" opt; do
       ;;
     s )
       SAMPLE=${OPTARG}
+      ;;
+    h )
+      usage_align
+      exit 0
       ;;
     \? )
       echo "Invalid option: -${OPTARG}" 1>&2
@@ -31,8 +35,12 @@ EXIT_CODE=0
 
 # Since the default value for REF_GENOME and SAMPLE is "Null", we can check if those have been changed
 
-[[ ${REF_GENOME} != "Null" ]] || { echo "ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && exit 1; }
-[[ ${SAMPLE} != "Null" ]] || { echo "ERROR: SAMPLE (-s <arg>) argument must be provided" && exit 1; }
+[[ ${REF_GENOME} != "Null" ]] || { echo "
+ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
+ usage_align && exit 1; }
+[[ ${SAMPLE} != "Null" ]] || { echo "
+ERROR: SAMPLE (-s <arg>) argument must be provided" && \
+ usage_align && exit 1; }
 
 # Checks for the necessary directories which are only created by volumes
 

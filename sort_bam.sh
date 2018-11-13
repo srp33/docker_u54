@@ -3,13 +3,17 @@
 BAM_FILE=Null
 THREADS=1
 
-while getopts "b:t:" opt; do
+while getopts "b:t:h" opt; do
   case ${opt} in
     b )
       BAM_FILE=${OPTARG}
       ;;
     t )
       THREADS=${OPTARG}
+      ;;
+    h )
+      usage_sort_bam
+      exit 0
       ;;
     \? )
       echo "Invalid option: -${OPTARG}" 1>&2
@@ -18,7 +22,9 @@ while getopts "b:t:" opt; do
   esac
 done
 
-[[ ${BAM_FILE} != "Null" ]] || { echo "ERROR: BAM FILE (-b <arg>) argument must be provided" && exit 1; }
+[[ ${BAM_FILE} != "Null" ]] || { echo "
+ERROR: BAM FILE (-b <arg>) argument must be provided" && \
+ usage_sort_bam && exit 1; }
 
 EXIT_CODE=0
 MISSING_VOLUMES=()

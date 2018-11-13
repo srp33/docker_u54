@@ -14,13 +14,19 @@ file (BAM) for that sample to a different directory.
 
 Remember a few things:
 
-  * You must include three volumes using:
+  * You must include four volumes using:
     1. `<location of reference genome>:/data/ref_index`
     2. `<location of reads>:/data/sample_data`
     3. `<location of output directory>:/data/results`
+    4. `<location of bam files>:/data/bam_files`
     
     Remember that each volume must be preceded by the `-v` flag and follows the format
-    `<location on host>:<prescribed location in container>`. The `<location on host>` is
+    
+    ```
+    <location on host>:<prescribed location in container>
+    ```
+    
+    The `<location on host>` is
     determined by the user, __but the `<prescribed location in container>` must be one of the
     locations described in this document__. Otherwise the container will fail.
     
@@ -31,17 +37,10 @@ Remember a few things:
     2. Read permissions for the reads
     3. Read/Write permissions for the output directory
     
-    Permissions are most easily dealt with using the `--user` argument, however, it is up to 
+    Permissions are most easily dealt with using the `--user root:root` argument, however, it is up to 
     the user to resolve any issues with permissions.
     
-  * You must pass in two environmental variables:
-    1. `REF_GENOME=<name of reference genome file>`
-    2. `SAMPLE=<sample id of reads>`
-    
-    Each environmental variable must be preceded by `-e`. The user can also set the number of 
-    threads used by `bwa` and `samtools`:
-       
-    * `THREADS=<number of threads>`
+  * Each container command 
   
 ## Usage
 
@@ -52,7 +51,8 @@ docker run \
 -v <location of reference genome>:/data/ref_index \
 -v <location of reads>:/data/sample_data \
 -v <location of output directory>:/data/results \
---user <user id> -it [additional options] \
+-v <location of bam files>:/data/bam_files \
+--user root:root -it [additional options] \
 --rm \
 srp33/u54:latest \
 <command> <args...>
@@ -65,7 +65,8 @@ docker run \
 -v /Applications/U54/ref_index:/data/ref_index \ 
 -v /Applications/U54/in_use:/data/sample_data \
 -v /Applications/U54/OutputData:/data/results \
---user 1001:1001 \
+-v /Applications/U54/bam_files:/data/bam_files \
+--user root:root \
 --rm \
 srp33/bwamtools:latest \
 align \
@@ -123,10 +124,23 @@ I will attempt to break this down and make sense of each argument.
          This may done by either allowing write permissions using `chmod` although this method is not
          recommended. Instead, it is recommended that the user follow the guidelines defined in the
          `--user <user id>` section of this document.
+         
+    4. `<location of bam files>:/data/bam_files`
+    
+       * This volume as been added to more clearly define locations of bam files to be used primarily
+       by `sambamba`
+       
+    In general, it is a good idea to just give read/write permissions to all of the volumes and to
+    pass in every volume regardless of the command used, even though each command only requires some,
+    but not all, of the volumes.
 
 * `--user <user id>`
 
   * This flag allows the user to pass read, write, and execute permissions to the container.
+  Users can simply pass in `--user root:root` for easy access to all directories, however,
+  this may allow more permission to docker than the user is comfortable with. For this reason,
+  I will keep this section of the README.
+  
   Permissions are particularly important when writing, since most directories, by default,
   will block docker from writing if the proper user id is not passed in. Follow these steps
   to retrieve and use the proper user id:
@@ -171,7 +185,7 @@ I will attempt to break this down and make sense of each argument.
   
     `--user <user id>:<group id>`
         
-* `-e`
+* __DEPRECATED:__ `-e`
 
   * This allows the user to assign certain variables within the container. There are only three 
   possible options, two of which are required and the other being optional:
@@ -202,14 +216,12 @@ I will attempt to break this down and make sense of each argument.
   * Any options that the user deems necessary for `docker run`.
   
 * __Deprecated:__ `srp33/bwamtools:latest` __Use:__ `srp33/u54:latest`
-
-  * This should always be the last piece to the `docker run` command
   
 ## Supported Commands
 
-> A comprehensive list of commands that will replace the need for environmental variables. U54 currently
-does not currently support whole word flags. It should also be noted that there are no positional arguments
-to these commands. __All arguments must be preceded by a flag.__
+> A comprehensive list of commands that will replace the need for environmental variables. U54 
+currently does not support whole word flags. It should also be noted that there are no positional 
+arguments to these commands. __All arguments must be preceded by a flag.__
 
 * `align`
 

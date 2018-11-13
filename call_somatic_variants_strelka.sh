@@ -22,7 +22,8 @@ done
 [[ ${REF_GENOME} != "Null" ]] || { echo "ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && exit 1; }
 
 if [[ ${REF_GENOME: -3} = ".gz" ]]; then
-    NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -1)".bgz
+    INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
+    NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})".bgz
     gunzip -c /data/ref_index/${REF_GENOME} | bgzip > /data/ref_index/${NEW_REF}
     REF_GENOME=${NEW_REF}
 fi

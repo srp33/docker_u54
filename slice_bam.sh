@@ -5,7 +5,7 @@ REGION=Null
 OUTPUT=Null
 THREADS=1
 
-while getopts "b:t:r:o:" opt; do
+while getopts "b:t:r:o:h" opt; do
   case ${opt} in
     b )
       BAM_FILE=${OPTARG}
@@ -19,6 +19,10 @@ while getopts "b:t:r:o:" opt; do
     o )
       OUTPUT=${OPTARG}
       ;;
+    h )
+      usage_slice_bam
+      exit 0
+      ;;
     \? )
       echo "Invalid option: -${OPTARG}" 1>&2
       exit 1
@@ -26,9 +30,15 @@ while getopts "b:t:r:o:" opt; do
   esac
 done
 
-[[ ${BAM_FILE} != "Null" ]] || { echo "ERROR: BAM FILE (-b <arg>) argument must be provided" && exit 1; }
-[[ ${REGION} != "Null" ]] || { echo "ERROR: REGION (-r <arg>) argument must be provided" && exit 1; }
-[[ ${OUTPUT} != "Null" ]] || { echo "ERROR: OUTPUT (-o <arg>) argument must be provided" && exit 1; }
+[[ ${BAM_FILE} != "Null" ]] || { echo "
+ERROR: BAM FILE (-b <arg>) argument must be provided" && \
+ usage_slice_bam && exit 1; }
+[[ ${REGION} != "Null" ]] || { echo "
+ERROR: REGION (-r <arg>) argument must be provided" && \
+ usage_slice_bam && exit 1; }
+[[ ${OUTPUT} != "Null" ]] || { echo "
+ERROR: OUTPUT (-o <arg>) argument must be provided" && \
+ usage_slice_bam && exit 1; }
 
 EXIT_CODE=0
 MISSING_VOLUMES=()

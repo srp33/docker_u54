@@ -4,7 +4,7 @@ BAM_FILES=()
 OUTPUT=Null
 THREADS=1
 
-while getopts "b:t:o:" opt; do
+while getopts "b:t:o:h" opt; do
   case ${opt} in
     b )
       BAM_FILES+=("/data/bam_files/${OPTARG}")
@@ -15,6 +15,10 @@ while getopts "b:t:o:" opt; do
     o )
       OUTPUT=${OPTARG}
       ;;
+    h )
+      usage_merge_bams
+      exit 0
+      ;;
     \? )
       echo "Invalid option: -${OPTARG}" 1>&2
       exit 1
@@ -22,8 +26,12 @@ while getopts "b:t:o:" opt; do
   esac
 done
 
-[[ ${#BAM_FILES[@]} -gt 1 ]] || { echo "ERROR: TWO OR MORE BAM FILE (-b <arg>) arguments must be provided" && exit 1; }
-[[ ${OUTPUT} != "Null" ]] || { echo "ERROR: OUTPUT (-o <arg>) arguments must be provided" && exit 1; }
+[[ ${#BAM_FILES[@]} -gt 1 ]] || { echo "
+ERROR: TWO OR MORE BAM FILE (-b <arg>) arguments must be provided" && \
+ usage_merge_bams && exit 1; }
+[[ ${OUTPUT} != "Null" ]] || { echo "
+ERROR: OUTPUT (-o <arg>) arguments must be provided" && \
+ usage_merge_bams && exit 1; }
 
 EXIT_CODE=0
 MISSING_VOLUMES=()

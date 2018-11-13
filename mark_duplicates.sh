@@ -4,7 +4,7 @@ BAM_FILE=Null
 OUTPUT=Null
 THREADS=1
 
-while getopts "b:t:o:r:" opt; do
+while getopts "b:t:o:r:h" opt; do
   case ${opt} in
     b )
       BAM_FILE=${OPTARG}
@@ -17,6 +17,10 @@ while getopts "b:t:o:r:" opt; do
       ;;
     r )
       ;;
+    h )
+      usage_mark_duplicates
+      exit 0
+      ;;
     \? )
       echo "Invalid option: -${OPTARG}" 1>&2
       exit 1
@@ -24,8 +28,12 @@ while getopts "b:t:o:r:" opt; do
   esac
 done
 
-[[ ${BAM_FILE} != "Null" ]] || { echo "ERROR: BAM FILE (-b <arg>) argument must be provided" && exit 1; }
-[[ ${OUTPUT} != "Null" ]] || { echo "ERROR: OUTPUT (-o <arg>) argument must be provided" && exit 1; }
+[[ ${BAM_FILE} != "Null" ]] || { echo "
+ERROR: BAM FILE (-b <arg>) argument must be provided" && \
+ usage_mark_duplicates && exit 1; }
+[[ ${OUTPUT} != "Null" ]] || { echo "
+ERROR: OUTPUT (-o <arg>) argument must be provided" && \
+ usage_mark_duplicates && exit 1; }
 
 EXIT_CODE=0
 MISSING_VOLUMES=()
