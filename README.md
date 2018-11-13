@@ -2,30 +2,74 @@
 
 ## Description
 
-This repository contains scripts that enable researchers to perform whole-genome variant calling on Illumina sequencing data. We package software within a Docker image and enable the user to execute the software via commands that pass data into and out of a Docker container. Currently, we support the following commands:
+This repository contains scripts that enable researchers to perform whole-genome variant 
+calling on Illumina sequencing data. We package software within a Docker image and enable the 
+user to execute the software via commands that pass data into and out of a Docker container. 
+Currently, we support the following commands:
 
-* `align.sh` (align FASTA files to a reference genome using `bwa mem`)
-* `index_bam.sh` (index a BAM file using `sambamba`)
-* `mark_duplicates.sh` (mark duplicates in a BAM file using `sambamba`)
-* `merge_bams.sh` (merge BAM files using `sambamba`)
-* `slice_bam.sh` (slice/split a BAM file using `sambamba`)
-* `sort_bam.sh` (sort a BAM file using `sambamba`)
-* `call_gatk_variants.sh` (call variants using GATK)
+* `align` (align FASTA files to a reference genome using `bwa mem`)
+* `index_bam` (index a BAM file using `sambamba`)
+* `mark_duplicates` (mark duplicates in a BAM file using `sambamba`)
+* `merge_bams` (merge BAM files using `sambamba`)
+* `slice_bam` (slice/split a BAM file using `sambamba`)
+* `sort_bam` (sort a BAM file using `sambamba`)
+* `call_gatk_variants` (call variants using GATK)
 
-ZAC: Please put an example here of how to display the available commands.
+The default behavior of the docker container is to display the usage and available commands,
+so if the user simply runs
 
-ZAC: Please put an example here of how to view the help documentation for `align.sh`.
+```
+docker run --rm srp33/u54:latest
+```
 
-ZAC: Please put an example here of how to execute `align.sh`.
-
-
-
-
-
+usage and available commands will be displayed.
 
 
+With any of the supported commands, the user can give the `-h` flag to view available options for 
+that command, as follows:
 
-Remember a few things:
+```
+docker run --rm srp33/u54:latest align -h
+```
+
+this will display the usage for the `align` command as follows:
+
+```
+align
+Options:
+-t <number of threads> (Optional)
+-r <name of reference genome fasta file>
+-s <sample id>
+```
+
+
+The `align` command runs as follows:
+
+```
+docker run \
+-v /Applications/U54/ref_index:/data/ref_index \ 
+-v /Applications/U54/in_use:/data/sample_data \
+-v /Applications/U54/OutputData:/data/results \
+--user root:root \
+--rm \
+srp33/u54:latest \
+align \
+-t 10 \
+-r ucsc.hg19.fasta.gz \
+-s 101024
+```
+
+as listed above, the option `-t` is optional, however, the command will throw an error if `-r` or
+`-s` are missing. Also note that certain volumes are required for the `align` command to run properly.
+Volumes are described in greater detail below.
+
+
+
+
+
+
+
+###Remember a few things:
 
   * You must include four volumes using:
     1. `<location of reference genome>:/data/ref_index`
@@ -81,7 +125,7 @@ docker run \
 -v /Applications/U54/bam_files:/data/bam_files \
 --user root:root \
 --rm \
-srp33/bwamtools:latest \
+srp33/u54:latest \
 align \
 -t 10 \
 -r ucsc.hg19.fasta.gz \

@@ -32,7 +32,8 @@ MISSING_VOLUMES=()
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
-    echo "The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
+    echo "
+    The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1

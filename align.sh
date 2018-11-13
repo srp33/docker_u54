@@ -49,7 +49,8 @@ ERROR: SAMPLE (-s <arg>) argument must be provided" && \
 [[ -d /data/results ]] || { MISSING_VOLUMES+=(/data/results) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
-    echo "The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
+    echo "
+    The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
 # Check permissions of each directory

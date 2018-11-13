@@ -3,13 +3,17 @@
 BAM_FILE=Null
 REF_GENOME=Null
 
-while getopts "b:r:" opt; do
+while getopts "b:r:h" opt; do
   case ${opt} in
     b )
       BAM_FILE=${OPTARG}
       ;;
     r )
       REF_GENOME=${OPTARG}
+      ;;
+    h )
+      usage_strelka
+      exit 0
       ;;
     \? )
       echo "Invalid option: -${OPTARG}" 1>&2
@@ -18,8 +22,12 @@ while getopts "b:r:" opt; do
   esac
 done
 
-[[ ${BAM_FILE} != "Null" ]] || { echo "ERROR: BAM FILE (-b <arg>) argument must be provided" && exit 1; }
-[[ ${REF_GENOME} != "Null" ]] || { echo "ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && exit 1; }
+[[ ${BAM_FILE} != "Null" ]] || { echo "
+ERROR: BAM FILE (-b <arg>) argument must be provided" && \
+ usage_strelka && exit 1; }
+[[ ${REF_GENOME} != "Null" ]] || { echo "
+ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
+ usage_strelka && exit 1; }
 
 if [[ ${REF_GENOME: -3} = ".gz" ]]; then
     INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
@@ -36,7 +44,8 @@ MISSING_VOLUMES=()
 [[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
-    echo "The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
+    echo "
+    The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
