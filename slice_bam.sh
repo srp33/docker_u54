@@ -44,7 +44,7 @@ EXIT_CODE=0
 MISSING_VOLUMES=()
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
-[[ -d /data/results ]] || { MISSING_VOLUMES+=(/data/results) && EXIT_CODE=1; }
+[[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
     echo "
@@ -52,6 +52,6 @@ if [[ ${EXIT_CODE} = 1 ]]; then
 fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
-python /check_permissions.py /data/results ReadWrite || exit 1
+python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-sambamba slice -o /data/results/${OUTPUT} /data/bam_files/${BAM_FILE} ${REGION}
+sambamba slice -o /data/output_data/${OUTPUT} /data/bam_files/${BAM_FILE} ${REGION}

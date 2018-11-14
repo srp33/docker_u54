@@ -2,7 +2,8 @@
 
 REF_GENOME=Null
 THREADS=1
-SAMPLE=Null
+READ1=Null
+READ2=Null
 
 while getopts "t:r:s:h" opt; do
   case ${opt} in
@@ -13,7 +14,19 @@ while getopts "t:r:s:h" opt; do
       REF_GENOME=${OPTARG}
       ;;
     s )
-      SAMPLE=${OPTARG}
+      case ${OPTARG} in
+        1 )
+          READ1="${!OPTIND}"
+          OPTIND=$(( $OPTIND + 1 ))
+          ;;
+        2 )
+          READ2="${!OPTIND}"
+          OPTIND=$(( $OPTIND + 1 ))
+          ;;
+        * )
+          echo "Invalid option: -s${OPTARG}"
+          ;;
+      esac
       ;;
     h )
       usage_align
@@ -38,15 +51,18 @@ EXIT_CODE=0
 [[ ${REF_GENOME} != "Null" ]] || { echo "
 ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
  usage_align && exit 1; }
-[[ ${SAMPLE} != "Null" ]] || { echo "
-ERROR: SAMPLE (-s <arg>) argument must be provided" && \
+[[ ${READ1} != "Null" ]] || { echo "
+ERROR: READ 1 (-s1 <arg>) argument must be provided" && \
+ usage_align && exit 1; }
+ [[ ${READ2} != "Null" ]] || { echo "
+ERROR: READ 2 (-s2 <arg>) argument must be provided" && \
  usage_align && exit 1; }
 
 # Checks for the necessary directories which are only created by volumes
 
-[[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
-[[ -d /data/sample_data ]] || { MISSING_VOLUMES+=(/data/sample_data) && EXIT_CODE=1; }
-[[ -d /data/results ]] || { MISSING_VOLUMES+=(/data/results) && EXIT_CODE=1; }
+[[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
+[[ -d /data/input_data ]] || { MISSING_VOLUMES+=(/data/input_data) && EXIT_CODE=1; }
+[[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
     echo "
@@ -55,14 +71,14 @@ fi
 
 # Check permissions of each directory
 
-python /check_permissions.py /data/ref_index Read ${REF_GENOME} || exit 1
-python /check_permissions.py /data/sample_data Read ${SAMPLE}.1.fastq.gz || exit 1
-python /check_permissions.py /data/results ReadWrite || exit 1
+python /check_permissions.py /data/ref_genome Read ${REF_GENOME} || exit 1
+python /check_permissions.py /data/input_data Read ${READ1} || exit 1
+python /check_permissions.py /data/output_data ReadWrite || exit 1
 
 # Check for necessary index files in ref_index directory
 #   If one of the files is missing, bwa index will be run
 
-for filename in /data/ref_index/*; do
+for filename in /data/ref_genome/*; do
     REF_INDEX_FILES+=($(echo "${filename##*/}"))
 done
 
@@ -75,13 +91,13 @@ if [[ ${REF_INDEXED} == 1 ]]; then
 
     echo "The reference does not contain the proper index files. Running bwa index"
 
-    python check_permissions.py /data/ref_index ReadWrite || \
+    python check_permissions.py /data/ref_genome ReadWrite || \
        { echo "Please ensure you are passing in directory and not just a file volume" && exit 1; }
 
-    bwa index -t ${THREADS} /data/ref_index/${REF_GENOME}
+    bwa index -t ${THREADS} /data/ref_genome/${REF_GENOME}
 fi
 
-bwa mem -t ${THREADS} /data/ref_index/${REF_GENOME} \
-    /data/sample_data/${SAMPLE}.1.fastq.gz /data/sample_data/${SAMPLE}.2.fastq.gz | \
-    samtools view -@ ${THREADS} -S -b > /data/results/${SAMPLE}.bam
+bwa mem -t ${THREADS} /data/ref_genome/${REF_GENOME} \
+    /data/input_data/${READ1} /data/input_data/${READ2} | \
+    samtools view -@ ${THREADS} -S -b > /data/output_data/${SAMPLE}.bam
 

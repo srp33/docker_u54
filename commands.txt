@@ -1,1 +1,1 @@
-docker run -v /Applications/U54/ref_index:/data/ref_index -v /Applications/U54/in_use:/data/SampleData -v /Applications/U54/OutputData:/data/results --user 1004 zence/bwamtools:testing
+docker run -v /Applications/U54/ref_index:/data/ref_genome -v /Applications/U54/in_use:/data/SampleData -v /Applications/U54/OutputData:/data/output_data --user 1004 zence/bwamtools:testing

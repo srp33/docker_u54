@@ -15,20 +15,41 @@ Currently, we support the following commands:
 * `sort_bam` (sort a BAM file using `sambamba`)
 * `call_gatk_variants` (call variants using GATK)
 
-The default behavior of the docker container is to display the usage and available commands. If the user executes the following command, usage information will be displayed.
+The default behavior of the docker container is to display the usage and available commands. 
+If the user executes the following command, usage information will be displayed.
 
 ```
 docker run --rm srp33/u54:latest
 ```
 
 For any of the supported commands, the user can specify the `-h` flag to view available options for 
-that command. For example, the following command would provide usage information for the `bwa_mem_align` command, which uses `bwa mem` to align sequencing reads to a reference genome.
+that command. For example, the following command would provide usage information for the 
+`bwa_mem_align` command, which uses `bwa mem` to align sequencing reads to a reference genome.
 
 ```
 docker run --rm srp33/u54:latest bwa_mem_align -h
 ```
 
-Below is an example of how the `bwa_mem_align` command might be executed. A variety of arguments must be specified. The first three arguments (each beginning with `-v`) specify [volumes](https://docs.docker.com/storage/volumes). Volumes enable data to be shared between the host operating system and the Docker container. The path specified before each colon indicates a directory on the host; the path specified after the colon indicates the corresponding directory within the container (this is static). In the example below, the first volume specifies the location of the reference genome. The second volume specifies the location where input files are stored (in this case, FASTQ files). The third volume specifies the location where output files will be stored after the container's software has been executed. The `--user` argument indicates the user under which the container should be executed on the host (before the colon) and within the container (after the colon). The `--rm` argument indicates that Docker should automatically clean up the container and remove its file system when the container exits. `srp33/u54` is the name of the Docker image; `latest` is the version tag associated with this image. The remaining arguments are specific to the task of using `bwa mem` to align FASTQ files to the reference genome. The first argument (`-r`) indicates the name of a FASTA file that the user wishes to use as a reference genome. The `-s1` and `-s2` arguments indicate the names of the FASTQ files that will be aligned; these files should be stored in the volume specified above and should represent the first and second side of the paired-end reads, respectively. Finally, the `-t` argument indicates the number of threads/cores that should be used during alignment; this argument is optional.
+Below is an example of how the `bwa_mem_align` command might be executed. 
+A variety of arguments must be specified. The first three arguments (each beginning with `-v`) 
+specify [volumes](https://docs.docker.com/storage/volumes). Volumes enable data to be shared 
+between the host operating system and the Docker container. The path specified before each colon 
+indicates a directory on the host; the path specified after the colon indicates the corresponding 
+directory within the container (this is static). In the example below, the first volume specifies 
+the location of the reference genome. The second volume specifies the location where input files 
+are stored (in this case, FASTQ files). The third volume specifies the location where output files 
+will be stored after the container's software has been executed. The `--user` argument indicates 
+the user under which the container should be executed on the host (before the colon) and within 
+the container (after the colon). The `--rm` argument indicates that Docker should automatically 
+clean up the container and remove its file system when the container exits. `srp33/u54` is the 
+name of the Docker image; `latest` is the version tag associated with this image. 
+The remaining arguments are specific to the task of using `bwa mem` to align FASTQ files to the 
+reference genome. The first argument (`-r`) indicates the name of a FASTA file that the user wishes 
+to use as a reference genome. The `-s1` and `-s2` arguments indicate the names of the FASTQ files 
+that will be aligned; these files should be stored in the volume specified above and should 
+represent the first and second side of the paired-end reads, respectively. Finally, the `-t` 
+argument indicates the number of threads/cores that should be used during alignment; 
+this argument is optional.
 
 ```
 docker run \
@@ -55,9 +76,9 @@ docker run \
 ###Remember a few things:
 
   * You must include four volumes using:
-    1. `<location of reference genome>:/data/ref_index`
-    2. `<location of reads>:/data/sample_data`
-    3. `<location of output directory>:/data/results`
+    1. `<location of reference genome>:/data/ref_genome`
+    2. `<location of reads>:/data/input_data`
+    3. `<location of output directory>:/data/output_data`
     4. `<location of bam files>:/data/bam_files`
     
     Remember that each volume must be preceded by the `-v` flag and follows the format
@@ -88,9 +109,9 @@ docker run \
 
 ```
 docker run \
--v <location of reference genome>:/data/ref_index \
--v <location of reads>:/data/sample_data \
--v <location of output directory>:/data/results \
+-v <location of reference genome>:/data/ref_genome \
+-v <location of reads>:/data/input_data \
+-v <location of output directory>:/data/output_data \
 -v <location of bam files>:/data/bam_files \
 --user root:root -it [additional options] \
 --rm \
@@ -102,9 +123,9 @@ The command for this container can seem rather daunting at first:
 
 ```{bash}
 docker run \
--v /Applications/U54/ref_index:/data/ref_index \ 
--v /Applications/U54/in_use:/data/sample_data \
--v /Applications/U54/OutputData:/data/results \
+-v /Applications/U54/ref_index:/data/ref_genome \ 
+-v /Applications/U54/in_use:/data/input_data \
+-v /Applications/U54/OutputData:/data/output_data \
 -v /Applications/U54/bam_files:/data/bam_files \
 --user root:root \
 --rm \
@@ -121,20 +142,20 @@ I will attempt to break this down and make sense of each argument.
   * This flag allows the user to connect a directory or folder to an identical directory or folder
   in the container. There are three important volumes that may be required to use certain commands:
   
-    1. `<location of reference genome>:/data/ref_index`
+    1. `<location of reference genome>:/data/ref_genome`
     
        * `<location of reference genome>` should be a directory where the reference genome is
        found. If the genome has not previously been indexed, the container will run `bwa index`.
-       This command requires write permissions in the `/data/ref_index` directory on top of read
+       This command requires write permissions in the `/data/ref_genome` directory on top of read
        permissions. If the genome has been indexed previously, only read permissions are required.
        __It is vital to pass a directory and not just a file into this volume__, if the user
        passes a file instead of a directory into this container, it will attempt to run 
        `bwa index` and fail.
        
-       * `/data/ref_index` is where bwamtools expects to find the reference genome. If it is not
+       * `/data/ref_genome` is where bwamtools expects to find the reference genome. If it is not
        found, the container will fail and exit.
       
-    2. `<location of reads>:/data/sample_data`
+    2. `<location of reads>:/data/input_data`
     
        * `<location of reads>` is where the reads are located. The easiest way to use this volume
        is by putting the desired reads into a directory and simply referencing the directory
@@ -144,7 +165,7 @@ I will attempt to break this down and make sense of each argument.
        does not want this behavior (i.e. the user only wants to run this container on one sample)
        the user may reference the specific files as follows:
        
-         `-v <location of reads>/<file name>:/data/sample_data/<file name>`
+         `-v <location of reads>/<file name>:/data/input_data/<file name>`
        
          The file name does not need to coincide between the file found on the host and that on
          the container, however, the container will dynamically name the outputted `.bam` file 
@@ -153,7 +174,7 @@ I will attempt to break this down and make sense of each argument.
          will not be analyzed as being part of the same sample. Thus consistency will allow the user
          to avoid many unforeseen issues.
        
-    3. `<location of output directory>:/data/results`
+    3. `<location of output directory>:/data/output_data`
       
        * It is vital for the proper function of this container that the user follow two rules
        concerning the output directory:

@@ -6,7 +6,7 @@ FROM broadinstitute/gatk:latest
 MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
 
 ################## ADD SCRIPT #########################
-ADD align.sh /usr/local/bin/align
+ADD bwa_mem_align.sh /usr/local/bin/bwa_mem_align
 ADD echo_usage.sh /usr/local/bin/echo_usage
 ADD usage_align.sh /usr/local/bin/usage_align
 ADD usage_index_bam.sh /usr/local/bin/usage_index_bam

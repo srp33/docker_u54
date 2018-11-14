@@ -37,7 +37,7 @@ if [[ ${EXIT_CODE} = 1 ]]; then
 fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
-python /check_permissions.py /data/results ReadWrite || exit 1
+python /check_permissions.py /data/output_data ReadWrite || exit 1
 
 # Figure out sambamba
 sambamba sort -t ${THREADS} /data/bam_files/${BAM_FILE}

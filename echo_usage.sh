@@ -3,9 +3,9 @@
 echo "
 Usage:
 docker run \\
--v <location of reference genome>:/data/ref_index \\
--v <location of reads>:/data/sample_data \\
--v <location of output directory>:/data/results \\
+-v <location of reference genome>:/data/ref_genome \\
+-v <location of reads>:/data/input_data \\
+-v <location of output directory>:/data/output_data \\
 -v <location of bam files>:/data/bam_files \\
 --user <user id> -it [additional options] \\
 --rm \\
