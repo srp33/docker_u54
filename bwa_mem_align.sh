@@ -1,39 +1,42 @@
 #! /bin/bash
 
+source check_for_args
+
 REF_GENOME=Null
 THREADS=1
 READ1=Null
 READ2=Null
+ARGNUM=$#
 
-while getopts "t:r:s:h" opt; do
-  case ${opt} in
-    t )
-      THREADS=${OPTARG}
+for (( i=1; i<=ARGNUM; i++ )); do
+  OPTARG=$((i+1))
+  case ${!i} in
+    -t | --nthreads )
+      check_args "${!OPTARG}" "-t" || exit 1
+      THREADS=${!OPTARG}
+      i=$((i+1))
       ;;
-    r )
-      REF_GENOME=${OPTARG}
+    -r | --reference )
+      check_args "${!OPTARG}" "-r" || exit 1
+      REF_GENOME=${!OPTARG}
+      i=$((i+1))
       ;;
-    s )
-      case ${OPTARG} in
-        1 )
-          READ1="${!OPTIND}"
-          OPTIND=$(( $OPTIND + 1 ))
-          ;;
-        2 )
-          READ2="${!OPTIND}"
-          OPTIND=$(( $OPTIND + 1 ))
-          ;;
-        * )
-          echo "Invalid option: -s${OPTARG}"
-          ;;
-      esac
+    -s1 | --sample1 )
+      check_args "${!OPTARG}" "-s1" || exit 1
+      READ1="${!OPTARG}"
+      i=$((i+1))
       ;;
-    h )
+    -s2 | --sample2 )
+      check_args "${!OPTARG}" "-s2" || exit 1
+      READ2="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -h | --help )
       usage_align
       exit 0
       ;;
-    \? )
-      echo "Invalid option: -${OPTARG}" 1>&2
+    * )
+      echo "Invalid option: ${!i}" 1>&2
       exit 1
       ;;
   esac

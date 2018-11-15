@@ -15,6 +15,7 @@ ADD usage_merge_bams.sh /usr/local/bin/usage_merge_bams
 ADD usage_slice_bam.sh /usr/local/bin/usage_slice_bam
 ADD usage_sort_bam.sh /usr/local/bin/usage_sort_bam
 ADD usage_strelka.sh /usr/local/bin/usage_strelka
+ADD check_for_args.sh /usr/local/bin/check_for_args
 ADD call_gatk_variants.sh /usr/local/bin/call_gatk_variants
 ADD call_somatic_variants_strelka.sh /usr/local/bin/call_somatic_variants_strelka
 ADD call_somatic_variants_varscan.sh /usr/local/bin/call_somatic_variants_varscan

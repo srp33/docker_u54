@@ -1,22 +1,30 @@
 #! /bin/bash
 
+source check_for_args
+
 BAM_FILE=Null
 REF_GENOME=Null
+ARGNUM=$#
 
-while getopts "b:r:h" opt; do
-  case ${opt} in
-    b )
-      BAM_FILE=${OPTARG}
+for (( i=1; i<=ARGNUM; i++ )); do
+  OPTARG=$((i+1))
+  case ${!i} in
+    -b )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      BAM_FILE=${!OPTARG}
+      i=$((i+1))
       ;;
-    r )
-      REF_GENOME=${OPTARG}
+    -r )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      REF_GENOME=${!OPTARG}
+      i=$((i+1))
       ;;
-    h )
+    -h )
       usage_strelka
       exit 0
       ;;
-    \? )
-      echo "Invalid option: -${OPTARG}" 1>&2
+    * )
+      echo "Invalid option: ${!i}" 1>&2
       exit 1
       ;;
   esac

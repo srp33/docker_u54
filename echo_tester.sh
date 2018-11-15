@@ -1,32 +1,29 @@
 #! /bin/bash
 
-dummy_var=()
+source check_for_args.sh
 
-while getopts "t:n:s:" opt; do
-  case ${opt} in
-    t )
-      threads="$OPTARG"
+dummy_var=()
+ARGNUM=$#
+
+for (( i=1; i<=ARGNUM; i++ )); do
+  OPTARG=$((i+1))
+  case ${!i} in
+    -t )
+      check_args "${!OPTARG}" "-t" || exit 1
+      echo "${!OPTARG}"
+      i=$((i+1))
       ;;
-    n )
-      dummy_var+=("/bin/bash/${OPTARG}")
+    -n )
+      echo "N!!"
       ;;
-    s )
-      case "${OPTARG}" in
-        1 )
-          val="${!OPTIND}"
-          echo ${val}
-          echo ${OPTIND}
-          echo "woah buddy ${OPTARG}"
-          ;;
-        2 )
-          echo "noah buddy"
-          ;;
-        * )
-          echo "Invalid option: -s${OPTARG}"
-          ;;
-      esac;;
-    \? )
-      echo "Invalid option: -$OPTARG" 1>&2
+    -s1 )
+      echo "s1!!!"
+      ;;
+    -s2 )
+      echo "s2!!!"
+      ;;
+    * )
+      echo "Invalid option: ${!i}" 1>&2
       ;;
   esac
 done

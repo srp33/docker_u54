@@ -1,22 +1,30 @@
 #! /bin/bash
 
+source check_for_args
+
 PILEUP=Null
 OUTPUT=Null
+ARGNUM=$#
 
-while getopts "p:o:h" opt; do
-  case ${opt} in
-    p )
+for (( i=1; i<=ARGNUM; i++ )); do
+  OPTARG=$((i+1))
+  case ${!i} in
+    -p )
+      check_args "${!OPTARG}" "${!i}" || exit 1
       PILEUP=${OPTARG}
+      i=$((i+1))
       ;;
-    o )
+    -o )
+      check_args "${!OPTARG}" "${!i}" || exit 1
       OUTPUT=${OPTARG}
+      i=$((i+1))
       ;;
-    h )
+    -h )
       usage_strelka
       exit 0
       ;;
-    \? )
-      echo "Invalid option: -${OPTARG}" 1>&2
+    * )
+      echo "Invalid option: ${!i}" 1>&2
       exit 1
       ;;
   esac
