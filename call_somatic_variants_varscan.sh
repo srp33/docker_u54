@@ -1,5 +1,6 @@
 #! /bin/bash
 
+source usage_functions
 source check_for_args
 
 PILEUP=Null
@@ -9,17 +10,17 @@ ARGNUM=$#
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case ${!i} in
-    -p )
+    -p | --pileup )
       check_args "${!OPTARG}" "${!i}" || exit 1
       PILEUP=${OPTARG}
       i=$((i+1))
       ;;
-    -o )
+    -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
       OUTPUT=${OPTARG}
       i=$((i+1))
       ;;
-    -h )
+    -h | --help )
       usage_strelka
       exit 0
       ;;

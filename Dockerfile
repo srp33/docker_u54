@@ -8,13 +8,7 @@ MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
 ################## ADD SCRIPT #########################
 ADD bwa_mem_align.sh /usr/local/bin/bwa_mem_align
 ADD echo_usage.sh /usr/local/bin/echo_usage
-ADD usage_align.sh /usr/local/bin/usage_align
-ADD usage_index_bam.sh /usr/local/bin/usage_index_bam
-ADD usage_mark_duplicates.sh /usr/local/bin/usage_mark_duplicates
-ADD usage_merge_bams.sh /usr/local/bin/usage_merge_bams
-ADD usage_slice_bam.sh /usr/local/bin/usage_slice_bam
-ADD usage_sort_bam.sh /usr/local/bin/usage_sort_bam
-ADD usage_strelka.sh /usr/local/bin/usage_strelka
+ADD usage_functions.sh /usr/local/bin/usage_functions
 ADD check_for_args.sh /usr/local/bin/check_for_args
 ADD call_gatk_variants.sh /usr/local/bin/call_gatk_variants
 ADD call_somatic_variants_strelka.sh /usr/local/bin/call_somatic_variants_strelka

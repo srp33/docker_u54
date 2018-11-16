@@ -1,5 +1,6 @@
 #! /bin/bash
 
+source usage_functions
 source check_for_args
 
 BAM_FILE=Null
@@ -9,17 +10,17 @@ ARGNUM=$#
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case ${!i} in
-    -b )
+    -b | --bam )
       check_args "${!OPTARG}" "${!i}" || exit 1
       BAM_FILE=${!OPTARG}
       i=$((i+1))
       ;;
-    -r )
+    -r | --reference )
       check_args "${!OPTARG}" "${!i}" || exit 1
       REF_GENOME=${!OPTARG}
       i=$((i+1))
       ;;
-    -h )
+    -h | --help )
       usage_strelka
       exit 0
       ;;

@@ -1,5 +1,6 @@
 #! /bin/bash
 
+source usage_functions
 source check_for_args
 
 BAM_FILE=Null
@@ -10,22 +11,22 @@ ARGNUM=$#
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case ${!i} in
-    -b )
+    -b | --bam )
       check_args "${!OPTARG}" "${!i}" || exit 1
       BAM_FILE=${OPTARG}
       i=$((i+1))
       ;;
-    -t )
+    -t | --nthreads )
       check_args "${!OPTARG}" "${!i}" || exit 1
       THREADS=${OPTARG}
       i=$((i+1))
       ;;
-    -o )
+    -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
       OUTPUT=${OPTARG}
       i=$((i+1))
       ;;
-    -h )
+    -h | --help )
       usage_mark_duplicates
       exit 0
       ;;

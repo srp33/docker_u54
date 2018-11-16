@@ -3,8 +3,9 @@
 echo "
 slice_bam
 Options:
--t <number of threads> (Optional)
--b <name of bam file>
--r <region to slice>
--o <name of output file>
+-t, --nthreads <number of threads> (Optional)
+-b, --bam <name of bam file>
+-r, --region <region to slice>
+-o, --output <name of output file>
+-h, --help
 "

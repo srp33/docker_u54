@@ -1,5 +1,6 @@
 #! /bin/bash
 
+source usage_functions
 source check_for_args
 
 BAM_FILE=Null
@@ -9,17 +10,17 @@ ARGNUM=$#
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case ${!i} in
-    -b )
+    -b | --bam )
       check_args "${!OPTARG}" "${!i}" || exit 1
       BAM_FILE=${OPTARG}
       i=$((i+1))
       ;;
-    -t )
+    -t | --nthreads )
       check_args "${!OPTARG}" "${!i}" || exit 1
       THREADS=${OPTARG}
       i=$((i+1))
       ;;
-    -h )
+    -h | --help )
       usage_sort_bam
       exit 0
       ;;
@@ -47,5 +48,4 @@ fi
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-# Figure out sambamba
 sambamba sort -t ${THREADS} /data/bam_files/${BAM_FILE}

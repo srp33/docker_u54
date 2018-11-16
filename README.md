@@ -284,22 +284,26 @@ I will attempt to break this down and make sense of each argument.
 currently does not support whole word flags. It should also be noted that there are no positional 
 arguments to these commands. __All arguments must be preceded by a flag.__
 
-* `align`
+* `bwa_mem_align`
 
   * Uses `bwa` and `samtools` to align reads using a reference genome. 
   There are two required arguments:
   
-    * `-r`
+    * `-r`, `--reference`
     
       * Name of reference genome file
       
-    * `-s`
+    * `-s1`, `--sample1`
     
-      * Sample id of reads
+      * Name of read 1 fastq file
+      
+    * `-s2`, `--sample2`
+    
+      * Name of read 2 fastq file
       
     There is an additional optional argument that may be used
     
-    * `-t`
+    * `-t`, `--nthreads`
     
       * Number of threads to use. __Default:__ 1
     
@@ -307,13 +311,13 @@ arguments to these commands. __All arguments must be preceded by a flag.__
 
   * Uses `sambamba` to index a `bam` file
   
-    * `-b`
+    * `-b`, `--bam`
     
       * Name of bam file to be indexed
       
     Optional:
     
-    * `-t`
+    * `-t`, `--nthreads`
     
       * Number of threads. __Default:__ 1
       
@@ -322,13 +326,13 @@ arguments to these commands. __All arguments must be preceded by a flag.__
   * Uses `sambamba` to sort a `bam` file. __NOTE:__ `bam` file must have been previously indexed and 
   index file (`*.bai`) must be in same directory as `bam` file.
   
-    * `-b`
+    * `-b`, `--bam`
     
        * Name of bam file to be sorted
        
     Optional:
     
-    * `-t`
+    * `-t`, `--nthreads`
     
        * Number of threads. __Default:__ 1
        
@@ -336,18 +340,18 @@ arguments to these commands. __All arguments must be preceded by a flag.__
 
   * Uses `sambamba` to mark duplicates in a `bam` file.
   
-    * `-b`
+    * `-b`, `--bam`
     
       * Name of bam file to be read
       
-    * `-o`
+    * `-o`, `--output`
     
       * Name of output file
       * Saved into `results` directory
       
     Optional:
     
-    * '-t'
+    * `-t`, `--nthreads`
     
       * Threads
       
@@ -355,19 +359,19 @@ arguments to these commands. __All arguments must be preceded by a flag.__
 
   * Uses `sambamba` to merge multiple `bam` files.
   
-    * `-b`
+    * `-b`, `--bam`
     
       * Bam file to be merged with others
       * __NOTE:__ there must be two or more `bam` files for this to run correctly. Each
       `bam` file must be preceded by `-b`.
       
-    * `-o`
+    * `-o`, `--output`
     
       * Name of output, saved to `bam_files` directory
       
     Optional:
     
-    * `-t`
+    * `-t`, `--nthreads`
     
       * Thread count
       
@@ -375,21 +379,21 @@ arguments to these commands. __All arguments must be preceded by a flag.__
 
   * `sambamba slice`, essentially
   
-    * `-b`
+    * `-b`, `--bam`
     
       * `bam` file to be sliced
       
-    * `-r`
+    * `-r`, `--region`
     
       * Region to be sliced out of the `bam` file
       
-    * `-o`
+    * `-o`, `--output`
     
       * Output file, saved to `results` directory
       
     Optional:
     
-    * `-t`
+    * `-t`, `--nthreads`
     
       * Thread count
       

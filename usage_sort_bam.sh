@@ -3,6 +3,7 @@
 echo "
 sort_bam
 Options:
--t <number of threads> (Optional)
--b <name of bam file>
+-t, --nthreads <number of threads> (Optional)
+-b, --bam <name of bam file>
+-h, --help
 "
