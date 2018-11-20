@@ -14,22 +14,22 @@ for (( i=1; i<=ARGNUM; i++ )); do
   case ${!i} in
     -b | --bam )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      BAM_FILE=${OPTARG}
+      BAM_FILE=${!OPTARG}
       i=$((i+1))
       ;;
     -t | --nthreads )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      THREADS=${OPTARG}
+      THREADS=${!OPTARG}
       i=$((i+1))
       ;;
     -r | --region )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      REGION=${OPTARG}
+      REGION=${!OPTARG}
       i=$((i+1))
       ;;
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      OUTPUT=${OPTARG}
+      OUTPUT=${!OPTARG}
       i=$((i+1))
       ;;
     -h | --help )

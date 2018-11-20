@@ -18,12 +18,12 @@ for (( i=1; i<=ARGNUM; i++ )); do
       ;;
     -t | --nthreads )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      THREADS=${OPTARG}
+      THREADS=${!OPTARG}
       i=$((i+1))
       ;;
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      OUTPUT=${OPTARG}
+      OUTPUT=${!OPTARG}
       i=$((i+1))
       ;;
     -h | --help )
