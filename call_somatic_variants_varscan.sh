@@ -12,12 +12,12 @@ for (( i=1; i<=ARGNUM; i++ )); do
   case ${!i} in
     -p | --pileup )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      PILEUP=${OPTARG}
+      PILEUP=${!OPTARG}
       i=$((i+1))
       ;;
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      OUTPUT=${OPTARG}
+      OUTPUT=${!OPTARG}
       i=$((i+1))
       ;;
     -h | --help )
@@ -32,11 +32,11 @@ for (( i=1; i<=ARGNUM; i++ )); do
 done
 
 [[ ${PILEUP} != "Null" ]] || { echo "
-ERROR: BAM FILE (-b <arg>) argument must be provided" && \
- usage_strelka && exit 1; }
+ERROR: PILEUP FILE (-p <arg>) argument must be provided" && \
+ usage_varscan && exit 1; }
 [[ ${OUTPUT} != "Null" ]] || { echo "
-ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
- usage_strelka && exit 1; }
+ERROR: OUTPUT (-o <arg>) argument must be provided" && \
+ usage_varscan && exit 1; }
 
 if [[ ${REF_GENOME: -3} = ".gz" ]]; then
     INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')

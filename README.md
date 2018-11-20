@@ -19,7 +19,7 @@ The default behavior of the docker container is to display the usage and availab
 If the user executes the following command, usage information will be displayed.
 
 ```
-docker run --rm srp33/u54:latest
+docker run --rm srp33/somatic_wgs:latest
 ```
 
 For any of the supported commands, the user can specify the `-h` flag to view available options for 
@@ -27,7 +27,7 @@ that command. For example, the following command would provide usage information
 `bwa_mem_align` command, which uses `bwa mem` to align sequencing reads to a reference genome.
 
 ```
-docker run --rm srp33/u54:latest bwa_mem_align -h
+docker run --rm srp33/somatic_wgs:latest bwa_mem_align -h
 ```
 
 Below is an example of how the `bwa_mem_align` command might be executed. 
@@ -41,7 +41,7 @@ are stored (in this case, FASTQ files). The third volume specifies the location 
 will be stored after the container's software has been executed. The `--user` argument indicates 
 the user under which the container should be executed on the host (before the colon) and within 
 the container (after the colon). The `--rm` argument indicates that Docker should automatically 
-clean up the container and remove its file system when the container exits. `srp33/u54` is the 
+clean up the container and remove its file system when the container exits. `srp33/somatic_wgs` is the 
 name of the Docker image; `latest` is the version tag associated with this image. 
 The remaining arguments are specific to the task of using `bwa mem` to align FASTQ files to the 
 reference genome. The first argument (`-r`) indicates the name of a FASTA file that the user wishes 
@@ -58,7 +58,7 @@ docker run \
   -v /MyData/BAM:/data/output_data \
   --user root:root \
   --rm \
-  srp33/u54:latest \
+  srp33/somatic_wgs:latest \
   bwa_mem_align \
     -r ucsc.hg19.fasta.gz \
     -s1 101024.1.fastq.gz \
@@ -66,14 +66,7 @@ docker run \
     -t 10
 ```
 
-
-
-
-
-
-
-
-###Remember a few things:
+### Remember a few things:
 
   * You must include four volumes using:
     1. `<location of reference genome>:/data/ref_genome`
@@ -115,7 +108,7 @@ docker run \
 -v <location of bam files>:/data/bam_files \
 --user root:root -it [additional options] \
 --rm \
-srp33/u54:latest \
+srp33/somatic_wgs:latest \
 <command> <args...>
 ```
 
@@ -129,7 +122,7 @@ docker run \
 -v /Applications/U54/bam_files:/data/bam_files \
 --user root:root \
 --rm \
-srp33/u54:latest \
+srp33/somatic_wgs:latest \
 align \
 -t 10 \
 -r ucsc.hg19.fasta.gz \
@@ -276,7 +269,7 @@ I will attempt to break this down and make sense of each argument.
 
   * Any options that the user deems necessary for `docker run`.
   
-* __Deprecated:__ `srp33/bwamtools:latest` __Use:__ `srp33/u54:latest`
+* __Deprecated:__ `srp33/bwamtools:latest` __Use:__ `srp33/somatic_wgs:latest`
   
 ## Supported Commands
 

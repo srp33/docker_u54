@@ -69,3 +69,36 @@ Options:
 -h, --help
 "
 }
+
+usage_strelka (){
+echo "
+call_somatic_variants_strelka
+Options:
+-b, --bam <name of bam file>
+-r, --reference <name of reference genome fasta file>
+-h, --help
+"
+}
+
+usage_varscan (){
+echo "
+call_somatic_variants_varscan
+Options:
+-p --pileup <name of pileup file>
+-o, --output <name of output file>
+-h, --help
+"
+}
+
+usage_mutect (){
+echo "
+call_gatk_variants
+Options:
+-bt, --bam_tumor <name of tumor bam file>
+-bn, --bam_normal <name of normal bam file
+-o, --output <name of output file>
+-r, --reference <name of reference file>
+-t, --tumor-sample <BAM sample name of tumor>
+-h, --help
+"
+}

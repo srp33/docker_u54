@@ -9,7 +9,7 @@ docker run \\
 -v <location of bam files>:/data/bam_files \\
 --user <user id> -it [additional options] \\
 --rm \\
-srp33/u54:latest \\
+srp33/somatic_wgs:latest \\
 <command> <args...>
 
 Available commands:
