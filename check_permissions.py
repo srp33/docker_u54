@@ -4,6 +4,7 @@ import errno
 
 test_dir = sys.argv[1]
 needed_permissions = sys.argv[2]
+test_file = ""
 
 if needed_permissions == "Read":
     try:

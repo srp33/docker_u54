@@ -7,6 +7,7 @@ REF_GENOME=Null
 THREADS=1
 READ1=Null
 READ2=Null
+OUTPUT_PREFIX=Null
 ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
@@ -30,6 +31,11 @@ for (( i=1; i<=ARGNUM; i++ )); do
     -s2 | --sample2 )
       check_args "${!OPTARG}" "${!i}" || exit 1
       READ2="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -o | --output )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      OUTPUT_PREFIX="${!OPTARG}"
       i=$((i+1))
       ;;
     -h | --help )
@@ -58,8 +64,11 @@ ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
 [[ ${READ1} != "Null" ]] || { echo "
 ERROR: READ 1 (-s1 <arg>) argument must be provided" && \
  usage_align && exit 1; }
- [[ ${READ2} != "Null" ]] || { echo "
+[[ ${READ2} != "Null" ]] || { echo "
 ERROR: READ 2 (-s2 <arg>) argument must be provided" && \
+ usage_align && exit 1; }
+[[ ${OUTPUT_PREFIX} != "Null" ]] || { echo "
+ERROR: OUTPUT PREFIX (-o <arg>) argument must be provided" && \
  usage_align && exit 1; }
 
 # Checks for the necessary directories which are only created by volumes
@@ -103,5 +112,5 @@ fi
 
 bwa mem -t ${THREADS} /data/ref_genome/${REF_GENOME} \
     /data/input_data/${READ1} /data/input_data/${READ2} | \
-    samtools view -@ ${THREADS} -S -b > /data/output_data/${SAMPLE}.bam
+    samtools view -@ ${THREADS} -S -b > /data/output_data/${OUTPUT_PREFIX}.bam
 
