@@ -29,18 +29,7 @@ that command. For example, the following command would provide usage information
 docker run --rm srp33/somatic_wgs:latest bwa_mem_align -h
 ```
 
-Below is an example of how the `bwa_mem_align` command could be executed. A variety of arguments must be specified:
-
-* The first three arguments (each beginning with `-v`) specify [volumes](https://docs.docker.com/storage/volumes). Volumes enable data to be shared between the host operating system and the Docker container. The path specified before each colon  indicates a directory on the host; the path specified after the colon indicates the corresponding directory within the container (this is static). In the example below, the first volume specifies the location of the reference genome. The second volume specifies the location where input files are stored (in this case, FASTQ files). The third volume specifies the location where output files will be stored after the container's software has been executed.
-* The `--user` argument identifies the user under which the container should be executed on the host (before the colon) and within the container (after the colon).
-* The `--rm` argument indicates that Docker should automatically 
-clean up the container and remove its file system when the container exits.
-* `srp33/somatic_wgs` is the name (tag) of the Docker image; `latest` is the version tag associated with this image. 
-* The remaining arguments are specific to the task of using `bwa mem` to align FASTQ files to the 
-reference genome.
-    - The first argument (`-r`) indicates the name of a FASTA file that the user wishes to use as a reference genome.
-    - The `-s1` and `-s2` arguments indicate the names of the FASTQ files that will be aligned; these files should be stored in the volume specified above and should represent the first and second side of the paired-end reads, respectively.
-    - The `-t` argument indicates the number of threads/cores that should be used during alignment; this argument is optional.
+Below is an example of how the `bwa_mem_align` command could be executed.
 
 ```
 docker run \
@@ -56,5 +45,20 @@ docker run \
     -s2 101024.2.fastq.gz \
     -t 10
 ```
+
+A variety of arguments must be specified:
+
+* The first three arguments (each beginning with `-v`) specify [volumes](https://docs.docker.com/storage/volumes). Volumes enable data to be shared between the host operating system and the Docker container. The path specified before each colon  indicates a directory on the host; the path specified after the colon indicates the corresponding directory within the container (this is static). In the example below, the first volume specifies the location of the reference genome. The second volume specifies the location where input files are stored (in this case, FASTQ files). The third volume specifies the location where output files will be stored after the container's software has been executed.
+* The `--user` argument identifies the user under which the container should be executed on the host (before the colon) and within the container (after the colon).
+* The `--rm` argument indicates that Docker should automatically 
+clean up the container and remove its file system when the container exits.
+* `srp33/somatic_wgs` is the name (tag) of the Docker image; `latest` is the version tag associated with this image. 
+* The remaining arguments are specific to the task of using `bwa mem` to align FASTQ files to the 
+reference genome.
+    - The first argument (`-r`) indicates the name of a FASTA file that the user wishes to use as a reference genome.
+    - The `-s1` and `-s2` arguments indicate the names of the FASTQ files that will be aligned; these files should be stored in the volume specified above and should represent the first and second side of the paired-end reads, respectively.
+    - The `-t` argument indicates the number of threads/cores that should be used during alignment; this argument is optional.
+
+## Feedback
 
 [Let us know](https://github.com/srp33/docker_u54/issues) if you have any questions or problems.
