@@ -12,6 +12,7 @@ Options:
 -r, --reference <name of reference genome fasta file>
 -s1, --sample1 <read 1>
 -s2, --sample2 <read 2>
+-o, --output <prefix of outputted bam file>
 -h, --help
 "
 }
@@ -94,11 +95,10 @@ usage_mutect (){
 echo "
 call_gatk_variants
 Options:
--bt, --bam_tumor <name of tumor bam file>
--bn, --bam_normal <name of normal bam file
+-t, --tumor <name of tumor bam file>
+-n, --normal <name of normal bam file
 -o, --output <name of output file>
 -r, --reference <name of reference file>
--t, --tumor-sample <BAM sample name of tumor>
 -h, --help
 "
 }
