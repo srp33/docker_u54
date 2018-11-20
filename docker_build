@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -o errexit
+
 tmpDir=/tmp/somatic-wgs-build
 
 mkdir -p $tmpDir

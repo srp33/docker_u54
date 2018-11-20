@@ -23,11 +23,7 @@ ADD check_permissions.py /
 
 ################## INSTALL TOOLS ######################
 RUN conda config --add channels bioconda
-RUN conda install bwa
-RUN conda install samtools
-RUN conda install sambamba
-RUN conda install varscan
-RUN conda install strelka
+RUN conda install bwa samtools sambamba varscan strelka
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data
