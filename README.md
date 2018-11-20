@@ -8,11 +8,11 @@ user to execute the software via commands that pass data into and out of a Docke
 Currently, we support the following commands:
 
 * `bwa_mem_align` (align FASTA files to a reference genome using `bwa mem`)
+* `sort_bam` (sort a BAM file using `sambamba`)
 * `index_bam` (index a BAM file using `sambamba`)
 * `mark_duplicates` (mark duplicates in a BAM file using `sambamba`)
-* `merge_bams` (merge BAM files using `sambamba`)
 * `slice_bam` (slice/split a BAM file using `sambamba`)
-* `sort_bam` (sort a BAM file using `sambamba`)
+* `merge_bams` (merge BAM files using `sambamba`)
 
 The default behavior of the docker container is to display the usage and available commands. 
 If the user executes the following command, usage information will be displayed.
