@@ -18,12 +18,13 @@ ADD mark_duplicates.sh /usr/local/bin/mark_duplicates
 ADD merge_bams.sh /usr/local/bin/merge_bams
 ADD slice_bam.sh /usr/local/bin/slice_bam
 ADD sort_bam.sh /usr/local/bin/sort_bam
-ADD strelka.sh /usr/local/bin/strelka
+#ADD strelka.sh /usr/local/bin/strelka
 ADD check_permissions.py /
 
 ################## INSTALL TOOLS ######################
 RUN conda config --add channels bioconda
-RUN conda install bwa samtools sambamba varscan strelka
+RUN conda install bwa samtools sambamba varscan
+RUN conda install strelka
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data
