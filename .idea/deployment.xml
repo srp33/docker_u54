@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="zence@bonsai.byu.edu:22" autoUploadExternalChanges="true">
+    <serverData>
+      <paths name="zence@bonsai.byu.edu:22">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/zence/somatic_wgs" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/echo_tester.sh" />
+            <excludedPath local="true" path="$PROJECT_DIR$/usage_sort_bam.sh" />
+            <excludedPath local="true" path="$PROJECT_DIR$/usage_index_bam.sh" />
+            <excludedPath local="true" path="$PROJECT_DIR$/usage_mark_duplicates.sh" />
+            <excludedPath local="true" path="$PROJECT_DIR$/usage_merge_bams.sh" />
+            <excludedPath local="true" path="$PROJECT_DIR$/usage_slice_bam.sh" />
+            <excludedPath local="true" path="$PROJECT_DIR$/usage_strelka.sh" />
+            <excludedPath local="true" path="$PROJECT_DIR$/usage_align.sh" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ON_EXPLICIT_SAVE" />
+  </component>
+</project>
