@@ -43,12 +43,14 @@ ERROR: BAM FILE (-b <arg>) argument must be provided" && \
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
  usage_mark_duplicates && exit 1; }
+[[ ${OUTPUT} != ${BAM_FILE} ]] || { echo "
+ERROR: OUTPUT cannot overwrite BAM FILE. Please provide new file name for OUTPUT argument" && \
+ usage_mark_duplicates && exit 1; }
 
 EXIT_CODE=0
 MISSING_VOLUMES=()
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
-[[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
     echo "
@@ -58,4 +60,4 @@ fi
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-sambamba markdup /data/bam_files/${BAM_FILE} /data/output_data/${OUTPUT}
+sambamba markdup /data/bam_files/${BAM_FILE} /data/bam_files/${OUTPUT}

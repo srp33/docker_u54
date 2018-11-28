@@ -43,6 +43,7 @@ docker run \
     -r ucsc.hg19.fasta.gz \
     -s1 101024.1.fastq.gz \
     -s2 101024.2.fastq.gz \
+    -o 101024.bam \
     -t 10
 ```
 
@@ -61,6 +62,7 @@ reference genome.
     - The first argument (`-r`) indicates the name of a FASTA file that the user wishes to use as a reference genome.
     - The `-s1` and `-s2` arguments indicate the names of the FASTQ files that will be aligned; these files should be stored in the volume specified above and should represent the first and second side of the paired-end reads, respectively.
     - The `-t` argument indicates the number of threads/cores that should be used during alignment; this argument is optional.
+    - The `-o` argument indicates the name of the outputted `bam` file (extension should be included)
 
 ## Feedback
 

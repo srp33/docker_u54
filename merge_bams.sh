@@ -13,7 +13,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
   case ${!i} in
     -b | --bam )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      BAM_FILES+=("/data/bam_files/${OPTARG}")
+      BAM_FILES+=("/data/bam_files/${!OPTARG}")
       i=$((i+1))
       ;;
     -t | --nthreads )
@@ -43,12 +43,16 @@ ERROR: TWO OR MORE BAM FILE (-b <arg>) arguments must be provided" && \
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) arguments must be provided" && \
  usage_merge_bams && exit 1; }
+for out in ${BAM_FILES[@]}; do
+    [[ ${OUTPUT} == ${out} ]] && echo "
+ERROR: OUTPUT cannot have same name as BAM files to \
+    be merged" && usage_merge_bams && exit 1;
+done
 
 EXIT_CODE=0
 MISSING_VOLUMES=()
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
-[[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
     echo "
@@ -56,7 +60,6 @@ if [[ ${EXIT_CODE} = 1 ]]; then
 fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
-python /check_permissions.py /data/output_data ReadWrite || exit 1
 
 
 sambamba merge -t ${THREADS} /data/bam_files/${OUTPUT} ${BAM_FILES[@]}

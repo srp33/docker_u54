@@ -4,6 +4,7 @@ source usage_functions
 source check_for_args
 
 BAM_FILE=Null
+OUTPUT=Null
 THREADS=1
 ARGNUM=$#
 
@@ -20,6 +21,11 @@ for (( i=1; i<=ARGNUM; i++ )); do
       THREADS=${!OPTARG}
       i=$((i+1))
       ;;
+    -o | --output )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      OUTPUT=${!OPTARG}
+      i=$((i+1))
+      ;;
     -h | --help )
       usage_sort_bam
       exit 0
@@ -34,6 +40,12 @@ done
 [[ ${BAM_FILE} != "Null" ]] || { echo "
 ERROR: BAM FILE (-b <arg>) argument must be provided" && \
  usage_sort_bam && exit 1; }
+[[ ${OUTPUT} != "Null" ]] || { echo "
+ERROR: OUTPUT (-o <arg>) argument must be provided" && \
+ usage_sort_bam && exit 1; }
+[[ ${OUTPUT} != ${BAM_FILE} ]] || { echo "
+ERROR: OUTPUT cannot overwrite BAM FILE. Please provide new file name for OUTPUT argument" && \
+ usage_mark_duplicates && exit 1; }
 
 EXIT_CODE=0
 MISSING_VOLUMES=()
@@ -48,4 +60,4 @@ fi
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-sambamba sort -t ${THREADS} /data/bam_files/${BAM_FILE}
+sambamba sort -t ${THREADS} -o /data/bam_files/${OUTPUT} /data/bam_files/${BAM_FILE}
