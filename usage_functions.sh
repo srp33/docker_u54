@@ -49,7 +49,6 @@ Options:
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
-  -v <location for output>:/data/output_data \\
   --user root:root \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -145,7 +144,7 @@ usage_sort_bam (){
 echo "sort_bam
 
 Description:
-Sort a BAM file.
+Sort and index a BAM file.
 
 Options:
   -t, --nthreads <number of threads> (Optional)
