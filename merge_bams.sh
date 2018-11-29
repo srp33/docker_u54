@@ -43,11 +43,6 @@ ERROR: TWO OR MORE BAM FILE (-b <arg>) arguments must be provided" && \
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) arguments must be provided" && \
  usage_merge_bams && exit 1; }
-for out in ${BAM_FILES[@]}; do
-    [[ ${OUTPUT} == ${out} ]] && echo "
-ERROR: OUTPUT cannot have same name as BAM files to \
-    be merged" && usage_merge_bams && exit 1;
-done
 
 EXIT_CODE=0
 MISSING_VOLUMES=()

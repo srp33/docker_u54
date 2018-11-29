@@ -43,9 +43,6 @@ ERROR: BAM FILE (-b <arg>) argument must be provided" && \
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
  usage_sort_bam && exit 1; }
-[[ ${OUTPUT} != ${BAM_FILE} ]] || { echo "
-ERROR: OUTPUT cannot overwrite BAM FILE. Please provide new file name for OUTPUT argument" && \
- usage_mark_duplicates && exit 1; }
 
 EXIT_CODE=0
 MISSING_VOLUMES=()
