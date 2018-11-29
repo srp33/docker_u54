@@ -49,6 +49,7 @@ Options:
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
+  -v <location for output>:/data/output_data \\
   --user root:root \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -73,6 +74,7 @@ Options:
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
+  -v <location for output>:/data/output_data \\
   --user root:root \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -98,6 +100,7 @@ Options:
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
+  -v <location for output>:/data/output_data \\
   --user root:root \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -126,6 +129,7 @@ Options:
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
+  -v <location for output>:/data/output_data \\
   --user root:root \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -152,6 +156,7 @@ Options:
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
+  -v <location for output>:/data/output_data \\
   --user root:root \\
   --rm \\
   srp33/somatic_wgs:latest \\

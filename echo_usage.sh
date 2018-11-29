@@ -10,5 +10,4 @@ mark_duplicates
 merge_bams
 slice_bam
 sort_bam
-
 "

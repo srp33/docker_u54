@@ -51,6 +51,7 @@ EXIT_CODE=0
 MISSING_VOLUMES=()
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
+[[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
     echo "
@@ -60,4 +61,4 @@ fi
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-sambamba markdup /data/bam_files/${BAM_FILE} /data/bam_files/${OUTPUT}
+sambamba markdup /data/bam_files/${BAM_FILE} /data/output_data/${OUTPUT}
