@@ -203,3 +203,17 @@ Options:
 ERROR: THIS COMMAND IS NOT READY FOR USAGE
 "
 }
+
+usage_add_read_groups (){
+echo "add_read_groups
+
+Options:
+  -t, --tumor <name of tumor BAM file>
+  -n, --normal <name of normal BAM file
+  -o, --output <name of output file>
+  -r, --reference <name of reference file>
+  -h, --help
+
+ERROR: THIS COMMAND IS NOT READY FOR USAGE
+"
+}

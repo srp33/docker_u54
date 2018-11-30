@@ -56,10 +56,16 @@ for (( i=1; i<=ARGNUM; i++ )); do
 done
 
 [[ ${TUMOR} != "Null" ]] || { echo "
-ERROR: TUMOR BAM FILE (-p <arg>) argument must be provided" && \
+ERROR: TUMOR BAM FILE (-t <arg>) argument must be provided" && \
+ usage_mutect && exit 1; }
+[[ ${TUMOR_SAMPLE} != "Null" ]] || { echo "
+ERROR: TUMOR SAMPLE (-ts <arg>) argument must be provided" && \
  usage_mutect && exit 1; }
 [[ ${NORMAL} != "Null" ]] || { echo "
-ERROR: NORMAL BAM FILE (-t <arg>) argument must be provided" && \
+ERROR: NORMAL BAM FILE (-n <arg>) argument must be provided" && \
+ usage_mutect && exit 1; }
+[[ ${NORMAL_SAMPLE} != "Null" ]] || { echo "
+ERROR: NORMAL SAMPLE (-n <arg>) argument must be provided" && \
  usage_mutect && exit 1; }
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
