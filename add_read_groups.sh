@@ -55,6 +55,15 @@ EXIT_CODE=0
 [[ ${GROUP_ID} != "Null" ]] || { echo "
 ERROR: ID (-id <arg>) argument must be provided" && \
  usage_add_read_groups && exit 1; }
+[[ ${GROUP_LB} != "Null" ]] || { echo "
+ERROR: LB (-lb <arg>) argument must be provided" && \
+ usage_add_read_groups && exit 1; }
+[[ ${SAMPLE} != "Null" ]] || { echo "
+ERROR: SAMPLE (-s <arg>) argument must be provided" && \
+ usage_add_read_groups && exit 1; }
+[[ ${BAM_FILE} != "Null" ]] || { echo "
+ERROR: BAM FILE (-b <arg>) argument must be provided" && \
+ usage_add_read_groups && exit 1; }
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
  usage_add_read_groups && exit 1; }
@@ -66,6 +75,9 @@ if [[ ${EXIT_CODE} = 1 ]]; then
     echo "
     The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
+
+python /check_permissions.py /data/bam_files ReadWrite || exit 1
+python /check_permissions.py /data/output_data ReadWrite || exit 1
 
 samtools addreplacerg -r ID:${GROUP_ID} -r LB:${GROUP_LB} -r SM:${SAMPLE} \
 -o /data/output_data/${OUTPUT} /data/bam_files/${BAM_FILE}
