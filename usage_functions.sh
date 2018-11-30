@@ -207,13 +207,29 @@ ERROR: THIS COMMAND IS NOT READY FOR USAGE
 usage_add_read_groups (){
 echo "add_read_groups
 
+Description:
+Add/replace read group in BAM file header
+
 Options:
-  -t, --tumor <name of tumor BAM file>
-  -n, --normal <name of normal BAM file
+  -b, --bam_file <name of BAM file>
+  -id, --group_id <group_id>
+  -lb, --library_identifier <name of library>
+  -s, --sample <name of sample>
   -o, --output <name of output file>
-  -r, --reference <name of reference file>
   -h, --help
 
-ERROR: THIS COMMAND IS NOT READY FOR USAGE
+Usage:
+docker run \\
+  -v <location of BAM files>:/data/bam_files \\
+  -v <location for output>:/data/output_data \\
+  --user root:root \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  add_read_groups \\
+    -b <BAM file> \\
+    -id <Group ID> \\
+    -lb <Library Identifier> \\
+    -s <Sample> \\
+    -o <name of output file>
 "
 }

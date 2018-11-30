@@ -13,7 +13,7 @@ ARGNUM=$#
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case ${!i} in
-    -id )
+    -id | --group_id )
       check_args "${!OPTARG}" "${!i}" || exit 1
       GROUP_ID=${!OPTARG}
       i=$((i+1))
