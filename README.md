@@ -56,7 +56,7 @@ A variety of arguments must be specified, as described below:
 * The first three arguments (each beginning with `-v`) specify [volumes](https://docs.docker.com/storage/volumes). Volumes enable data to be shared between the host operating system and the Docker container. The path specified before each colon indicates a directory on the host; the path specified after the colon indicates the corresponding directory within the container (these are static; please do not change them).
     - In the example above, the first volume specifies the location of the reference genome. This should be a directory that contains a FASTA file (can be gzipped) and the index for the reference genome. If the index does not already exist, our scripts will create it using `samtools`.
     - The second volume specifies the directory where input files are stored (in this case, FASTQ files).
-    - The third volume specifies the directory where output files will be stored after the scripts have been executed.
+    - The third volume specifies the directory where output files will be stored after the scripts have been executed. *You must create this directory before using the container to put files in it.*
 * The `--user` argument identifies the user and group under which commands should be executed within the container. You should be able to leave this as is (if you are running on a Linux machine).
 * The `--rm` argument indicates that Docker should automatically clean up the container and remove its file system when the container exits.
 * `srp33/somatic_wgs` is the name (tag) of the Docker image; `latest` is a version tag associated with this image.
