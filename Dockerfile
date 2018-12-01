@@ -5,6 +5,11 @@ FROM broadinstitute/gatk:latest
 #################### MAINTAINER #######################
 MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
 
+################## INSTALL TOOLS ######################
+RUN conda config --add channels bioconda
+RUN conda install bwa samtools sambamba varscan
+RUN conda install strelka
+
 ################## ADD SCRIPT #########################
 ADD bwa_mem_align.sh /usr/local/bin/bwa_mem_align
 ADD echo_usage.sh /usr/local/bin/echo_usage
@@ -21,11 +26,6 @@ ADD sort_bam.sh /usr/local/bin/sort_bam
 ADD add_read_groups.sh /usr/local/bin/add_read_groups
 #ADD strelka.sh /usr/local/bin/strelka
 ADD check_permissions.py /
-
-################## INSTALL TOOLS ######################
-RUN conda config --add channels bioconda
-RUN conda install bwa samtools sambamba varscan
-RUN conda install strelka
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data

@@ -2,9 +2,14 @@
 
 ## Description
 
-This repository contains scripts that enable researchers to perform whole-genome variant 
+This repository contains scripts that enable researchers to manipulate BAM files and perform whole-genome variant 
 calling on Illumina sequencing data. We package software within a Docker image and enable the 
-user to execute the software via commands that pass data into and out of a Docker container. 
+user to execute the software via commands and arguments. We have also configured the image so that data can easily be passed into and out of a Docker container.
+
+For a high-level overview of how Docker works (and software containers in general), read [this paper](https://gigascience.biomedcentral.com/articles/10.1186/s13742-016-0135-4).
+
+To get started, install the [Docker CE](https://docs.docker.com/install) on your computer. That should be the only software that you need to install for this.
+
 Currently, we support the following commands:
 
 * `bwa_mem_align` (align FASTA files to a reference genome using `bwa mem`)
@@ -14,16 +19,15 @@ Currently, we support the following commands:
 * `slice_bam` (slice/split a BAM file using `sambamba`)
 * `merge_bams` (merge BAM files using `sambamba`)
 
-The default behavior of the docker container is to display the usage and available commands. 
-If the user executes the following command, usage information will be displayed.
+The default behavior of the Docker container is to display the usage and available commands. If the user executes the following command, usage information will be displayed.
 
 ```
 docker run --rm srp33/somatic_wgs:latest
 ```
 
-For any of the supported commands, the user can specify the `-h` flag to view available options for 
+For any of the commands listed above, the user can specify the `-h` flag to view available options for 
 that command. For example, the following command would provide usage information for the 
-`bwa_mem_align` command, which uses `bwa mem` to align sequencing reads to a reference genome.
+`bwa_mem_align` command, which uses [bwa mem](https://github.com/lh3/bwa) to align sequencing reads to a reference genome.
 
 ```
 docker run --rm srp33/somatic_wgs:latest bwa_mem_align -h
@@ -36,7 +40,7 @@ docker run \
   -v /MyData/Reference_Genomes/hg19:/data/ref_genome \ 
   -v /MyData/FASTQ:/data/input_data \
   -v /MyData/BAM:/data/output_data \
-  --user root:root \
+  --user $(id -u):$(id -g) \
   --rm \
   srp33/somatic_wgs:latest \
   bwa_mem_align \
@@ -47,22 +51,20 @@ docker run \
     -t 10
 ```
 
-A variety of arguments must be specified:
+A variety of arguments must be specified, as described below:
 
-* The first three arguments (each beginning with `-v`) specify [volumes](https://docs.docker.com/storage/volumes). Volumes enable data to be shared between the host operating system and the Docker container. The path specified before each colon  indicates a directory on the host; the path specified after the colon indicates the corresponding directory within the container (this is static; please do not change it).
+* The first three arguments (each beginning with `-v`) specify [volumes](https://docs.docker.com/storage/volumes). Volumes enable data to be shared between the host operating system and the Docker container. The path specified before each colon indicates a directory on the host; the path specified after the colon indicates the corresponding directory within the container (these are static; please do not change them).
     - In the example above, the first volume specifies the location of the reference genome. This should be a directory that contains a FASTA file (can be gzipped) and the index for the reference genome. If the index does not already exist, our scripts will create it using `samtools`.
     - The second volume specifies the directory where input files are stored (in this case, FASTQ files).
     - The third volume specifies the directory where output files will be stored after the scripts have been executed.
-* The `--user` argument identifies the user under which the container should be executed on the host (before the colon) and within the container (after the colon).
-* The `--rm` argument indicates that Docker should automatically 
-clean up the container and remove its file system when the container exits.
-* `srp33/somatic_wgs` is the name (tag) of the Docker image; `latest` is the version tag associated with this image. 
-* The remaining arguments are specific to the task of using `bwa mem` to align FASTQ files to the 
-reference genome.
+* The `--user` argument identifies the user and group under which commands should be executed within the container. You should be able to leave this as is (if you are running on a Linux machine).
+* The `--rm` argument indicates that Docker should automatically clean up the container and remove its file system when the container exits.
+* `srp33/somatic_wgs` is the name (tag) of the Docker image; `latest` is a version tag associated with this image.
+* The remaining arguments are specific to the task of using `bwa mem` to align FASTQ files to the reference genome.
     - The first argument (`-r`) indicates the name of a FASTA file that the user wishes to use as a reference genome.
-    - The `-s1` and `-s2` arguments indicate the names of the FASTQ files that will be aligned; these files should be stored in the volume specified above and should represent the first and second side of the paired-end reads, respectively.
-    - The `-t` argument indicates the number of threads/cores that should be used during alignment; this argument is optional.
-    - The `-o` argument indicates the name of the outputted `bam` file (extension should be included)
+    - The `-s1` and `-s2` arguments indicate the names of the FASTQ files that will be aligned; these files should be stored in the input_data volume specified above and should represent the first and second side of the paired-end reads, respectively.
+    - The `-t` argument indicates the number of threads/cores that should be used during alignment; this argument should be a positive integer and is optional.
+    - The `-o` argument indicates the name of the `bam` file that will be created (extension should be included).
 
 ## Feedback
 
