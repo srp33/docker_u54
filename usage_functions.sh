@@ -36,7 +36,7 @@ docker run \\
 Notes:
 
   To avoid permissions issues, please ensure that the following directories have been \
-  created on the host operating system before executing this command:
+created on the host operating system before executing this command:
 
   <location of reference FASTA file>
   <location of FASTQ files>
@@ -68,7 +68,7 @@ docker run \\
 Notes:
 
   To avoid permissions issues, please ensure that the following directories have been \
-  created on the host operating system before executing this command:
+created on the host operating system before executing this command:
 
   <location of BAM files>
 "
@@ -101,7 +101,7 @@ docker run \\
 Notes:
 
   To avoid permissions issues, please ensure that the following directories have been \
-  created on the host operating system before executing this command:
+created on the host operating system before executing this command:
 
   <location of BAM files>
   <location for output>
@@ -137,7 +137,7 @@ docker run \\
 Notes:
 
   To avoid permissions issues, please ensure that the following directories have been \
-  created on the host operating system before executing this command:
+created on the host operating system before executing this command:
 
   <location of BAM files>
   <location for output>
@@ -173,7 +173,7 @@ docker run \\
 Notes:
 
   To avoid permissions issues, please ensure that the following directories have been \
-  created on the host operating system before executing this command:
+created on the host operating system before executing this command:
 
   <location of BAM files>
   <location for output>
@@ -207,7 +207,7 @@ docker run \\
 Notes:
 
   To avoid permissions issues, please ensure that the following directories have been \
-  created on the host operating system before executing this command:
+created on the host operating system before executing this command:
 
   <location of BAM files>
   <location for output>
@@ -283,7 +283,7 @@ docker run \\
 Notes:
 
   To avoid permissions issues, please ensure that the following directories have been \
-  created on the host operating system before executing this command:
+created on the host operating system before executing this command:
 
   <location of BAM files>
   <location for output>
