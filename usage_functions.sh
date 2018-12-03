@@ -203,6 +203,14 @@ docker run \\
     -b <BAM file> \\
     -o <name of output file> \\
     -t <number of threads>
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+  created on the host operating system before executing this command:
+
+  <location of BAM files>
+  <location for output>
 "
 }
 
