@@ -32,6 +32,15 @@ docker run \\
     -s2 <file 2> \\
     -o <name of outputted BAM file> \\
     -t <number of threads> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+  created on the host operating system before executing this command:
+
+  <location of reference FASTA file>
+  <location of FASTQ files>
+  <location for outputted BAM file>
 "
 }
 
@@ -55,6 +64,13 @@ docker run \\
   index_bam \\
      -b <BAM file> \\
      -t <number of threads> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+  created on the host operating system before executing this command:
+
+  <location of BAM files>
 "
 }
 
@@ -81,6 +97,14 @@ docker run \\
     -b <BAM file> \\
     -o <name of output file> \\
     -t <number of threads>
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+  created on the host operating system before executing this command:
+
+  <location of BAM files>
+  <location for output>
 "
 }
 
@@ -109,6 +133,14 @@ docker run \\
     ... \\
     -o <name of output file> \\
     -t <number of threads>
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+  created on the host operating system before executing this command:
+
+  <location of BAM files>
+  <location for output>
 "
 }
 
@@ -137,6 +169,14 @@ docker run \\
     -r <region to slice> \\
     -o <name of output file> \\
     -t <number of threads>
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+  created on the host operating system before executing this command:
+
+  <location of BAM files>
+  <location for output>
 "
 }
 
@@ -231,5 +271,13 @@ docker run \\
     -lb <Library Identifier> \\
     -s <Sample> \\
     -o <name of output file>
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+  created on the host operating system before executing this command:
+
+  <location of BAM files>
+  <location for output>
 "
 }
