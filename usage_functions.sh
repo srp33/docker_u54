@@ -23,7 +23,7 @@ docker run \\
   -v <location of reference FASTA file>:/data/ref_genome \\
   -v <location of FASTQ files>:/data/input_data \\
   -v <location for outputted BAM file>:/data/output_data \\
-  ---user $(id -u):$(id -g) \\
+  ---user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   bwa_mem_align \\
@@ -58,7 +58,7 @@ Options:
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
-  ---user $(id -u):$(id -g) \\
+  ---user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   index_bam \\
@@ -90,7 +90,7 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location for output>:/data/output_data \\
-  ---user $(id -u):$(id -g) \\
+  ---user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   mark_duplicates \\
@@ -124,7 +124,7 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location for output>:/data/output_data \\
-  ---user $(id -u):$(id -g) \\
+  ---user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   merge_bams \\
@@ -161,7 +161,7 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location for output>:/data/output_data \\
-  ---user $(id -u):$(id -g) \\
+  ---user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   slice_bam \\
@@ -196,7 +196,7 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location for output>:/data/output_data \\
-  ---user $(id -u):$(id -g) \\
+  ---user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   sort_bam \\
@@ -243,12 +243,41 @@ echo "call_gatk_variants
 
 Options:
   -t, --tumor <name of tumor BAM file>
+  -t, --tumor_sample <name of tumor sample>
   -n, --normal <name of normal BAM file
+  -ns --normal_sample <name of normal sample>
   -o, --output <name of output file>
   -r, --reference <name of reference file>
   -h, --help
 
-ERROR: THIS COMMAND IS NOT READY FOR USAGE
+Usage:
+docker run \\
+  -v <location of BAM files>:/data/bam_files \\
+  -v <location of FASTA reference file>:/data/ref_genome \\
+  -v <location for output>:/data/output_data \\
+  ---user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  call_gatk_variants \\
+    -b <BAM file> \\
+    -t <tumor BAM file> \\
+    -ts <tumor sample> \\
+    -n <normal BAM file> \\
+    -ns <normal sample> \\
+    -r <reference FASTA file> \\
+    -o <name of output file>
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of BAM files>
+  <location of FASTA reference file>
+  <location for output>
+
+  Tumor and normal samples must be included in the headers of BAM files. See 'add_read_groups' for \
+details on how to add sample identifier to headers.
 "
 }
 
@@ -270,7 +299,7 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location for output>:/data/output_data \\
-  ---user $(id -u):$(id -g) \\
+  ---user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   add_read_groups \\
