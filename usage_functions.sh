@@ -23,7 +23,7 @@ docker run \\
   -v <location of reference FASTA file>:/data/ref_genome \\
   -v <location of FASTQ files>:/data/input_data \\
   -v <location for outputted BAM file>:/data/output_data \\
-  --user root:root \\
+  ---user $(id -u):$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   bwa_mem_align \\
@@ -49,7 +49,7 @@ Options:
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
-  --user root:root \\
+  ---user $(id -u):$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   index_bam \\
@@ -74,7 +74,7 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location for output>:/data/output_data \\
-  --user root:root \\
+  ---user $(id -u):$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   mark_duplicates \\
@@ -88,7 +88,7 @@ usage_merge_bams (){
 echo "merge_bams
 
 Description:
-Merge multiple bam files into one
+Merge multiple BAM files into one and index it
 
 Options:
   -t, --nthreads <number of threads> (Optional)
@@ -100,7 +100,7 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location for output>:/data/output_data \\
-  --user root:root \\
+  ---user $(id -u):$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   merge_bams \\
@@ -129,7 +129,7 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location for output>:/data/output_data \\
-  --user root:root \\
+  ---user $(id -u):$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   slice_bam \\
@@ -156,7 +156,7 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location for output>:/data/output_data \\
-  --user root:root \\
+  ---user $(id -u):$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   sort_bam \\
@@ -222,7 +222,7 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location for output>:/data/output_data \\
-  --user root:root \\
+  ---user $(id -u):$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   add_read_groups \\
