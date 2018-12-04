@@ -107,10 +107,10 @@ if [[ ${REF_INDEXED} == 1 ]]; then
     python check_permissions.py /data/ref_genome ReadWrite || \
        { echo "Please ensure you are passing in directory and not just a file volume" && exit 1; }
 
-    bwa index -t ${THREADS} /data/ref_genome/${REF_GENOME}
+    bwa index -t ${THREADS} /data/ref_genome/"${REF_GENOME}"
 fi
 
-bwa mem -t ${THREADS} /data/ref_genome/${REF_GENOME} \
-    /data/input_data/${READ1} /data/input_data/${READ2} | \
-    samtools view -@ ${THREADS} -S -b > /data/output_data/${OUTPUT}
+bwa mem -t ${THREADS} /data/ref_genome/"${REF_GENOME}" \
+    /data/input_data/"${READ1}" /data/input_data/"${READ2}" | \
+    samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
 

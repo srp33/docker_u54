@@ -218,11 +218,42 @@ usage_strelka (){
 echo "call_somatic_variants_strelka
 
 Options:
-  -b, --bam <name of BAM file>
-  -r, --reference <name of reference genome FASTA file>
+  -t, --tumorBam <name of tumor BAM file>
+  -n, --normalBam <name of normal BAM file>
+  -r, --referenceFasta <name of reference genome FASTA file>
+  -i, --indelCandidates <name of VCF of indel alleles> (Optional)
+  -c, --callRegions <name of file containing regions to call> (Optional)
+  -d, --runDir <desired name for output directory> (Optional) [Default: StrelkaSomaticWorkflow]
   -h, --help
 
-ERROR: THIS COMMAND IS NOT READY FOR USAGE
+Usage:
+docker run \\
+  -v <location of indel alleles VCF and call regions file>:/data/input_data \\
+  -v <location of BAM files>:/data/bam_files \\
+  -v <location of FASTA reference file>:/data/ref_genome \\
+  -v <location for output>:/data/output_data \\
+  ---user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  call_somatic_variants_strelka \\
+    -t <tumor BAM file> \\
+    -n <normal BAM file> \\
+    -r <reference FASTA file> \\
+    -i <indel candidates VCF file> \\
+    -c <call regions file> \\
+    -d <output directory name>
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of indel alleles VCF and call regions file>
+  <location of BAM files>
+  <location of FASTA reference file>
+  <location for output>
+
+  This command currently requires tumor and normal BAM files.
 "
 }
 
@@ -259,7 +290,6 @@ docker run \\
   --rm \\
   srp33/somatic_wgs:latest \\
   call_gatk_variants \\
-    -b <BAM file> \\
     -t <tumor BAM file> \\
     -ts <tumor sample> \\
     -n <normal BAM file> \\

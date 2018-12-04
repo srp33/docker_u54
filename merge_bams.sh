@@ -59,4 +59,4 @@ python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
 
-sambamba merge -t ${THREADS} /data/output_data/${OUTPUT} ${BAM_FILES[@]}
+sambamba merge -t ${THREADS} /data/output_data/"${OUTPUT}" ${BAM_FILES[@]}

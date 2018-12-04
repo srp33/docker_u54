@@ -67,4 +67,4 @@ fi
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-sambamba slice -o /data/output_data/${OUTPUT} /data/bam_files/${BAM_FILE} ${REGION}
+sambamba slice -o /data/output_data/"${OUTPUT}" /data/bam_files/"${BAM_FILE}" "${REGION}"

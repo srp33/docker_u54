@@ -48,4 +48,4 @@ fi
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 
 
-sambamba index -t ${THREADS} /data/bam_files/${BAM_FILE} /data/bam_files/${BAM_FILE}.bai
+sambamba index -t ${THREADS} /data/bam_files/"${BAM_FILE}" /data/bam_files/"${BAM_FILE}.bai"

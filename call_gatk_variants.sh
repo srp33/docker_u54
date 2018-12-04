@@ -111,13 +111,13 @@ if [[ ! -f ${NEEDED_DICT} ]]; then
     echo "
     Fasta dict file (${NEEDED_DICT}) is missing. Running gatk CreateSequenceDictionary
 "
-    gatk CreateSequenceDictionary --REFERENCE ${REF_LOCATION}
+    gatk CreateSequenceDictionary --REFERENCE "${REF_LOCATION}"
 fi
 
-python /check_permissions.py /data/bam_files Read ${TUMOR} || exit 1
-python /check_permissions.py /data/ref_genome Read ${REF_GENOME} || exit 1
+python /check_permissions.py /data/bam_files Read "${TUMOR}" || exit 1
+python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-gatk Mutect2 -I /data/bam_files/${TUMOR} -tumor ${TUMOR_SAMPLE} \
-  -I /data/bam_files/${NORMAL} -normal ${NORMAL_SAMPLE} \
-  -O /data/results/${OUTPUT} -R ${REF_LOCATION}
+gatk Mutect2 -I /data/bam_files/"${TUMOR}" -tumor "${TUMOR_SAMPLE}" \
+  -I /data/bam_files/"${NORMAL}" -normal "${NORMAL_SAMPLE}" \
+  -O /data/results/"${OUTPUT}" -R "${REF_LOCATION}"
