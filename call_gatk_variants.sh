@@ -1,7 +1,7 @@
 #! /bin/bash
 
 source usage_functions
-source check_for_args
+source check_functions
 
 TUMOR=Null
 NORMAL=Null
@@ -9,6 +9,7 @@ OUTPUT=Null
 REF_GENOME=Null
 TUMOR_SAMPLE=Null
 NORMAL_SAMPLE=Null
+VERSION_LOG=""
 ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
@@ -42,6 +43,11 @@ for (( i=1; i<=ARGNUM; i++ )); do
     -r | --reference )
       check_args "${!OPTARG}" "${!i}" || exit 1
       REF_GENOME=${!OPTARG}
+      i=$((i+1))
+      ;;
+    --version )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      VERSION_LOG=${!OPTARG}
       i=$((i+1))
       ;;
     -h | --help )
@@ -117,6 +123,25 @@ fi
 python /check_permissions.py /data/bam_files Read "${TUMOR}" || exit 1
 python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
+
+if [[ ${VERSION_LOG} != "" ]]; then
+
+    echo "bwa_mem_align
+
+Date run: $(date '+%d/%m/%Y %H:%M:%S')
+
+Software used:
+  Bash:
+    $( bash --version )
+
+  Python:
+    version $( get_python_version )
+
+  gatk:
+    version 4.0.11.0
+" > /data/output_data/"${VERSION_LOG}"
+
+fi
 
 gatk Mutect2 -I /data/bam_files/"${TUMOR}" -tumor "${TUMOR_SAMPLE}" \
   -I /data/bam_files/"${NORMAL}" -normal "${NORMAL_SAMPLE}" \

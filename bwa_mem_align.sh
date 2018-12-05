@@ -1,13 +1,14 @@
 #! /bin/bash
 
 source usage_functions
-source check_for_args
+source check_functions
 
 REF_GENOME=Null
 THREADS=1
 READ1=Null
 READ2=Null
 OUTPUT=Null
+VERSION_LOG=""
 ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
@@ -36,6 +37,11 @@ for (( i=1; i<=ARGNUM; i++ )); do
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
       OUTPUT="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    --version )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      VERSION_LOG="${!OPTARG}"
       i=$((i+1))
       ;;
     -h | --help )
@@ -108,6 +114,28 @@ if [[ ${REF_INDEXED} == 1 ]]; then
        { echo "Please ensure you are passing in directory and not just a file volume" && exit 1; }
 
     bwa index -t ${THREADS} /data/ref_genome/"${REF_GENOME}"
+fi
+
+if [[ ${VERSION_LOG} != "" ]]; then
+
+    echo "bwa_mem_align
+
+Date run: $(date '+%d/%m/%Y %H:%M:%S')
+
+Software used:
+  Bash:
+    $( bash --version )
+
+  Python:
+    version $( get_python_version )
+
+  bwa:
+    version $( get_conda_version bwa )
+
+  samtools:
+    version $( get_conda_version samtools )
+" > /data/output_data/"${VERSION_LOG}"
+
 fi
 
 bwa mem -t ${THREADS} /data/ref_genome/"${REF_GENOME}" \

@@ -1,20 +1,15 @@
 # Run bwa
-#################### BWA IMAGE ########################
-FROM broadinstitute/gatk:latest
+#################### GATK IMAGE ########################
+FROM broadinstitute/gatk:4.0.11.0
 
 #################### MAINTAINER #######################
 MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
-
-################## INSTALL TOOLS ######################
-RUN conda config --add channels bioconda
-RUN conda install bwa samtools sambamba varscan
-RUN conda install strelka
 
 ################## ADD SCRIPT #########################
 ADD bwa_mem_align.sh /usr/local/bin/bwa_mem_align
 ADD echo_usage.sh /usr/local/bin/echo_usage
 ADD usage_functions.sh /usr/local/bin/usage_functions
-ADD check_for_args.sh /usr/local/bin/check_for_args
+ADD check_functions.sh /usr/local/bin/check_functions
 ADD call_gatk_variants.sh /usr/local/bin/call_gatk_variants
 ADD call_somatic_variants_strelka.sh /usr/local/bin/call_somatic_variants_strelka
 ADD call_somatic_variants_varscan.sh /usr/local/bin/call_somatic_variants_varscan
@@ -26,6 +21,11 @@ ADD sort_bam.sh /usr/local/bin/sort_bam
 ADD add_read_groups.sh /usr/local/bin/add_read_groups
 #ADD strelka.sh /usr/local/bin/strelka
 ADD check_permissions.py /
+
+################## INSTALL TOOLS ######################
+RUN conda config --add channels bioconda
+RUN conda install bwa samtools sambamba varscan
+RUN conda install strelka
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data

@@ -1,7 +1,7 @@
 #! /bin/bash
 
 source usage_functions
-source check_for_args
+source check_functions
 
 BAM_FILE=Null
 THREADS=1
