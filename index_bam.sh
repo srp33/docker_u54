@@ -21,7 +21,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       THREADS=${!OPTARG}
       i=$((i+1))
       ;;
-    --version )
+    --log )
       check_args "${!OPTARG}" "${!i}" || exit 1
       VERSION_LOG="${!OPTARG}"
       i=$((i+1))

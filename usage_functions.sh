@@ -17,7 +17,7 @@ Options:
   -o, --output <name of outputted BAM file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
-  --version <destination file for log> (Optional)
+  --log <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -33,7 +33,7 @@ docker run \\
     -s2 <file 2> \\
     -o <name of outputted BAM file> \\
     -t <number of threads> (Optional) \\
-    --version <destination file for log> (Optional)
+    --log <destination file for log> (Optional)
 
 Notes:
 
@@ -56,7 +56,7 @@ Options:
   -t, --nthreads <number of threads> (Optional)
   -b, --bam <name of BAM file>
   -h, --help
-  --version <destination file for log> (Optional)
+  --log <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -68,7 +68,7 @@ docker run \\
   index_bam \\
      -b <BAM file> \\
      -t <number of threads> (Optional)
-     --version <destination file for log> (Optional)
+     --log <destination file for log> (Optional)
 
 Notes:
 
@@ -78,8 +78,8 @@ created on the host operating system before executing this command:
   <location of BAM files>
   <location for version log>
 
-  --version is an optional argument, meaning that the volume \
-<location for version log>:/data/output_data is only required if --version is called.
+  --log is an optional argument, meaning that the volume \
+<location for version log>:/data/output_data is only required if --log is called.
 "
 }
 
@@ -94,7 +94,7 @@ Options:
   -b, --bam <name of BAM file>
   -o, --output <name of output file>
   -h, --help
-  --version <destination file for log> (Optional)
+  --log <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -107,7 +107,7 @@ docker run \\
     -b <BAM file> \\
     -o <name of output file> \\
     -t <number of threads> (Optional) \\
-    --version <destination file for log> (Optional)
+    --log <destination file for log> (Optional)
 
 Notes:
 
@@ -130,7 +130,7 @@ Options:
   -o, --output <name of output file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
-  --version <destination file for log> (Optional)
+  --log <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -145,7 +145,7 @@ docker run \\
     ... \\
     -o <name of output file> \\
     -t <number of threads> (Optional) \\
-    --version <destination file for log> (Optional)
+    --log <destination file for log> (Optional)
 
 Notes:
 
@@ -169,7 +169,7 @@ Options:
   -o, --output <name of output file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
-  --version <destination file for log> (Optional)
+  --log <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -183,7 +183,7 @@ docker run \\
     -r <region to slice> \\
     -o <name of output file> \\
     -t <number of threads> (Optional) \\
-    --version <destination file for log> (Optional)
+    --log <destination file for log> (Optional)
 
 Notes:
 
@@ -206,7 +206,7 @@ Options:
   -o, --output <name of output file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
-  --version <destination file for log> (Optional)
+  --log <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -219,7 +219,7 @@ docker run \\
     -b <BAM file> \\
     -o <name of output file> \\
     -t <number of threads> (Optional) \\
-    --version <destination file for log> (Optional)
+    --log <destination file for log> (Optional)
 
 Notes:
 
@@ -242,7 +242,7 @@ Options:
   -c, --callRegions <name of file containing regions to call> (Optional)
   -d, --runDir <desired name for output directory> (Optional) [Default: StrelkaSomaticWorkflow]
   -h, --help
-  --version <destination file for log> (Optional)
+  --log <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -260,7 +260,7 @@ docker run \\
     -i <indel candidates VCF file> \\
     -c <call regions file> \\
     -d <output directory name> \\
-    --version <destination file for log> (Optional)
+    --log <destination file for log> (Optional)
 
 Notes:
 
@@ -299,7 +299,7 @@ Options:
   -o, --output <name of output file>
   -r, --reference <name of reference file>
   -h, --help
-  --version <destination file for log> (Optional)
+  --log <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -316,7 +316,7 @@ docker run \\
     -ns <normal sample> \\
     -r <reference FASTA file> \\
     -o <name of output file> \\
-    --version <destination file for log> (Optional)
+    --log <destination file for log> (Optional)
 
 Notes:
 
@@ -345,7 +345,7 @@ Options:
   -s, --sample <name of sample>
   -o, --output <name of output file>
   -h, --help
-  --version <destination file for log> (Optional)
+  --log <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -360,7 +360,7 @@ docker run \\
     -lb <Library Identifier> \\
     -s <Sample> \\
     -o <name of output file> \\
-    --version <destination file for log> (Optional)
+    --log <destination file for log> (Optional)
 
 Notes:
 

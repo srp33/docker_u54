@@ -33,7 +33,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       OUTPUT=${!OPTARG}
       i=$((i+1))
       ;;
-    --version )
+    --log )
       check_args "${!OPTARG}" "${!i}" || exit 1
       VERSION_LOG="${!OPTARG}"
       i=$((i+1))
@@ -80,7 +80,7 @@ if [[ ${VERSION_LOG} != "" ]]; then
 Command:
   sambamba slice -o /data/output_data/\"${OUTPUT}\" /data/bam_files/\"${BAM_FILE}\" \"${REGION}\"
 
-Date run: $(date '+%d/%m/%Y %H:%M:%S')
+Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
 Software used:
   Bash:

@@ -39,7 +39,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       OUTPUT="${!OPTARG}"
       i=$((i+1))
       ;;
-    --version )
+    --log )
       check_args "${!OPTARG}" "${!i}" || exit 1
       VERSION_LOG="${!OPTARG}"
       i=$((i+1))
@@ -130,10 +130,11 @@ if [[ ${VERSION_LOG} != "" ]]; then
 
 Command:
   bwa mem -t ${THREADS} /data/tmp/\"${REF_GENOME}\" \\
-    /data/input_data/\"${READ1}\" /data/input_data/\"${READ2}\" | \\
+    <(zcat /data/input_data/\"${READ1}\" | awk 'int((NR-1)/4)%7==6') \\
+    <(zcat /data/input_data/\"${READ2}\" | awk 'int((NR-1)/4)%7==6') \\
     samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\"
 
-Date run: $(date '+%d/%m/%Y %H:%M:%S')
+Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
 Software used:
   Bash:
@@ -152,6 +153,7 @@ Software used:
 fi
 
 bwa mem -t ${THREADS} /data/tmp/"${REF_GENOME}" \
-    /data/input_data/"${READ1}" /data/input_data/"${READ2}" | \
+    <(zcat /data/input_data/"${READ1}" | awk 'int((NR-1)/4)%7==6') \
+    <(zcat /data/input_data/"${READ2}" | awk 'int((NR-1)/4)%7==6') |\
     samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
 
