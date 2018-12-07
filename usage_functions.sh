@@ -17,6 +17,7 @@ Options:
   -o, --output <name of outputted BAM file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
+  --version <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -31,7 +32,8 @@ docker run \\
     -s1 <file 1> \\
     -s2 <file 2> \\
     -o <name of outputted BAM file> \\
-    -t <number of threads> (Optional)
+    -t <number of threads> (Optional) \\
+    --version <destination file for log> (Optional)
 
 Notes:
 
@@ -54,16 +56,19 @@ Options:
   -t, --nthreads <number of threads> (Optional)
   -b, --bam <name of BAM file>
   -h, --help
+  --version <destination file for log> (Optional)
 
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
+  -v <location for version log>:/data/output_data \\
   ---user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   index_bam \\
      -b <BAM file> \\
      -t <number of threads> (Optional)
+     --version <destination file for log> (Optional)
 
 Notes:
 
@@ -71,6 +76,10 @@ Notes:
 created on the host operating system before executing this command:
 
   <location of BAM files>
+  <location for version log>
+
+  --version is an optional argument, meaning that the volume \
+<location for version log>:/data/output_data is only required if --version is called.
 "
 }
 
@@ -85,6 +94,7 @@ Options:
   -b, --bam <name of BAM file>
   -o, --output <name of output file>
   -h, --help
+  --version <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -96,7 +106,8 @@ docker run \\
   mark_duplicates \\
     -b <BAM file> \\
     -o <name of output file> \\
-    -t <number of threads>
+    -t <number of threads> (Optional) \\
+    --version <destination file for log> (Optional)
 
 Notes:
 
@@ -115,10 +126,11 @@ Description:
 Merge multiple BAM files into one and index it
 
 Options:
-  -t, --nthreads <number of threads> (Optional)
   -b, --bam <name of BAM file> (2 or more required)
   -o, --output <name of output file>
   -h, --help
+  -t, --nthreads <number of threads> (Optional)
+  --version <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -132,7 +144,8 @@ docker run \\
     -b <BAM file> \\
     ... \\
     -o <name of output file> \\
-    -t <number of threads>
+    -t <number of threads> (Optional) \\
+    --version <destination file for log> (Optional)
 
 Notes:
 
@@ -151,11 +164,12 @@ Description:
 Slice a BAM file based on chromosomal coordinates.
 
 Options:
-  -t, --nthreads <number of threads> (Optional)
   -b, --bam <name of BAM file>
   -r, --region <region to slice> (e.g. \"chr2\" or \"chr2:1000-2000\")
   -o, --output <name of output file>
   -h, --help
+  -t, --nthreads <number of threads> (Optional)
+  --version <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -168,7 +182,8 @@ docker run \\
     -b <BAM file> \\
     -r <region to slice> \\
     -o <name of output file> \\
-    -t <number of threads>
+    -t <number of threads> (Optional) \\
+    --version <destination file for log> (Optional)
 
 Notes:
 
@@ -187,10 +202,11 @@ Description:
 Sort and index a BAM file.
 
 Options:
-  -t, --nthreads <number of threads> (Optional)
   -b, --bam <name of BAM file>
   -o, --output <name of output file>
   -h, --help
+  -t, --nthreads <number of threads> (Optional)
+  --version <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -202,7 +218,8 @@ docker run \\
   sort_bam \\
     -b <BAM file> \\
     -o <name of output file> \\
-    -t <number of threads>
+    -t <number of threads> (Optional) \\
+    --version <destination file for log> (Optional)
 
 Notes:
 
@@ -225,6 +242,7 @@ Options:
   -c, --callRegions <name of file containing regions to call> (Optional)
   -d, --runDir <desired name for output directory> (Optional) [Default: StrelkaSomaticWorkflow]
   -h, --help
+  --version <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -241,7 +259,8 @@ docker run \\
     -r <reference FASTA file> \\
     -i <indel candidates VCF file> \\
     -c <call regions file> \\
-    -d <output directory name>
+    -d <output directory name> \\
+    --version <destination file for log> (Optional)
 
 Notes:
 
@@ -280,6 +299,7 @@ Options:
   -o, --output <name of output file>
   -r, --reference <name of reference file>
   -h, --help
+  --version <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -295,7 +315,8 @@ docker run \\
     -n <normal BAM file> \\
     -ns <normal sample> \\
     -r <reference FASTA file> \\
-    -o <name of output file>
+    -o <name of output file> \\
+    --version <destination file for log> (Optional)
 
 Notes:
 
@@ -324,6 +345,7 @@ Options:
   -s, --sample <name of sample>
   -o, --output <name of output file>
   -h, --help
+  --version <destination file for log> (Optional)
 
 Usage:
 docker run \\
@@ -337,7 +359,8 @@ docker run \\
     -id <Group ID> \\
     -lb <Library Identifier> \\
     -s <Sample> \\
-    -o <name of output file>
+    -o <name of output file> \\
+    --version <destination file for log> (Optional)
 
 Notes:
 

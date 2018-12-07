@@ -4,6 +4,7 @@ source usage_functions
 source check_functions
 
 BAM_FILE=Null
+VERSION_LOG=""
 THREADS=1
 ARGNUM=$#
 
@@ -18,6 +19,11 @@ for (( i=1; i<=ARGNUM; i++ )); do
     -t | --nthreads )
       check_args "${!OPTARG}" "${!i}" || exit 1
       THREADS=${!OPTARG}
+      i=$((i+1))
+      ;;
+    --version )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      VERSION_LOG="${!OPTARG}"
       i=$((i+1))
       ;;
     -h | --help )
@@ -47,5 +53,30 @@ fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 
+if [[ ${VERSION_LOG} != "" ]]; then
+
+    if [[ -d /data/output_data ]]; then
+
+    echo "index_bam
+
+Commands:
+  sambamba index -t ${THREADS} /data/bam_files/\"${BAM_FILE}\" /data/bam_files/\"${BAM_FILE}.bai\"
+
+Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
+
+Software used:
+  Bash:
+    $( bash --version )
+
+  Python:
+    version $( get_python_version )
+
+  sambamba:
+    version $( get_conda_version sambamba )
+" > /data/output_data/"${VERSION_LOG}"
+    else
+        echo "WARNING: version log cannot be created without output_data volume"
+    fi
+fi
 
 sambamba index -t ${THREADS} /data/bam_files/"${BAM_FILE}" /data/bam_files/"${BAM_FILE}.bai"

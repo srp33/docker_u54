@@ -7,6 +7,7 @@ SAMPLE=Null
 GROUP_ID=Null
 GROUP_LB=Null
 BAM_FILE=Null
+VERSION_LOG=""
 OUTPUT=Null
 ARGNUM=$#
 
@@ -36,6 +37,11 @@ for (( i=1; i<=ARGNUM; i++ )); do
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
       OUTPUT="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    --version )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      VERSION_LOG="${!OPTARG}"
       i=$((i+1))
       ;;
     -h | --help )
@@ -78,6 +84,29 @@ fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
+
+if [[ ${VERSION_LOG} != "" ]]; then
+
+    echo "add_read_groups
+
+Command:
+  samtools addreplacerg -r ID:\"${GROUP_ID}\" -r LB:\"${GROUP_LB}\" -r SM:\"${SAMPLE}\" \\
+    -o /data/output_data/\"${OUTPUT}\" /data/bam_files/\"${BAM_FILE}\"
+
+Date run: $(date '+%d/%m/%Y %H:%M:%S')
+
+Software used:
+  Bash:
+    $( bash --version )
+
+  Python:
+    version $( get_python_version )
+
+  samtools:
+    version $( get_conda_version samtools )
+" > /data/output_data/"${VERSION_LOG}"
+
+fi
 
 samtools addreplacerg -r ID:"${GROUP_ID}" -r LB:"${GROUP_LB}" -r SM:"${SAMPLE}" \
 -o /data/output_data/"${OUTPUT}" /data/bam_files/"${BAM_FILE}"

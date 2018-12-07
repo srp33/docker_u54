@@ -80,6 +80,7 @@ ERROR: OUTPUT (-o <arg>) argument must be provided" && \
 # Checks for the necessary directories which are only created by volumes
 
 [[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
+[[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
 [[ -d /data/input_data ]] || { MISSING_VOLUMES+=(/data/input_data) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
@@ -93,16 +94,21 @@ fi
 python /check_permissions.py /data/ref_genome Read ${REF_GENOME} || exit 1
 python /check_permissions.py /data/input_data Read ${READ1} || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
+python /check_permissions.py /data/ref_index ReadWrite || exit 1
+
+mkdir /data/tmp
+ln -s /data/ref_genome/"${REF_GENOME}" /data/tmp/"${REF_GENOME}"
 
 # Check for necessary index files in ref_index directory
 #   If one of the files is missing, bwa index will be run
 
-for filename in /data/ref_genome/*; do
+for filename in /data/ref_index/*; do
     REF_INDEX_FILES+=($(echo "${filename##*/}"))
 done
 
 for NEEDED_FILE in ${NEEDED_FILES[@]}; do
-    [[ " ${REF_INDEX_FILES[@]} " =~ " ${NEEDED_FILE} " ]] || REF_INDEXED=1
+    { [[ " ${REF_INDEX_FILES[@]} " =~ " ${NEEDED_FILE} " ]] \
+&& ln -s /data/ref_index/"${NEEDED_FILE}" /data/tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
 done
 
 
@@ -110,15 +116,22 @@ if [[ ${REF_INDEXED} == 1 ]]; then
 
     echo "The reference does not contain the proper index files. Running bwa index"
 
-    python check_permissions.py /data/ref_genome ReadWrite || \
-       { echo "Please ensure you are passing in directory and not just a file volume" && exit 1; }
+    bwa index /data/tmp/"${REF_GENOME}"
 
-    bwa index -t ${THREADS} /data/ref_genome/"${REF_GENOME}"
+    for NEEDED_FILE in ${NEEDED_FILES[@]}; do
+        mv /data/tmp/"${NEEDED_FILE}" /data/ref_index
+        ln -s /data/ref_index/"${NEEDED_FILE}" /data/tmp/"${NEEDED_FILE}"
+    done
 fi
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
     echo "bwa_mem_align
+
+Command:
+  bwa mem -t ${THREADS} /data/tmp/\"${REF_GENOME}\" \\
+    /data/input_data/\"${READ1}\" /data/input_data/\"${READ2}\" | \\
+    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\"
 
 Date run: $(date '+%d/%m/%Y %H:%M:%S')
 
@@ -138,7 +151,7 @@ Software used:
 
 fi
 
-bwa mem -t ${THREADS} /data/ref_genome/"${REF_GENOME}" \
+bwa mem -t ${THREADS} /data/tmp/"${REF_GENOME}" \
     /data/input_data/"${READ1}" /data/input_data/"${READ2}" | \
     samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
 

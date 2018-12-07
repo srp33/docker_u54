@@ -6,6 +6,7 @@ source check_functions
 TUMOR=Null
 NORMAL=Null
 REF_GENOME=Null
+VERSION_LOG=""
 INDEL=""
 CALL_REGIONS=""
 RUN_DIR="/data/output_data/StrelkaSomaticWorkflow"
@@ -46,6 +47,11 @@ for (( i=1; i<=ARGNUM; i++ )); do
       RUN_DIR_ARG="--runDir ${RUN_DIR}"
       i=$((i+1))
       ;;
+    --version )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      VERSION_LOG="${!OPTARG}"
+      i=$((i+1))
+      ;;
     -h | --help )
       usage_strelka
       exit 0
@@ -74,6 +80,7 @@ MISSING_VOLUMES=()
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
 [[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
+[[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
     echo "
@@ -82,6 +89,7 @@ fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/ref_genome ReadWrite || exit 1
+python /check_permissions.py /data/output_data ReadWrite || exit 1
 
 if [[ ! -f ${NEEDED_FILE} ]]; then
     echo "
@@ -97,6 +105,34 @@ if [[ ! -f ${NEEDED_FILE} ]]; then
     samtools faidx ${REF_LOCATION}
 fi
 
+if [[ ${VERSION_LOG} != "" ]]; then
+
+    echo "call_somatic_variants_strelka
+
+Commands:
+  python2.7 /opt/miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \\
+    --referenceFasta=\"${REF_LOCATION}\" --tumorBam=\"/data/bam_files/${TUMOR}\" \\
+    --normalBam=\"/data/bam_files/${NORMAL}\" \"${INDEL}\" \"${CALL_REGIONS}\" \"${RUN_DIR_ARG}\"
+
+  python2.7 \"${RUN_DIR}\"/runWorkflow.py --mode=local
+
+Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
+
+Software used:
+  Bash:
+    $( bash --version )
+
+  Python:
+    version $( get_python2_version )
+
+  samtools:
+    version $( get_conda_version samtools )
+
+  strelka:
+    version 2.9.10-0
+" > /data/output_data/"${VERSION_LOG}"
+
+fi
 
 python2.7 /opt/miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \
 --referenceFasta="${REF_LOCATION}" --tumorBam="/data/bam_files/${TUMOR}" \

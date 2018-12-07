@@ -6,6 +6,7 @@ source check_functions
 BAM_FILE=Null
 REGION=Null
 OUTPUT=Null
+VERSION_LOG=""
 THREADS=1
 ARGNUM=$#
 
@@ -30,6 +31,11 @@ for (( i=1; i<=ARGNUM; i++ )); do
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
       OUTPUT=${!OPTARG}
+      i=$((i+1))
+      ;;
+    --version )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      VERSION_LOG="${!OPTARG}"
       i=$((i+1))
       ;;
     -h | --help )
@@ -66,5 +72,27 @@ fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
+
+if [[ ${VERSION_LOG} != "" ]]; then
+
+    echo "add_read_groups
+
+Command:
+  sambamba slice -o /data/output_data/\"${OUTPUT}\" /data/bam_files/\"${BAM_FILE}\" \"${REGION}\"
+
+Date run: $(date '+%d/%m/%Y %H:%M:%S')
+
+Software used:
+  Bash:
+    $( bash --version )
+
+  Python:
+    version $( get_python_version )
+
+  samtools:
+    version $( get_conda_version samtools )
+" > /data/output_data/"${VERSION_LOG}"
+
+fi
 
 sambamba slice -o /data/output_data/"${OUTPUT}" /data/bam_files/"${BAM_FILE}" "${REGION}"

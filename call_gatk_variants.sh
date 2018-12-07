@@ -126,9 +126,14 @@ python /check_permissions.py /data/output_data ReadWrite || exit 1
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
-    echo "bwa_mem_align
+    echo "call_gatk_variants
 
-Date run: $(date '+%d/%m/%Y %H:%M:%S')
+Commands:
+  gatk Mutect2 -I /data/bam_files/\"${TUMOR}\" -tumor \"${TUMOR_SAMPLE}\" \\
+    -I /data/bam_files/"${NORMAL}" -normal \"${NORMAL_SAMPLE}\" \\
+    -O /data/results/\"${OUTPUT}\" -R \"${REF_LOCATION}\"
+
+Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
 Software used:
   Bash:
