@@ -6,7 +6,7 @@ source check_functions
 REF_GENOME=Null
 THREADS=1
 READ1=Null
-READ2=Null
+READ2=""
 OUTPUT=Null
 VERSION_LOG=""
 ARGNUM=$#
@@ -31,7 +31,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       ;;
     -s2 | --sample2 )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      READ2="${!OPTARG}"
+      READ2="<(zcat /data/input_data/\"${!OPTARG}\" | awk 'int((NR-1)/4)%7==6')"
       i=$((i+1))
       ;;
     -o | --output )
@@ -69,9 +69,6 @@ ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
  usage_align && exit 1; }
 [[ ${READ1} != "Null" ]] || { echo "
 ERROR: READ 1 (-s1 <arg>) argument must be provided" && \
- usage_align && exit 1; }
-[[ ${READ2} != "Null" ]] || { echo "
-ERROR: READ 2 (-s2 <arg>) argument must be provided" && \
  usage_align && exit 1; }
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
@@ -126,13 +123,21 @@ fi
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
+    if [[ ${READ2} = "" ]]; then
+        COMMAND="bwa mem -t ${THREADS} /data/tmp/\"${REF_GENOME}\" \\
+    <(zcat /data/input_data/\"${READ1}\" | awk 'int((NR-1)/4)%7==6') |\\
+    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
+    else
+        COMMAND="bwa mem -t ${THREADS} /data/tmp/\"${REF_GENOME}\" \\
+    <(zcat /data/input_data/\"${READ1}\" | awk 'int((NR-1)/4)%7==6') \\
+    ${READ2} |\\
+    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
+    fi
+
     echo "bwa_mem_align
 
 Command:
-  bwa mem -t ${THREADS} /data/tmp/\"${REF_GENOME}\" \\
-    <(zcat /data/input_data/\"${READ1}\" | awk 'int((NR-1)/4)%7==6') \\
-    <(zcat /data/input_data/\"${READ2}\" | awk 'int((NR-1)/4)%7==6') \\
-    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\"
+  ${COMMAND}
 
 Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
@@ -152,8 +157,14 @@ Software used:
 
 fi
 
-bwa mem -t ${THREADS} /data/tmp/"${REF_GENOME}" \
-    <(zcat /data/input_data/"${READ1}" | awk 'int((NR-1)/4)%7==6') \
-    <(zcat /data/input_data/"${READ2}" | awk 'int((NR-1)/4)%7==6') |\
-    samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
+if [[ ${READ2} = "" ]]; then
+    bwa mem -t ${THREADS} /data/tmp/"${REF_GENOME}" \
+        <(zcat /data/input_data/"${READ1}" | awk 'int((NR-1)/4)%7==6') |\
+        samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
+else
+    bwa mem -t ${THREADS} /data/tmp/"${REF_GENOME}" \
+        <(zcat /data/input_data/"${READ1}" | awk 'int((NR-1)/4)%7==6') \
+        "${READ2}" |\
+        samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
 
+fi
