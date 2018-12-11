@@ -77,7 +77,6 @@ ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
 ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
 
 EXIT_CODE=0
-NEEDED_FILE=/data/ref_index/${REF_GENOME}.fai
 MISSING_VOLUMES=()
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
@@ -95,16 +94,19 @@ python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
 python /check_permissions.py /data/ref_index ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
+INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
+if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
+    NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
+    gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
+    REF_GENOME="${NEW_REF}"
+fi
+
+NEEDED_FILE=/data/ref_index/${REF_GENOME}.fai
+
 if [[ ! -f "${NEEDED_FILE}" ]]; then
     echo "
     Samtools reference index (${NEEDED_FILE}) is missing. Running samtools faidx
 "
-    INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
-    if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
-        NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
-        gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
-        REF_GENOME="${NEW_REF}"
-    fi
     samtools faidx /tmp/"${REF_GENOME}"
     mv /tmp/"${REF_GENOME}.fai" /data/ref_index/"${REF_GENOME}.fai"
 fi

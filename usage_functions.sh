@@ -273,6 +273,11 @@ created on the host operating system before executing this command:
   <location for output>
 
   This command currently requires tumor and normal BAM files.
+
+  It should also be noted that strelka requires a .fai index file for the reference genome. \
+If this file cannot be found in the /data/ref_index volume, it will be created. Unfortunately,\
+ samtools cannot index gzipped files. Thus gzipped fasta files will be gunzipped into a \
+temporary directory within the container.
 "
 }
 
