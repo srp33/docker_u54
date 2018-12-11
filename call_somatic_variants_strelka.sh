@@ -44,7 +44,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
     -d | --runDir )
       check_args "${!OPTARG}" "${!i}" || exit 1
       RUN_DIR=/data/output_data/${!OPTARG}
-      RUN_DIR_ARG="--runDir ${RUN_DIR}"
+      RUN_DIR_ARG="--runDir=${RUN_DIR}"
       i=$((i+1))
       ;;
     --log )
@@ -73,13 +73,16 @@ ERROR: NORMAL BAM FILE (-n <arg>) argument must be provided" && \
 ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
  usage_strelka && exit 1; }
 
+#mkdir /temp
+ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
 
 EXIT_CODE=0
-NEEDED_FILE=/data/ref_genome/${REF_GENOME}.fai
+NEEDED_FILE=/data/ref_index/${REF_GENOME}.fai
 MISSING_VOLUMES=()
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
 [[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
+[[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
@@ -88,22 +91,25 @@ if [[ ${EXIT_CODE} = 1 ]]; then
 fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
-python /check_permissions.py /data/ref_genome ReadWrite || exit 1
+python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
+python /check_permissions.py /data/ref_index ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-if [[ ! -f ${NEEDED_FILE} ]]; then
+if [[ ! -f "${NEEDED_FILE}" ]]; then
     echo "
     Samtools reference index (${NEEDED_FILE}) is missing. Running samtools faidx
 "
     INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
     if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
-        mkdir /data/temp_ref
         NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
-        gunzip -c /data/ref_genome/${REF_GENOME} > /data/temp_ref/${NEW_REF}
-        REF_LOCATION=/data/temp_ref/${NEW_REF}
+        gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
+        REF_GENOME="${NEW_REF}"
     fi
-    samtools faidx ${REF_LOCATION}
+    samtools faidx /tmp/"${REF_GENOME}"
+    mv /tmp/"${REF_GENOME}.fai" /data/ref_index/"${REF_GENOME}.fai"
 fi
+
+ln -s /data/ref_index/"${REF_GENOME}.fai" /tmp/"${REF_GENOME}.fai"
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
@@ -111,8 +117,8 @@ if [[ ${VERSION_LOG} != "" ]]; then
 
 Commands:
   python2.7 /opt/miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \\
-    --referenceFasta=\"${REF_LOCATION}\" --tumorBam=\"/data/bam_files/${TUMOR}\" \\
-    --normalBam=\"/data/bam_files/${NORMAL}\" \"${INDEL}\" \"${CALL_REGIONS}\" \"${RUN_DIR_ARG}\"
+    --referenceFasta=/tmp/\"${REF_GENOME}\" --tumorBam=\"/data/bam_files/${TUMOR}\" \\
+    --normalBam=\"/data/bam_files/${NORMAL}\" ${INDEL} ${CALL_REGIONS} \"${RUN_DIR_ARG}\"
 
   python2.7 \"${RUN_DIR}\"/runWorkflow.py --mode=local
 
@@ -135,7 +141,7 @@ Software used:
 fi
 
 python2.7 /opt/miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \
---referenceFasta="${REF_LOCATION}" --tumorBam="/data/bam_files/${TUMOR}" \
---normalBam="/data/bam_files/${NORMAL}" "${INDEL}" "${CALL_REGIONS}" "${RUN_DIR_ARG}"
+--referenceFasta=/tmp/"${REF_GENOME}" --tumorBam="/data/bam_files/${TUMOR}" \
+--normalBam="/data/bam_files/${NORMAL}" ${INDEL} ${CALL_REGIONS} ${RUN_DIR_ARG}
 
 python2.7 "${RUN_DIR}"/runWorkflow.py --mode=local

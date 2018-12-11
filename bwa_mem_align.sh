@@ -93,8 +93,8 @@ python /check_permissions.py /data/input_data Read ${READ1} || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 python /check_permissions.py /data/ref_index ReadWrite || exit 1
 
-mkdir /data/tmp
-ln -s /data/ref_genome/"${REF_GENOME}" /data/tmp/"${REF_GENOME}"
+#mkdir /tmp
+ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
 
 # Check for necessary index files in ref_index directory
 #   If one of the files is missing, bwa index will be run
@@ -105,7 +105,7 @@ done
 
 for NEEDED_FILE in ${NEEDED_FILES[@]}; do
     { [[ " ${REF_INDEX_FILES[@]} " =~ " ${NEEDED_FILE} " ]] \
-&& ln -s /data/ref_index/"${NEEDED_FILE}" /data/tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
+&& ln -s /data/ref_index/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
 done
 
 
@@ -113,22 +113,22 @@ if [[ ${REF_INDEXED} == 1 ]]; then
 
     echo "The reference does not contain the proper index files. Running bwa index"
 
-    bwa index /data/tmp/"${REF_GENOME}"
+    bwa index /tmp/"${REF_GENOME}"
 
     for NEEDED_FILE in ${NEEDED_FILES[@]}; do
-        mv /data/tmp/"${NEEDED_FILE}" /data/ref_index
-        ln -s /data/ref_index/"${NEEDED_FILE}" /data/tmp/"${NEEDED_FILE}"
+        mv /tmp/"${NEEDED_FILE}" /data/ref_index
+        ln -s /data/ref_index/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"
     done
 fi
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
     if [[ ${READ2} = "" ]]; then
-        COMMAND="bwa mem -t ${THREADS} /data/tmp/\"${REF_GENOME}\" \\
+        COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \\
     <(zcat /data/input_data/\"${READ1}\" | awk 'int((NR-1)/4)%7==6') |\\
     samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
     else
-        COMMAND="bwa mem -t ${THREADS} /data/tmp/\"${REF_GENOME}\" \\
+        COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \\
     <(zcat /data/input_data/\"${READ1}\" | awk 'int((NR-1)/4)%7==6') \\
     ${READ2} |\\
     samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
@@ -158,11 +158,11 @@ Software used:
 fi
 
 if [[ ${READ2} = "" ]]; then
-    bwa mem -t ${THREADS} /data/tmp/"${REF_GENOME}" \
+    bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
         <(zcat /data/input_data/"${READ1}" | awk 'int((NR-1)/4)%7==6') |\
         samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
 else
-    bwa mem -t ${THREADS} /data/tmp/"${REF_GENOME}" \
+    bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
         <(zcat /data/input_data/"${READ1}" | awk 'int((NR-1)/4)%7==6') \
         "${READ2}" |\
         samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"

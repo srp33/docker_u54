@@ -26,6 +26,7 @@ ADD check_permissions.py /
 RUN conda config --add channels bioconda
 RUN conda install bwa samtools sambamba varscan
 RUN conda install strelka
+#RUN mkdir -p /tmp && chmod 755 /data
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data
