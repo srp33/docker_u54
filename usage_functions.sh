@@ -13,7 +13,7 @@ Align FASTQ files to a reference genome using the Burrows-Wheeler Aligner softwa
 Options:
   -r, --reference <name of reference genome FASTA file>
   -s1, --sample1 <file 1>
-  -s2, --sample2 <file 2>
+  -s2, --sample2 <file 2> (Optional)
   -o, --output <name of outputted BAM file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
@@ -22,6 +22,7 @@ Options:
 Usage:
 docker run \\
   -v <location of reference FASTA file>:/data/ref_genome \\
+  -v <location of reference index files>:/data/ref_index \\
   -v <location of FASTQ files>:/data/input_data \\
   -v <location for outputted BAM file>:/data/output_data \\
   ---user \$(id -u):\$(id -g) \\
@@ -30,7 +31,7 @@ docker run \\
   bwa_mem_align \\
     -r <reference FASTA file> \\
     -s1 <file 1> \\
-    -s2 <file 2> \\
+    -s2 <file 2> (Optional) \\
     -o <name of outputted BAM file> \\
     -t <number of threads> (Optional) \\
     --log <destination file for log> (Optional)
@@ -249,6 +250,7 @@ docker run \\
   -v <location of indel alleles VCF and call regions file>:/data/input_data \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location of FASTA reference file>:/data/ref_genome \\
+  -v <location of .fai reference index file>:/data/ref_index \\
   -v <location for output>:/data/output_data \\
   ---user \$(id -u):\$(id -g) \\
   --rm \\
@@ -299,7 +301,7 @@ echo "call_gatk_variants
 Options:
   -t, --tumor <name of tumor BAM file>
   -t, --tumor_sample <name of tumor sample>
-  -n, --normal <name of normal BAM file
+  -n, --normal <name of normal BAM file>
   -ns --normal_sample <name of normal sample>
   -o, --output <name of output file>
   -r, --reference <name of reference file>
@@ -374,5 +376,51 @@ created on the host operating system before executing this command:
 
   <location of BAM files>
   <location for output>
+"
+}
+
+usage_mpileup () {
+echo "add_read_groups
+
+Description:
+Create samtools pileup file
+
+Options:
+  -t, --tumor <name of tumor BAM file>
+  -n, --normal <name of normal BAM file>
+  -r, --reference <name of reference FASTA file>
+  -o, --output <name of output file>
+  -h, --help
+  --log <destination file for log> (Optional)
+
+Usage:
+docker run \\
+  -v <location of BAM files>:/data/bam_files \\
+  -v <location of reference FASTA file>:/data/ref_genome \\
+  -v <location of reference .fai index file>:/data/ref_index \\
+  -v <location for output>:/data/output_data \\
+  ---user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  samtools_mpileup \\
+    -t <tumor BAM file> \\
+    -n <normal BAM file> \\
+    -r <reference FASTA file> \\
+    -o <name of output file> \\
+    --log <destination file for log> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of BAM files>
+  <location of reference FASTA file>
+  <location of .fai index file>
+  <location for output>
+
+  If .fai is not found, it will be created. If reference FASTA file is gzipped, a temporary \
+copy will be gunzipped into the container for the duration of this process. This will \
+considerably lengthen the process.
 "
 }

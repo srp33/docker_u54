@@ -19,7 +19,7 @@ ADD merge_bams.sh /usr/local/bin/merge_bams
 ADD slice_bam.sh /usr/local/bin/slice_bam
 ADD sort_bam.sh /usr/local/bin/sort_bam
 ADD add_read_groups.sh /usr/local/bin/add_read_groups
-#ADD strelka.sh /usr/local/bin/strelka
+ADD samtools_mpileup.sh /usr/local/bin/samtools_mpileup
 ADD check_permissions.py /
 
 ################## INSTALL TOOLS ######################
