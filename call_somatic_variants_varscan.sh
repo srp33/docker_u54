@@ -5,6 +5,10 @@ source check_functions
 
 PILEUP=Null
 OUTPUT=Null
+REF_GENOME=""
+NORMAL=""
+TUMOR=""
+RUN_PILEUP=0
 ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
@@ -18,6 +22,24 @@ for (( i=1; i<=ARGNUM; i++ )); do
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
       OUTPUT=${!OPTARG}
+      i=$((i+1))
+      ;;
+    --run_pileup )
+      RUN_PILEUP=1
+      ;;
+    -r | --reference )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      REF_GENOME=${!OPTARG}
+      i=$((i+1))
+      ;;
+    -n | --normal )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      NORMAL=${!OPTARG}
+      i=$((i+1))
+      ;;
+    -t | --tumor )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      TUMOR=${!OPTARG}
       i=$((i+1))
       ;;
     -h | --help )
@@ -38,31 +60,29 @@ ERROR: PILEUP FILE (-p <arg>) argument must be provided" && \
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
  usage_varscan && exit 1; }
 
-if [[ ${REF_GENOME: -3} = ".gz" ]]; then
-    INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
-    NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})".bgz
-    gunzip -c /data/ref_genome/${REF_GENOME} | bgzip > /data/ref_genome/${NEW_REF}
-    REF_GENOME=${NEW_REF}
-fi
 
 EXIT_CODE=0
-NEEDED_FILE=/data/ref_genome/${REF_GENOME}.fai
 MISSING_VOLUMES=()
 
-[[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
-[[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
+[[ -d /data/input_data ]] || { MISSING_VOLUMES+=(/data/input_data) && EXIT_CODE=1; }
+[[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
     echo "
     The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
-python /check_permissions.py /data/bam_files ReadWrite || exit 1
-python /check_permissions.py /data/ref_genome ReadWrite || exit 1
+python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-if [[ ! -f ${NEEDED_FILE} ]]; then
-    echo "Samtools reference index (${NEEDED_FILE}) is missing. Running samtools faidx"
-    samtools faidx /data/ref_genome/${REF_GENOME}
+if [[ ${RUN_PILEUP} -eq 1 ]]; then
+    echo "
+Running samtools_mpileup
+"
+    samtools_mpileup -t "${TUMOR}" -n "${NORMAL}" -r "${REF_GENOME}" -o "${PILEUP}"
+    ln -s /data/output_data/"${PILEUP}" /tmp/"${PILEUP}"
+else
+    python /check_permissions.py /data/input_data Read "${PILEUP}" || exit 1
+    ln -s /data/input_data/"${PILEUP}" /tmp/"${PILEUP}"
 fi
 
-varscan somatic ${PILEUP} ${OUTPUT}
+varscan somatic /tmp/"${PILEUP}" /data/output_data/"${OUTPUT}" --mpileup 1

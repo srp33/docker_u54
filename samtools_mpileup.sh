@@ -4,7 +4,6 @@ source usage_functions
 source check_functions
 
 REF_GENOME=Null
-THREADS=1
 NORMAL=Null
 TUMOR=Null
 OUTPUT=Null
