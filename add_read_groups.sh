@@ -3,6 +3,8 @@
 source usage_functions
 source check_functions
 
+set -o errexit
+
 SAMPLE=Null
 GROUP_ID=Null
 GROUP_LB=Null
@@ -13,15 +15,15 @@ ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
-  case ${!i} in
+  case "${!i}" in
     -id | --group_id )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      GROUP_ID=${!OPTARG}
+      GROUP_ID="${!OPTARG}"
       i=$((i+1))
       ;;
     -lb | --library_identifier )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      GROUP_LB=${!OPTARG}
+      GROUP_LB="${!OPTARG}"
       i=$((i+1))
       ;;
     -s | --sample )

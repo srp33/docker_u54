@@ -10,7 +10,7 @@ ADD bwa_mem_align.sh /usr/local/bin/bwa_mem_align
 ADD echo_usage.sh /usr/local/bin/echo_usage
 ADD usage_functions.sh /usr/local/bin/usage_functions
 ADD check_functions.sh /usr/local/bin/check_functions
-ADD call_gatk_variants.sh /usr/local/bin/call_gatk_variants
+ADD call_somatic_variants_gatk4.sh /usr/local/bin/call_somatic_variants_gatk4
 ADD call_somatic_variants_strelka.sh /usr/local/bin/call_somatic_variants_strelka
 ADD call_somatic_variants_varscan.sh /usr/local/bin/call_somatic_variants_varscan
 ADD index_bam.sh /usr/local/bin/index_bam

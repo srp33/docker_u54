@@ -3,6 +3,8 @@
 source usage_functions
 source check_functions
 
+set -o errexit
+
 BAM_FILE=Null
 VERSION_LOG=""
 THREADS=1

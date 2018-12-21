@@ -3,6 +3,8 @@
 source usage_functions
 source check_functions
 
+set -o errexit
+
 BAM_FILE=Null
 OUTPUT=Null
 VERSION_LOG=""
@@ -14,7 +16,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
   case ${!i} in
     -b | --bam )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      BAM_FILE=${!OPTARG}
+      BAM_FILE="${!OPTARG}"
       i=$((i+1))
       ;;
     -t | --nthreads )
@@ -24,7 +26,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       ;;
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      OUTPUT=${!OPTARG}
+      OUTPUT="${!OPTARG}"
       i=$((i+1))
       ;;
     --log )

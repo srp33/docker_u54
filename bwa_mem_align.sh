@@ -3,6 +3,8 @@
 source usage_functions
 source check_functions
 
+set -o errexit
+
 REF_GENOME=Null
 THREADS=1
 READ1=Null
@@ -21,7 +23,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       ;;
     -r | --reference )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      REF_GENOME=${!OPTARG}
+      REF_GENOME="${!OPTARG}"
       i=$((i+1))
       ;;
     -s1 | --sample1 )
@@ -57,7 +59,7 @@ done
 
 
 REF_INDEX_FILES=()
-NEEDED_FILES=(${REF_GENOME}.amb ${REF_GENOME}.ann ${REF_GENOME}.bwt ${REF_GENOME}.pac ${REF_GENOME}.sa)
+NEEDED_FILES=("${REF_GENOME}".amb "${REF_GENOME}".ann "${REF_GENOME}".bwt "${REF_GENOME}".pac "${REF_GENOME}".sa)
 REF_INDEXED=0
 MISSING_VOLUMES=()
 EXIT_CODE=0
@@ -88,8 +90,8 @@ fi
 
 # Check permissions of each directory
 
-python /check_permissions.py /data/ref_genome Read ${REF_GENOME} || exit 1
-python /check_permissions.py /data/input_data Read ${READ1} || exit 1
+python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
+python /check_permissions.py /data/input_data Read "${READ1}" || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 python /check_permissions.py /data/ref_index ReadWrite || exit 1
 

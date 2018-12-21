@@ -3,6 +3,8 @@
 source usage_functions
 source check_functions
 
+set -o errexit
+
 PILEUP=Null
 OUTPUT=Null
 REF_GENOME=""

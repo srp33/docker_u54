@@ -3,6 +3,8 @@
 source usage_functions
 source check_functions
 
+set -o errexit
+
 TUMOR=Null
 NORMAL=Null
 OUTPUT=Null
@@ -17,17 +19,17 @@ for (( i=1; i<=ARGNUM; i++ )); do
   case ${!i} in
     -t | --tumor )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      TUMOR=${!OPTARG}
+      TUMOR="${!OPTARG}"
       i=$((i+1))
       ;;
     -n | --normal )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      NORMAL=${!OPTARG}
+      NORMAL="${!OPTARG}"
       i=$((i+1))
       ;;
     -ts | --tumor-sample )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      TUMOR_SAMPLE=${!OPTARG}
+      TUMOR_SAMPLE="${!OPTARG}"
       i=$((i+1))
       ;;
     -ns | --normal-sample )
@@ -83,12 +85,11 @@ ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
 [[ ${NORMAL_SAMPLE} != "Null" ]] || NORMAL_SAMPLE="${NORMAL%%.*}"
 
 EXIT_CODE=0
-REF_LOCATION=/data/ref_genome/${REF_GENOME}
-NEEDED_INDEX=/data/ref_genome/${REF_GENOME}.fai
 MISSING_VOLUMES=()
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
 [[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
+[[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
@@ -96,42 +97,56 @@ if [[ ${EXIT_CODE} = 1 ]]; then
     The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
-if [[ ! -f ${NEEDED_INDEX} ]]; then
+python /check_permissions.py /data/bam_files Read "${TUMOR}" || exit 1
+python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
+python /check_permissions.py /data/ref_index ReadWrite || exit 1
+python /check_permissions.py /data/output_data ReadWrite || exit 1
+
+#mkdir /temp
+ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+
+INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
+if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
+    NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
+    gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
+    REF_GENOME="${NEW_REF}"
+    INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
+fi
+
+
+NEEDED_INDEX=/data/ref_index/"${REF_GENOME}".fai
+REF_DICT="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})".dict
+NEEDED_DICT=/data/ref_index/"${REF_DICT}"
+
+
+if [[ ! -f "${NEEDED_INDEX}" ]]; then
     echo "
     Samtools reference index (${NEEDED_INDEX}) is missing. Running samtools faidx
 "
-    if [[ ${REF_GENOME: -3} = ".gz" ]]; then
-        mkdir /data/temp_ref
-        INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
-        NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
-        gunzip -c /data/ref_genome/${REF_GENOME} > /data/temp_ref/${NEW_REF}
-        REF_LOCATION=/data/temp_ref/${NEW_REF}
-    fi
-    samtools faidx ${REF_LOCATION}
+    samtools faidx /tmp/"${REF_GENOME}"
+    mv /tmp/"${REF_GENOME}.fai" /data/ref_index/"${REF_GENOME}.fai"
 fi
 
-INDEX=$(echo ${REF_LOCATION} | grep -o '\.' | grep -c '\.')
-NEEDED_DICT="$(echo ${REF_LOCATION} | cut -d '.' -f -${INDEX})".dict
+ln -s /data/ref_index/"${REF_GENOME}.fai" /tmp/"${REF_GENOME}.fai"
 
 if [[ ! -f ${NEEDED_DICT} ]]; then
     echo "
     Fasta dict file (${NEEDED_DICT}) is missing. Running gatk CreateSequenceDictionary
 "
-    gatk CreateSequenceDictionary --REFERENCE "${REF_LOCATION}"
+    gatk CreateSequenceDictionary --REFERENCE /tmp/"${REF_GENOME}"
+    mv /tmp/"${REF_DICT}" /data/ref_index/"${REF_DICT}"
 fi
 
-python /check_permissions.py /data/bam_files Read "${TUMOR}" || exit 1
-python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
-python /check_permissions.py /data/output_data ReadWrite || exit 1
+ln -s /data/ref_index/"${REF_DICT}" /tmp/"${REF_DICT}"
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
-    echo "call_gatk_variants
+    echo "call_somatic_variants_gatk4
 
 Commands:
   gatk Mutect2 -I /data/bam_files/\"${TUMOR}\" -tumor \"${TUMOR_SAMPLE}\" \\
-    -I /data/bam_files/"${NORMAL}" -normal \"${NORMAL_SAMPLE}\" \\
-    -O /data/results/\"${OUTPUT}\" -R \"${REF_LOCATION}\"
+    -I /data/bam_files/\"${NORMAL}\" -normal \"${NORMAL_SAMPLE}\" \\
+    -O /data/output_data/\"${OUTPUT}\" -R /tmp/\"${REF_GENOME}\"
 
 Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
@@ -150,4 +165,4 @@ fi
 
 gatk Mutect2 -I /data/bam_files/"${TUMOR}" -tumor "${TUMOR_SAMPLE}" \
   -I /data/bam_files/"${NORMAL}" -normal "${NORMAL_SAMPLE}" \
-  -O /data/results/"${OUTPUT}" -R "${REF_LOCATION}"
+  -O /data/output_data/"${OUTPUT}" -R /tmp/"${REF_GENOME}"

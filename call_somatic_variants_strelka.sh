@@ -3,6 +3,8 @@
 source usage_functions
 source check_functions
 
+set -o errexit
+
 TUMOR=Null
 NORMAL=Null
 REF_GENOME=Null
@@ -15,20 +17,20 @@ ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
-  case ${!i} in
+  case "${!i}" in
     -t | --tumorBam )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      TUMOR=${!OPTARG}
+      TUMOR="${!OPTARG}"
       i=$((i+1))
       ;;
     -n | --normalBam )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      NORMAL=${!OPTARG}
+      NORMAL="${!OPTARG}"
       i=$((i+1))
       ;;
     -r | --referenceFasta )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      REF_GENOME=${!OPTARG}
+      REF_GENOME="${!OPTARG}"
       i=$((i+1))
       ;;
     -i | --indelCandidates )
@@ -43,7 +45,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       ;;
     -d | --runDir )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      RUN_DIR=/data/output_data/${!OPTARG}
+      RUN_DIR=/data/output_data/"${!OPTARG}"
       RUN_DIR_ARG="--runDir=${RUN_DIR}"
       i=$((i+1))
       ;;
@@ -63,18 +65,15 @@ for (( i=1; i<=ARGNUM; i++ )); do
   esac
 done
 
-[[ ${TUMOR} != "Null" ]] || { echo "
+[[ "${TUMOR}" != "Null" ]] || { echo "
 ERROR: TUMOR BAM FILE (-t <arg>) argument must be provided" && \
  usage_strelka && exit 1; }
-[[ ${NORMAL} != "Null" ]] || { echo "
+[[ "${NORMAL}" != "Null" ]] || { echo "
 ERROR: NORMAL BAM FILE (-n <arg>) argument must be provided" && \
  usage_strelka && exit 1; }
-[[ ${REF_GENOME} != "Null" ]] || { echo "
+[[ "${REF_GENOME}" != "Null" ]] || { echo "
 ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
  usage_strelka && exit 1; }
-
-#mkdir /temp
-ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
 
 EXIT_CODE=0
 MISSING_VOLUMES=()
@@ -94,14 +93,17 @@ python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
 python /check_permissions.py /data/ref_index ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
-if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
+#mkdir /temp
+ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+
+INDEX=$(echo "${REF_GENOME}" | grep -o '\.' | grep -c '\.')
+if [[ "${REF_GENOME: -${INDEX}}" = ".gz" ]]; then
     NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
     gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
     REF_GENOME="${NEW_REF}"
 fi
 
-NEEDED_FILE=/data/ref_index/${REF_GENOME}.fai
+NEEDED_FILE=/data/ref_index/"${REF_GENOME}".fai
 
 if [[ ! -f "${NEEDED_FILE}" ]]; then
     echo "
