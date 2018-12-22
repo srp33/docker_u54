@@ -322,7 +322,7 @@ docker run \\
     -n <normal BAM file> \\
     -ns <normal sample> \\
     -r <reference FASTA file> \\
-    -o <name of output file> \\
+    -o <name of output BAM file> \\
     --log <destination file for log> (Optional)
 
 Notes:
