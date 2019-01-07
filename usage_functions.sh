@@ -44,6 +44,8 @@ created on the host operating system before executing this command:
   <location of reference FASTA file>
   <location of FASTQ files>
   <location for outputted BAM file>
+
+  This method spawns multiple processes, which each process a subset of the FASTQ reads, in parallel.
 "
 }
 
@@ -298,13 +300,16 @@ ERROR: THIS COMMAND IS NOT READY FOR USAGE
 usage_mutect (){
 echo "call_somatic_variants_gatk4
 
+Description:
+Calls somatic variants using Mutect2 for a tumor/normal pair
+
 Options:
   -t, --tumor <name of tumor BAM file>
-  -t, --tumor_sample <name of tumor sample>
+  -ts, --tumor_sample <name of tumor sample> (Optional)
   -n, --normal <name of normal BAM file>
-  -ns --normal_sample <name of normal sample>
+  -ns --normal_sample <name of normal sample> (Optional)
   -o, --output <name of output file>
-  -r, --reference <name of reference file>
+  -r, --reference <name of reference FASTA file>
   -h, --help
   --log <destination file for log> (Optional)
 
@@ -312,15 +317,16 @@ Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location of FASTA reference file>:/data/ref_genome \\
+  -v <location of .fai reference index file>:/data/ref_index \\
   -v <location for output>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   call_somatic_variants_gatk4 \\
     -t <tumor BAM file> \\
-    -ts <tumor sample> \\
+    -ts <tumor sample> (Optional) \\
     -n <normal BAM file> \\
-    -ns <normal sample> \\
+    -ns <normal sample> (Optional) \\
     -r <reference FASTA file> \\
     -o <name of output BAM file> \\
     --log <destination file for log> (Optional)
@@ -341,6 +347,9 @@ See 'add_read_groups' for details on how to add this information.
 If this file cannot be found in the /data/ref_index volume, it will be created. Unfortunately,\
  samtools cannot index gzipped files. Thus gzipped fasta files will be gunzipped into a \
 temporary directory within the container.
+
+  Tumor and normal samples should be provided, but if they are not, they will be taken from the names of \
+the respective BAM files.
 "
 }
 
