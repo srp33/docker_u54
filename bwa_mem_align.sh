@@ -11,6 +11,8 @@ READ1=Null
 READ2=""
 OUTPUT=Null
 VERSION_LOG=""
+CHUNKS=1
+PROCESS_CHUNK=0
 ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
@@ -33,12 +35,22 @@ for (( i=1; i<=ARGNUM; i++ )); do
       ;;
     -s2 | --sample2 )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      READ2="<(zcat /data/input_data/\"${!OPTARG}\" | awk 'int((NR-1)/4)%7==6')"
+      READ2="${!OPTARG}"
       i=$((i+1))
       ;;
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
       OUTPUT="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -c | --nchunks )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      CHUNKS="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -p | --process_chunk )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      PROCESS_CHUNK="${!OPTARG}"
       i=$((i+1))
       ;;
     --log )
@@ -75,6 +87,13 @@ ERROR: READ 1 (-s1 <arg>) argument must be provided" && \
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
  usage_align && exit 1; }
+[[ ${CHUNKS} -ge 1 ]] || { echo "
+ERROR: CHUNKS [${CHUNKS}](-c <arg>) argument must be greater than or equal to 1" && \
+ usage_align && exit 1; }
+[[ ${PROCESS_CHUNK} -lt ${CHUNKS} ]] || { echo "
+ERROR: PROCESS_CHUNK [${PROCESS_CHUNK}] (-p <arg>) argument must be smaller than \
+CHUNKS [${CHUNKS}] (-c <arg>) argument" && \
+ usage_align && exit 1; }
 
 # Checks for the necessary directories which are only created by volumes
 
@@ -95,7 +114,6 @@ python /check_permissions.py /data/input_data Read "${READ1}" || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 python /check_permissions.py /data/ref_index ReadWrite || exit 1
 
-#mkdir /tmp
 ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
 
 # Check for necessary index files in ref_index directory
@@ -110,6 +128,10 @@ for NEEDED_FILE in ${NEEDED_FILES[@]}; do
 && ln -s /data/ref_index/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
 done
 
+if [[ ${CHUNKS} -gt 1 ]]; then
+    INDEX=$(echo ${OUTPUT} | grep -o '\.' | grep -c '\.')
+    OUT_NAME="$(echo ${OUTPUT} | cut -d '.' -f -${INDEX})"
+fi
 
 if [[ ${REF_INDEXED} == 1 ]]; then
 
@@ -126,14 +148,29 @@ fi
 if [[ ${VERSION_LOG} != "" ]]; then
 
     if [[ ${READ2} = "" ]]; then
-        COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \\
-    <(zcat /data/input_data/\"${READ1}\" | awk 'int((NR-1)/4)%7==6') |\\
+        if [[ ${CHUNKS} -gt 1 ]]; then
+            COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \\
+    <(zcat /data/input_data/\"${READ1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
+      'int((NR-1)/4)%chunks==process_chunk') |\\
+    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUT_NAME}\".${PROCESS_CHUNK}.bam"
+        else
+            COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \
+    /data/input_data/\"${READ1}\" | \
     samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
+        fi
     else
-        COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \\
-    <(zcat /data/input_data/\"${READ1}\" | awk 'int((NR-1)/4)%7==6') \\
-    ${READ2} |\\
+        if [[ ${CHUNKS} -gt 1 ]]; then
+            COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \\
+    <(zcat /data/input_data/\"${READ1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
+      'int((NR-1)/4)%chunks==process_chunk') \\
+    <(zcat /data/input_data/\"${READ2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
+      'int((NR-1)/4)%chunks==process_chunk') | \\
+    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUT_NAME}\".${PROCESS_CHUNK}.bam"
+        else
+            COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \\
+    /data/input_data/\"${READ1}\" /data/input_data/\"${READ2}\" | \\
     samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
+        fi
     fi
 
     echo "bwa_mem_align
@@ -160,13 +197,28 @@ Software used:
 fi
 
 if [[ ${READ2} = "" ]]; then
-    bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
-        <(zcat /data/input_data/"${READ1}" | awk 'int((NR-1)/4)%7==6') |\
-        samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
+    if [[ ${CHUNKS} -gt 1 ]]; then
+        bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
+            <(zcat /data/input_data/"${READ1}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
+              'int((NR-1)/4)%chunks==process_chunk') | \
+            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
+    else
+        bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
+            /data/input_data/"${READ1}" | \
+            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
+    fi
 else
-    bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
-        <(zcat /data/input_data/"${READ1}" | awk 'int((NR-1)/4)%7==6') \
-        "${READ2}" |\
-        samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
+    if [[ ${CHUNKS} -gt 1 ]]; then
+        bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
+            <(zcat /data/input_data/"${READ1}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
+              'int((NR-1)/4)%chunks==process_chunk') \
+            <(zcat /data/input_data/"${READ2}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
+              'int((NR-1)/4)%chunks==process_chunk') | \
+            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
+    else
+        bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
+            /data/input_data/"${READ1}" /data/input_data/"${READ2}" | \
+            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
+    fi
 
 fi

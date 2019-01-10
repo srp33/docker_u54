@@ -17,6 +17,8 @@ Options:
   -o, --output <name of outputted BAM file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
+  -c, --nchunks <number of chunks> (Optional)
+  -p, --process_chunk <chunk to be processed> (Optional)
   --log <destination file for log> (Optional)
 
 Usage:
@@ -34,6 +36,8 @@ docker run \\
     -s2 <file 2> (Optional) \\
     -o <name of outputted BAM file> \\
     -t <number of threads> (Optional) \\
+    -c <number of chunks> (Optional) \\
+    -p <chunk to be processed (Optional) \\
     --log <destination file for log> (Optional)
 
 Notes:
@@ -45,7 +49,10 @@ created on the host operating system before executing this command:
   <location of FASTQ files>
   <location for outputted BAM file>
 
-  This method spawns multiple processes, which each process a subset of the FASTQ reads, in parallel.
+  The --nchunks argument divides the FASTQ files into n number of chunks. The --process_chunk argument \
+specifies which chunk should be aligned. --process_chunk must be less than --nchunks and greater than or \
+equal to 0 (the default for --process_chunk is 0). --nchunks must be greater than 0, however, inputting \
+1 for --nchunks will not change anything since that is the default behavior.
 "
 }
 
@@ -243,7 +250,9 @@ Options:
   -r, --referenceFasta <name of reference genome FASTA file>
   -i, --indelCandidates <name of VCF of indel alleles> (Optional)
   -c, --callRegions <name of file containing regions to call> (Optional)
-  -d, --runDir <desired name for output directory> (Optional) [Default: StrelkaSomaticWorkflow]
+  -d, --runDir <desired name for directory to be created where
+                workflow scripts and output will be written> (Optional)
+                [Default: StrelkaSomaticWorkflow]
   -h, --help
   --log <destination file for log> (Optional)
 
