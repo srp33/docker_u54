@@ -8,7 +8,7 @@ user to execute the software via commands and arguments. We have also configured
 
 For a high-level overview of how Docker works (and software containers in general), read [this paper](https://gigascience.biomedcentral.com/articles/10.1186/s13742-016-0135-4).
 
-To get started, install the [Docker CE](https://docs.docker.com/install) on your computer. That should be the only software that you need to install for this.
+To get started, install the [Docker CE](https://docs.docker.com/install) software on your computer.
 
 Currently, we support the following commands:
 
@@ -18,6 +18,9 @@ Currently, we support the following commands:
 * `mark_duplicates` (mark duplicates in a BAM file using `sambamba`)
 * `slice_bam` (slice/split a BAM file using `sambamba`)
 * `merge_bams` (merge BAM files using `sambamba`)
+* `add_read_groups` (add read groups to a BAM file)
+* `samtools_mpileup.sh` (create pileup file using `samtools`)
+* `call_somatic_variants_gatk4` (call variants using Mutect2 (GATK 4))
 
 The default behavior of the Docker container is to display the usage and available commands. If the user executes the following command, usage information will be displayed.
 
