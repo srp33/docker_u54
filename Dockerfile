@@ -24,13 +24,23 @@ ADD sort_bam.sh /usr/local/bin/wgs/sort_bam
 ADD add_read_groups.sh /usr/local/bin/wgs/add_read_groups
 ADD samtools_mpileup.sh /usr/local/bin/wgs/samtools_mpileup
 
+################ ADD OTHER SCRIPTS ####################
+ADD install_manta.sh /opt/manta/install_manta.sh
+
+ADD base_recalibrator.sh /usr/local/bin/base_recalibrator
+
 ################## ADD TO PATH ########################
+ENV MANTA_VERSION="1.5.0"
 ENV PATH="/usr/local/bin/wgs:${PATH}"
+ENV MANTA_INSTALL_PATH="/opt/manta/manta-${MANTA_VERSION}.release_src/src/python"
 
 ################## INSTALL TOOLS ######################
 RUN conda config --add channels bioconda
 RUN conda install bwa samtools sambamba varscan
 RUN conda install strelka
+
+#WORKDIR /opt/manta/
+#RUN ./install_manta.sh
 #RUN mkdir -p /tmp && chmod 755 /data
 
 ################## SETUP WORKDIR #######################
