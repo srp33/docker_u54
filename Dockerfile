@@ -36,7 +36,7 @@ ENV MANTA_INSTALL_PATH="/opt/manta/manta-${MANTA_VERSION}.release_src/src/python
 
 ################## INSTALL TOOLS ######################
 RUN conda config --add channels bioconda
-RUN conda install bwa samtools sambamba varscan
+RUN conda install bwa samtools sambamba varscan picard
 RUN conda install strelka
 
 #WORKDIR /opt/manta/
