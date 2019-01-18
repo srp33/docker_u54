@@ -447,3 +447,92 @@ copy will be gunzipped into the container for the duration of this process. This
 considerably lengthen the process.
 "
 }
+
+usage_apply_bqsr () {
+echo "apply_bqsr
+
+Description:
+Create samtools pileup file
+
+Options:
+  -b, --bam_file <name of input BAM file>
+  -bqsr, --bqsr_recal_file <name of input recalibration table for BQSR>
+  -o, --output <name of output BAM file>
+  -h, --help
+  --log <destination file for log> (Optional)
+
+Usage:
+docker run \\
+  -v <location of BAM files>:/data/bam_files \\
+  -v <location of input recalibration table for BQSR>:/data/input_data \\
+  -v <location for output>:/data/output_data \\
+  --user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  samtools_mpileup \\
+    -b <name of input BAM file> \\
+    -bqsr <name of recalibration table> \\
+    -o <name of output BAM file> \\
+    --log <destination file for log> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of BAM files>
+  <location of input recalibration table for BQSR>
+  <location for output>
+"
+}
+
+usage_base_recalibrator () {
+echo "base_recalibrator
+
+Description:
+Create samtools pileup file
+
+Options:
+  -b, --bam_file <name of input BAM file>
+  -r, --reference <name of reference FASTA file>
+  -s, --known_sites <URL to database of known polymorphic sites>
+  -o, --output <name of output recalibration table file>
+  -h, --help
+  --log <destination file for log> (Optional)
+
+Usage:
+docker run \\
+  -v <location of BAM files>:/data/bam_files \\
+  -v <location of reference FASTA file>:/data/ref_genome \\
+  -v <location of reference .fai index file>:/data/ref_index \\
+  -v <location for output>:/data/output_data \\
+  --user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  samtools_mpileup \\
+    -b <name of input BAM file \\
+    -r <reference FASTA file> \\
+    -s <URL to database of known polymorphic sites> \\
+    -o <name of output recalibration table file> \\
+    --log <destination file for log> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of BAM files>
+  <location of reference FASTA file>
+  <location of .fai index file>
+  <location for output>
+
+  If .fai is not found, it will be created. If reference FASTA file is gzipped, a temporary \
+copy will be gunzipped into the container for the duration of this process. This will \
+considerably lengthen the process.
+
+  -s argument should be a URL to database of known polymorphic sites. This database should agree with \
+the reference FASTA file (e.g. both are from the same bundle [hg18, hg19,...])
+Necessary files can be found at https://software.broadinstitute.org/gatk/download/bundle by clicking \
+on the FTP Server Access hyperlink.
+"
+}

@@ -23,11 +23,11 @@ ADD slice_bam.sh /usr/local/bin/wgs/slice_bam
 ADD sort_bam.sh /usr/local/bin/wgs/sort_bam
 ADD add_read_groups.sh /usr/local/bin/wgs/add_read_groups
 ADD samtools_mpileup.sh /usr/local/bin/wgs/samtools_mpileup
+ADD base_recalibrator.sh /usr/local/bin/wgs/base_recalibrator
+ADD apply_bqsr.sh /usr/local/bin/wgs/apply_bqsr
 
 ################ ADD OTHER SCRIPTS ####################
 ADD install_manta.sh /opt/manta/install_manta.sh
-
-ADD base_recalibrator.sh /usr/local/bin/base_recalibrator
 
 ################## ADD TO PATH ########################
 ENV MANTA_VERSION="1.5.0"

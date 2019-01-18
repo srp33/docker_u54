@@ -15,7 +15,7 @@ ARGNUM=$#
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case "${!i}" in
-    -s | --known-sites )
+    -s | --known_sites )
       check_args "${!OPTARG}" "${!i}" || exit 1
       KNOWN_SITES="${!OPTARG}"
       i=$((i+1))
@@ -41,7 +41,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       i=$((i+1))
       ;;
     -h | --help )
-      usage_add_read_groups
+      usage_base_recalibrator
       exit 0
       ;;
     * )
@@ -55,17 +55,17 @@ MISSING_VOLUMES=()
 EXIT_CODE=0
 
 [[ ${KNOWN_SITES} != "Null" ]] || { echo "
-ERROR: LB (-lb <arg>) argument must be provided" && \
- usage_add_read_groups && exit 1; }
+ERROR: KNOWN_SITES (-s <arg>) argument must be provided" && \
+ usage_base_recalibrator && exit 1; }
 [[ ${REF_GENOME} != "Null" ]] || { echo "
-ERROR: REF_GENOME (-s <arg>) argument must be provided" && \
- usage_add_read_groups && exit 1; }
+ERROR: REF_GENOME (-r <arg>) argument must be provided" && \
+ usage_base_recalibrator && exit 1; }
 [[ ${BAM_FILE} != "Null" ]] || { echo "
 ERROR: BAM FILE (-b <arg>) argument must be provided" && \
- usage_add_read_groups && exit 1; }
+ usage_base_recalibrator && exit 1; }
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
- usage_add_read_groups && exit 1; }
+ usage_base_recalibrator && exit 1; }
 
 [[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
 [[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
@@ -84,12 +84,12 @@ python /check_permissions.py /data/output_data ReadWrite || exit 1
 
 ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
 
-INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
+INDEX=$(echo "${REF_GENOME}" | grep -o '\.' | grep -c '\.')
 if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
     NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
     gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
     REF_GENOME="${NEW_REF}"
-    INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
+    INDEX=$(echo "${REF_GENOME}" | grep -o '\.' | grep -c '\.')
 fi
 
 NEEDED_INDEX=/data/ref_index/"${REF_GENOME}".fai
@@ -135,11 +135,11 @@ gatk IndexFeatureFile -F /tmp/${KNOWN_SITES}
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
-    echo "add_read_groups
+    echo "base_recalibrator
 
 Command:
-  samtools addreplacerg -r ID:\"${GROUP_ID}\" -r LB:\"${KNOWN_SITES}\" -r SM:\"${REF_GENOME}\" \\
-    -o /data/output_data/\"${OUTPUT}\" /data/bam_files/\"${BAM_FILE}\"
+  gatk BaseRecalibrator -R /tmp/\"${REF_GENOME}\" -I /data/bam_files/\"${BAM_FILE}\" \\
+    --known-sites /tmp/\"${KNOWN_SITES}\" -O /data/output_data/\"${OUTPUT}\"
 
 Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
@@ -150,11 +150,11 @@ Software used:
   Python:
     version $( get_python_version )
 
-  samtools:
-    version $( get_conda_version samtools )
+  gatk:
+    version $( get_conda_version gakt )
 " > /data/output_data/"${VERSION_LOG}"
 
 fi
 
-gatk BaseRecalibrator -R /tmp/${REF_GENOME} -I /data/bam_files/${BAM_FILE} \
---known-sites /tmp/${KNOWN_SITES} -O /data/output_data/${OUTPUT}
+gatk BaseRecalibrator -R /tmp/"${REF_GENOME}" -I /data/bam_files/"${BAM_FILE}" \
+--known-sites /tmp/"${KNOWN_SITES}" -O /data/output_data/"${OUTPUT}"
