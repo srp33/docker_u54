@@ -270,8 +270,8 @@ docker run \\
     -t <tumor BAM file> \\
     -n <normal BAM file> \\
     -r <reference FASTA file> \\
-    -i <indel candidates VCF file> \\
-    -c <call regions file> \\
+    -i <indel candidates VCF file> (Optional) \\
+    -c <call regions file> (Optional) \\
     -d <output directory name> \\
     --log <destination file for log> (Optional)
 
@@ -283,11 +283,64 @@ created on the host operating system before executing this command:
   <location of indel alleles VCF and call regions file>
   <location of BAM files>
   <location of FASTA reference file>
+  <location of .fai reference index file>
   <location for output>
 
   This command currently requires tumor and normal BAM files.
 
   It should also be noted that strelka requires a .fai index file for the reference genome. \
+If this file cannot be found in the /data/ref_index volume, it will be created. Unfortunately,\
+ samtools cannot index gzipped files. Thus gzipped fasta files will be gunzipped into a \
+temporary directory within the container.
+
+  The indel candidates VCF file can be created using the call_structural_variants_manta \
+command.
+"
+}
+
+usage_manta (){
+echo "call_structural_variants_manta
+
+Options:
+  -t, --tumorBam <name of tumor BAM file>
+  -n, --normalBam <name of normal BAM file>
+  -r, --referenceFasta <name of reference genome FASTA file>
+  -d, --runDir <desired name for directory to be created where
+                workflow scripts and output will be written> (Optional)
+                [Default: MantaWorkflow]
+  -h, --help
+  --log <destination file for log> (Optional)
+
+Usage:
+docker run \\
+  -v <location of BAM files>:/data/bam_files \\
+  -v <location of FASTA reference file>:/data/ref_genome \\
+  -v <location of .fai reference index file>:/data/ref_index \\
+  -v <location for output>:/data/output_data \\
+  --user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  call_structural_variants_manta \\
+    -t <tumor BAM file> \\
+    -n <normal BAM file> \\
+    -r <reference FASTA file> \\
+    -d <output directory name> \\
+    --log <destination file for log> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of BAM files>
+  <location of FASTA reference file>
+  <location of .fai reference index file>
+  <location for output>
+
+  This command currently requires tumor and normal BAM files. Both files must have been \
+previously sorted. This can be done using the sort_bam command.
+
+  It should also be noted that manta requires a .fai index file for the reference genome. \
 If this file cannot be found in the /data/ref_index volume, it will be created. Unfortunately,\
  samtools cannot index gzipped files. Thus gzipped fasta files will be gunzipped into a \
 temporary directory within the container.

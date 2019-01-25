@@ -25,9 +25,10 @@ ADD add_read_groups.sh /usr/local/bin/wgs/add_read_groups
 ADD samtools_mpileup.sh /usr/local/bin/wgs/samtools_mpileup
 ADD base_recalibrator.sh /usr/local/bin/wgs/base_recalibrator
 ADD apply_bqsr.sh /usr/local/bin/wgs/apply_bqsr
+ADD call_structural_variants_manta.sh /usr/local/bin/wgs/call_structural_variants_manta
 
 ################ ADD OTHER SCRIPTS ####################
-ADD install_manta.sh /opt/manta/install_manta.sh
+#ADD install_manta.sh /opt/manta/install_manta.sh
 
 ################## ADD TO PATH ########################
 ENV MANTA_VERSION="1.5.0"
@@ -37,7 +38,7 @@ ENV MANTA_INSTALL_PATH="/opt/manta/manta-${MANTA_VERSION}.release_src/src/python
 ################## INSTALL TOOLS ######################
 RUN conda config --add channels bioconda
 RUN conda install bwa samtools sambamba varscan picard
-RUN conda install strelka
+RUN conda install strelka manta
 
 #WORKDIR /opt/manta/
 #RUN ./install_manta.sh
