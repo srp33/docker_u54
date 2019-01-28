@@ -28,17 +28,17 @@ ADD apply_bqsr.sh /usr/local/bin/wgs/apply_bqsr
 ADD call_structural_variants_manta.sh /usr/local/bin/wgs/call_structural_variants_manta
 
 ################ ADD OTHER SCRIPTS ####################
+ADD call_structural_variants_lumpy.sh /usr/local/bin/call_structural_variants_lumpy
+ADD samblast.sh /usr/local/bin/samblast
 #ADD install_manta.sh /opt/manta/install_manta.sh
 
 ################## ADD TO PATH ########################
-ENV MANTA_VERSION="1.5.0"
 ENV PATH="/usr/local/bin/wgs:${PATH}"
-ENV MANTA_INSTALL_PATH="/opt/manta/manta-${MANTA_VERSION}.release_src/src/python"
 
 ################## INSTALL TOOLS ######################
 RUN conda config --add channels bioconda
-RUN conda install bwa samtools sambamba varscan picard
-RUN conda install strelka manta
+RUN conda install bwa samtools sambamba varscan picard samblaster
+RUN conda install python=2.7 strelka manta lumpy-sv
 
 #WORKDIR /opt/manta/
 #RUN ./install_manta.sh

@@ -6,31 +6,21 @@ source check_functions
 set -o errexit
 
 BAM_FILE=Null
-OUTPUT=Null
+OUTPUT="/dev/null"
 VERSION_LOG=""
-BY_NAME=""
-THREADS=1
 ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case ${!i} in
-    -b | --bam )
+    -b | --bam_file )
       check_args "${!OPTARG}" "${!i}" || exit 1
       BAM_FILE="${!OPTARG}"
       i=$((i+1))
       ;;
-    -t | --nthreads )
-      check_args "${!OPTARG}" "${!i}" || exit 1
-      THREADS=${!OPTARG}
-      i=$((i+1))
-      ;;
-    -n | --sort_by_name )
-      BY_NAME="-n"
-      ;;
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      OUTPUT="${!OPTARG}"
+      OUTPUT="/data/output_data/${!OPTARG}"
       i=$((i+1))
       ;;
     --log )
@@ -39,7 +29,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       i=$((i+1))
       ;;
     -h | --help )
-      usage_sort_bam
+      usage_align
       exit 0
       ;;
     * )
@@ -49,15 +39,16 @@ for (( i=1; i<=ARGNUM; i++ )); do
   esac
 done
 
+MISSING_VOLUMES=()
+EXIT_CODE=0
+
 [[ ${BAM_FILE} != "Null" ]] || { echo "
 ERROR: BAM FILE (-b <arg>) argument must be provided" && \
- usage_sort_bam && exit 1; }
-[[ ${OUTPUT} != "Null" ]] || { echo "
-ERROR: OUTPUT (-o <arg>) argument must be provided" && \
- usage_sort_bam && exit 1; }
+ usage_samblast && exit 1; }
 
-EXIT_CODE=0
-MISSING_VOLUMES=()
+SAMPLE="${BAM_FILE%%.*}"
+
+# Checks for the necessary directories which are only created by volumes
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
@@ -67,15 +58,20 @@ if [[ ${EXIT_CODE} = 1 ]]; then
     The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
-python /check_permissions.py /data/bam_files ReadWrite || exit 1
+# Check permissions of each directory
+
+python /check_permissions.py /data/bam_files Read "${BAM_FILE}" || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
+
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
-    echo "add_read_groups
+    echo "samblast
 
 Command:
-  sambamba sort -t ${THREADS} ${BY_NAME} -o /data/output_data/\"${OUTPUT}\" /data/bam_files/\"${BAM_FILE}\"
+  samtools view -h /data/bam_files/\"${BAM_FILE}\" | samblaster -a -e \\
+-d /data/output_data/\"${SAMPLE}.disc.sam\" -s /data/output_data/\"${SAMPLE}.split.sam\" \\
+-o \"${OUTPUT}\"
 
 Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
@@ -86,10 +82,16 @@ Software used:
   Python:
     version $( get_python_version )
 
+  samblaster:
+    version $( get_conda_version samblaster )
+
   samtools:
     version $( get_conda_version samtools )
 " > /data/output_data/"${VERSION_LOG}"
 
 fi
 
-sambamba sort -t ${THREADS} ${BY_NAME} -o /data/output_data/"${OUTPUT}" /data/bam_files/"${BAM_FILE}"
+samtools view -h /data/bam_files/"${BAM_FILE}" | samblaster --addMateTags \
+| samblaster -a -e \
+-d /data/output_data/"${SAMPLE}.disc.sam" -s /data/output_data/"${SAMPLE}.split.sam" \
+-o "${OUTPUT}"

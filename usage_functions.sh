@@ -589,3 +589,8 @@ Necessary files can be found at https://software.broadinstitute.org/gatk/downloa
 on the FTP Server Access hyperlink.
 "
 }
+
+usage_samblast () {
+echo "samblast
+"
+}
