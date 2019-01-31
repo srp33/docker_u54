@@ -244,6 +244,9 @@ created on the host operating system before executing this command:
 usage_strelka (){
 echo "call_somatic_variants_strelka
 
+Description:
+Calls somatic variants using Strelka for a tumor/normal pair
+
 Options:
   -t, --tumorBam <name of tumor BAM file>
   -n, --normalBam <name of normal BAM file>
@@ -300,6 +303,9 @@ command.
 
 usage_manta (){
 echo "call_structural_variants_manta
+
+Description:
+Calls somatic variants using Manta for a tumor/normal pair
 
 Options:
   -t, --tumorBam <name of tumor BAM file>
@@ -505,7 +511,7 @@ usage_apply_bqsr () {
 echo "apply_bqsr
 
 Description:
-Create samtools pileup file
+Apply base quality score recalibration
 
 Options:
   -b, --bam_file <name of input BAM file>
@@ -522,7 +528,7 @@ docker run \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
-  samtools_mpileup \\
+  apply_bqsr \\
     -b <name of input BAM file> \\
     -bqsr <name of recalibration table> \\
     -o <name of output BAM file> \\
@@ -543,7 +549,7 @@ usage_base_recalibrator () {
 echo "base_recalibrator
 
 Description:
-Create samtools pileup file
+Detect systematic errors in base quality scores
 
 Options:
   -b, --bam_file <name of input BAM file>
@@ -562,7 +568,7 @@ docker run \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
-  samtools_mpileup \\
+  base_recalibrator \\
     -b <name of input BAM file \\
     -r <reference FASTA file> \\
     -s <URL to database of known polymorphic sites> \\

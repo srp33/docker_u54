@@ -114,11 +114,11 @@ if [[ ${VERSION_LOG} != "" ]]; then
     echo "call_somatic_variants_strelka
 
 Commands:
-  python2.7 /opt/miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \\
+  python2.7 /opt/miniconda/share/manta-1.5.0-0/bin/configManta.py \\
     --referenceFasta=/tmp/\"${REF_GENOME}\" --tumorBam=\"/data/bam_files/${TUMOR}\" \\
     --normalBam=\"/data/bam_files/${NORMAL}\" ${CALL_REGIONS} \"${RUN_DIR_ARG}\"
 
-  python2.7 \"${RUN_DIR}\"/runWorkflow.py --mode=local
+python2.7 \"${RUN_DIR}\"/runWorkflow.py --mode=local
 
 Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
@@ -132,14 +132,14 @@ Software used:
   samtools:
     version $( get_conda_version samtools )
 
-  strelka:
-    version 2.9.10-0
+  manta:
+    version 1.5.0-0
 " > /data/output_data/"${VERSION_LOG}"
 
 fi
 
 python2.7 /opt/miniconda/share/manta-1.5.0-0/bin/configManta.py \
 --referenceFasta=/tmp/"${REF_GENOME}" --tumorBam="/data/bam_files/${TUMOR}" \
---normalBam="/data/bam_files/${NORMAL}" ${CALL_REGIONS} ${RUN_DIR_ARG}
+--normalBam="/data/bam_files/${NORMAL}" ${CALL_REGIONS} "${RUN_DIR_ARG}"
 
 python2.7 "${RUN_DIR}"/runWorkflow.py --mode=local

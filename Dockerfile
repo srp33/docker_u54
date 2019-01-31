@@ -40,10 +40,6 @@ RUN conda config --add channels bioconda
 RUN conda install bwa samtools sambamba varscan picard samblaster
 RUN conda install python=2.7 strelka manta lumpy-sv
 
-#WORKDIR /opt/manta/
-#RUN ./install_manta.sh
-#RUN mkdir -p /tmp && chmod 755 /data
-
 ################## SETUP WORKDIR #######################
 WORKDIR /data
 

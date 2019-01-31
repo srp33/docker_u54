@@ -21,6 +21,10 @@ Currently, we support the following commands:
 * `add_read_groups` (add read groups to a BAM file)
 * `samtools_mpileup.sh` (create pileup file using `samtools`)
 * `call_somatic_variants_gatk4` (call variants using Mutect2 (GATK 4))
+* `call_somatic_variants_strelka` (call variants using Strelka)
+* `call_strucural_variants_manta` (call variants using Manta)
+* `base_recalibrator` (detect systematic errors in base quality scores (GATK 4))
+* `apply_bqsr` (Apply base quality score recalibration (GATK 4))
 
 The default behavior of the Docker container is to display the usage and available commands. If the user executes the following command, usage information will be displayed.
 
