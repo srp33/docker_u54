@@ -6,7 +6,7 @@ source check_functions
 set -o errexit
 
 REF_GENOME=Null
-KNOWN_SITES=Null
+KNOWN_SITES=()
 BAM_FILE=Null
 VERSION_LOG=""
 OUTPUT=Null
@@ -17,7 +17,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
   case "${!i}" in
     -s | --known_sites )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      KNOWN_SITES="${!OPTARG}"
+      KNOWN_SITES+=("${!OPTARG}")
       i=$((i+1))
       ;;
     -r | --reference )
@@ -54,7 +54,7 @@ done
 MISSING_VOLUMES=()
 EXIT_CODE=0
 
-[[ ${KNOWN_SITES} != "Null" ]] || { echo "
+[[ ${#KNOWN_SITES[@]} -gt 0 ]] || { echo "
 ERROR: KNOWN_SITES (-s <arg>) argument must be provided" && \
  usage_base_recalibrator && exit 1; }
 [[ ${REF_GENOME} != "Null" ]] || { echo "
@@ -115,23 +115,33 @@ if [[ ! -f ${NEEDED_DICT} ]]; then
 fi
 
 ln -s /data/ref_index/"${REF_DICT}" /tmp/"${REF_DICT}"
-
+KNOWN_SITE_FILES=()
 cd /tmp/
-wget -q ${KNOWN_SITES}
+wget -q ${KNOWN_SITES[@]}
+
+for KNOWN_SITE_DB in ${KNOWN_SITES[@]}; do
+
+    echo "
+
+    Successfully downloaded!
+
+    "
+    INDEX=$(echo ${KNOWN_SITE_DB} | grep -o '/' | grep -c '/')
+    INDEX=$((INDEX+1))
+    KNOWN_SITE_DB="$(echo ${KNOWN_SITE_DB} | cut -d '/' -f ${INDEX})"
+
+    if [[ ${KNOWN_SITE_DB: -3} = ".gz" ]]; then
+        NEW_SITES="$(echo ${KNOWN_SITE_DB} | cut -d '.' -f -3)"
+        gunzip -c /tmp/"${KNOWN_SITE_DB}" > /tmp/"${NEW_SITES}"
+        KNOWN_SITE_DB="${NEW_SITES}"
+        INDEX=$(echo ${KNOWN_SITE_DB} | grep -o '\.' | grep -c '\.')
+    fi
+
+    gatk IndexFeatureFile -F /tmp/${KNOWN_SITE_DB}
+    KNOWN_SITE_FILES+=("--known-sites /tmp/${KNOWN_SITE_DB}")
+done
+
 cd /data/
-
-INDEX=$(echo ${KNOWN_SITES} | grep -o '/' | grep -c '/')
-INDEX=$((INDEX+1))
-KNOWN_SITES="$(echo ${KNOWN_SITES} | cut -d '/' -f ${INDEX})"
-
-if [[ ${KNOWN_SITES: -3} = ".gz" ]]; then
-    NEW_SITES="$(echo ${KNOWN_SITES} | cut -d '.' -f -3)"
-    gunzip -c /tmp/"${KNOWN_SITES}" > /tmp/"${NEW_SITES}"
-    KNOWN_SITES="${NEW_SITES}"
-    INDEX=$(echo ${KNOWN_SITES} | grep -o '\.' | grep -c '\.')
-fi
-
-gatk IndexFeatureFile -F /tmp/${KNOWN_SITES}
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
@@ -139,7 +149,7 @@ if [[ ${VERSION_LOG} != "" ]]; then
 
 Command:
   gatk BaseRecalibrator -R /tmp/\"${REF_GENOME}\" -I /data/bam_files/\"${BAM_FILE}\" \\
-    --known-sites /tmp/\"${KNOWN_SITES}\" -O /data/output_data/\"${OUTPUT}\"
+    --known-sites /tmp/\"${KNOWN_SITE_FILES[@]}\" -O /data/output_data/\"${OUTPUT}\"
 
 Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
@@ -157,4 +167,4 @@ Software used:
 fi
 
 gatk BaseRecalibrator -R /tmp/"${REF_GENOME}" -I /data/bam_files/"${BAM_FILE}" \
---known-sites /tmp/"${KNOWN_SITES}" -O /data/output_data/"${OUTPUT}"
+     ${KNOWN_SITE_FILES[@]} -O /data/output_data/"${OUTPUT}"

@@ -91,7 +91,7 @@ Software used:
 
 fi
 
-samtools view -h /data/bam_files/"${BAM_FILE}" | samblaster --addMateTags \
-| samblaster -a -e \
+samtools view -h /data/bam_files/"${BAM_FILE}" | samblaster --addMateTags --ignoreUnmated \
+| samblaster -a -e --ignoreUnmated \
 -d /data/output_data/"${SAMPLE}.disc.sam" -s /data/output_data/"${SAMPLE}.split.sam" \
 -o "${OUTPUT}"
