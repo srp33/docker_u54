@@ -121,11 +121,6 @@ wget -q ${KNOWN_SITES[@]}
 
 for KNOWN_SITE_DB in ${KNOWN_SITES[@]}; do
 
-    echo "
-
-    Successfully downloaded!
-
-    "
     INDEX=$(echo ${KNOWN_SITE_DB} | grep -o '/' | grep -c '/')
     INDEX=$((INDEX+1))
     KNOWN_SITE_DB="$(echo ${KNOWN_SITE_DB} | cut -d '/' -f ${INDEX})"
