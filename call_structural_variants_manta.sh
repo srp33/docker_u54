@@ -138,6 +138,8 @@ Software used:
 
 fi
 
+source activate py2.7
+
 python2.7 /opt/miniconda/share/manta-1.5.0-0/bin/configManta.py \
 --referenceFasta=/tmp/"${REF_GENOME}" --tumorBam="/data/bam_files/${TUMOR}" \
 --normalBam="/data/bam_files/${NORMAL}" ${CALL_REGIONS} "${RUN_DIR_ARG}"

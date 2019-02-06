@@ -24,7 +24,8 @@ Currently, we support the following commands:
 * `call_somatic_variants_strelka` (call variants using Strelka)
 * `call_strucural_variants_manta` (call variants using Manta)
 * `base_recalibrator` (detect systematic errors in base quality scores (GATK 4))
-* `apply_bqsr` (Apply base quality score recalibration (GATK 4))
+* `apply_bqsr` (apply base quality score recalibration (GATK 4))
+* `samblast` (create split and discordant read SAM files from BAM file using `samblaster`)
 
 The default behavior of the Docker container is to display the usage and available commands. If the user executes the following command, usage information will be displayed.
 

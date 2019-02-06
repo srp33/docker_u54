@@ -5,44 +5,34 @@ source check_functions
 
 set -o errexit
 
-TUMOR=Null
-NORMAL=Null
-REF_GENOME=Null
+BAM_FILE=Null
+DISC_FILE=Null
+SPLIT_FILE=Null
+OUTPUT=Null
 VERSION_LOG=""
-CALL_REGIONS=""
-RUN_DIR="/data/output_data/MantaWorkflow"
-RUN_DIR_ARG="--runDir ${RUN_DIR}"
 ARGNUM=$#
-
-echo "No no no, this command isn't ready yet" && exit 1
 
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case "${!i}" in
-    -t | --tumorBam )
+    -b | --bam_file )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      TUMOR="${!OPTARG}"
+      BAM_FILE="${!OPTARG}"
       i=$((i+1))
       ;;
-    -n | --normalBam )
+    -s | --split_reads )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      NORMAL="${!OPTARG}"
+      SPLIT_FILE="${!OPTARG}"
       i=$((i+1))
       ;;
-    -r | --referenceFasta )
+    -d | --discordant_reads )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      REF_GENOME="${!OPTARG}"
+      DISC_FILE="${!OPTARG}"
       i=$((i+1))
       ;;
-    -c | --callRegions )
+    -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      CALL_REGIONS="--callRegions ${!OPTARG}"
-      i=$((i+1))
-      ;;
-    -d | --runDir )
-      check_args "${!OPTARG}" "${!i}" || exit 1
-      RUN_DIR=/data/output_data/"${!OPTARG}"
-      RUN_DIR_ARG="--runDir=${RUN_DIR}"
+      OUTPUT="${!OPTARG}"
       i=$((i+1))
       ;;
     --log )
@@ -61,22 +51,24 @@ for (( i=1; i<=ARGNUM; i++ )); do
   esac
 done
 
-[[ "${TUMOR}" != "Null" ]] || { echo "
-ERROR: TUMOR BAM FILE (-t <arg>) argument must be provided" && \
+[[ "${BAM_FILE}" != "Null" ]] || { echo "
+ERROR: BAM FILE (-b <arg>) argument must be provided" && \
  usage_manta && exit 1; }
-[[ "${NORMAL}" != "Null" ]] || { echo "
-ERROR: NORMAL BAM FILE (-n <arg>) argument must be provided" && \
+[[ "${DISC_FILE}" != "Null" ]] || { echo "
+ERROR: DISCORDANT READS SAM FILE (-d <arg>) argument must be provided" && \
  usage_manta && exit 1; }
-[[ "${REF_GENOME}" != "Null" ]] || { echo "
-ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
+[[ "${SPLIT_FILE}" != "Null" ]] || { echo "
+ERROR: SPLIT READS SAM FILE (-s <arg>) argument must be provided" && \
+ usage_manta && exit 1; }
+[[ "${OUTPUT}" != "Null" ]] || { echo "
+ERROR: OUTPUT (-s <arg>) argument must be provided" && \
  usage_manta && exit 1; }
 
 EXIT_CODE=0
 MISSING_VOLUMES=()
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
-[[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
-[[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
+[[ -d /data/input_data ]] || { MISSING_VOLUMES+=(/data/input_data) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
@@ -85,42 +77,16 @@ if [[ ${EXIT_CODE} = 1 ]]; then
 fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
-python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
-python /check_permissions.py /data/ref_index ReadWrite || exit 1
+python /check_permissions.py /data/input_data Read "${SPLIT_FILE}" || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
-
-#mkdir /temp
-ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
-
-INDEX=$(echo "${REF_GENOME}" | grep -o '\.' | grep -c '\.')
-if [[ "${REF_GENOME: -${INDEX}}" = ".gz" ]]; then
-    NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
-    gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
-    REF_GENOME="${NEW_REF}"
-fi
-
-NEEDED_FILE=/data/ref_index/"${REF_GENOME}".fai
-
-if [[ ! -f "${NEEDED_FILE}" ]]; then
-    echo "
-    Samtools reference index (${NEEDED_FILE}) is missing. Running samtools faidx
-"
-    samtools faidx /tmp/"${REF_GENOME}"
-    mv /tmp/"${REF_GENOME}.fai" /data/ref_index/"${REF_GENOME}.fai"
-fi
-
-ln -s /data/ref_index/"${REF_GENOME}.fai" /tmp/"${REF_GENOME}.fai"
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
     echo "call_somatic_variants_strelka
 
 Commands:
-  python2.7 /opt/miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \\
-    --referenceFasta=/tmp/\"${REF_GENOME}\" --tumorBam=\"/data/bam_files/${TUMOR}\" \\
-    --normalBam=\"/data/bam_files/${NORMAL}\" ${CALL_REGIONS} \"${RUN_DIR_ARG}\"
-
-  python2.7 \"${RUN_DIR}\"/runWorkflow.py --mode=local
+  lumpyexpress -B /data/bam_files/\"${BAM_FILE}\" -S /data/input_data/\"${SPLIT_FILE}\" \\
+    -D /data/input_data/\"${DISC_FILE}\" -o /data/output_data/\"${OUTPUT}\"
 
 Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
@@ -131,8 +97,8 @@ Software used:
   Python:
     version $( get_python2_version )
 
-  samtools:
-    version $( get_conda_version samtools )
+  lumpy:
+    version $( get_conda_version lumpy )
 
   strelka:
     version 2.9.10-0
@@ -140,4 +106,7 @@ Software used:
 
 fi
 
-lumpyexpress
+source activate py2.7
+
+lumpyexpress -B /data/bam_files/"${BAM_FILE}" -S /data/input_data/"${SPLIT_FILE}" \
+    -D /data/input_data/"${DISC_FILE}" -o /data/output_data/"${OUTPUT}"

@@ -144,6 +144,8 @@ Software used:
 
 fi
 
+source activate py2.7
+
 python2.7 /opt/miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \
 --referenceFasta=/tmp/"${REF_GENOME}" --tumorBam="/data/bam_files/${TUMOR}" \
 --normalBam="/data/bam_files/${NORMAL}" ${INDEL} ${CALL_REGIONS} "${RUN_DIR_ARG}"

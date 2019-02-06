@@ -554,7 +554,7 @@ Detect systematic errors in base quality scores
 Options:
   -b, --bam_file <name of input BAM file>
   -r, --reference <name of reference FASTA file>
-  -s, --known_sites <URL to database of known polymorphic sites>
+  -s, --known_sites <URL to database of known polymorphic sites> (May be called more than once)
   -o, --output <name of output recalibration table file>
   -h, --help
   --log <destination file for log> (Optional)
@@ -562,6 +562,7 @@ Options:
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
+  -v <location of VCF known sites files>:/data/vcf_files \\
   -v <location of reference FASTA file>:/data/ref_genome \\
   -v <location of reference .fai index file>:/data/ref_index \\
   -v <location for output>:/data/output_data \\
@@ -571,7 +572,8 @@ docker run \\
   base_recalibrator \\
     -b <name of input BAM file \\
     -r <reference FASTA file> \\
-    -s <URL to database of known polymorphic sites> \\
+    -s <name of VCF file> \\
+    -s <name of VCF file> \\
     -o <name of output recalibration table file> \\
     --log <destination file for log> (Optional)
 
@@ -581,6 +583,7 @@ Notes:
 created on the host operating system before executing this command:
 
   <location of BAM files>
+  <location of VCF known sites files>
   <location of reference FASTA file>
   <location of .fai index file>
   <location for output>
@@ -589,14 +592,81 @@ created on the host operating system before executing this command:
 copy will be gunzipped into the container for the duration of this process. This will \
 considerably lengthen the process.
 
-  -s argument should be a URL to database of known polymorphic sites. This database should agree with \
-the reference FASTA file (e.g. both are from the same bundle [hg18, hg19,...])
-Necessary files can be found at https://software.broadinstitute.org/gatk/download/bundle by clicking \
-on the FTP Server Access hyperlink.
+  If .tbi of VCF files are not found, they will be created.
 "
 }
 
 usage_samblast () {
 echo "samblast
+
+Description:
+Create split read and discordant read SAM files from BAM file
+
+Options:
+  -b, --bam_file <name of input BAM file>
+  -o, --output <destination for output> (Default: /dev/null)
+  -h, --help
+  --log <destination file for log> (Optional)
+
+Usage:
+docker run \\
+  -v <location of BAM file>:/data/bam_files \\
+  -v <location for output and SAM files>:/data/output_data \\
+  --user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  samblast \\
+    -b <name of input BAM file> \\
+    -o <destination for output> (Default: /dev/null) \\
+    --log <destination file for log> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of BAM file>
+  <location for output and SAM files>
+"
+}
+
+#TODO: Lumpy usage
+usage_lumpy () {
+echo "call_structural_variants_lumpy
+
+Description:
+Call structural variants using lumpy
+
+Options:
+  -b, --bam_file <name of input BAM file>
+  -s, --split_reads <name of split-reads SAM file>
+  -d, --discordant_reads <name of discordant-reads SAM file>
+  -o, --output <name of output VCF file>
+  -h, --help
+  --log <destination file for version log> (Optional)
+
+Usage:
+docker run \\
+  -v <location of BAM file>:/data/bam_files \\
+  -v <location of SAM files>:/data/input_data \\
+  -v <location for output VCF file>:/data/output_data \\
+  --user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  call_structural_variants_lumpy \\
+    -b <name of input BAM file> \\
+    -s <name of split-reads SAM file> \\
+    -d <name -f discordant-reads SAM file> \\
+    -o <name of output VCF file> \\
+    --log <destination file for version log> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of BAM file>
+  <location of SAM files>
+  <location for output VCF file>
 "
 }

@@ -69,6 +69,8 @@ ERROR: OUTPUT (-o <arg>) argument must be provided" && \
 
 [[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
 [[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
+[[ -d /data/vcf_files ]] || { MISSING_VOLUMES+=(/data/vcf_files) && EXIT_CODE=1; }
+[[ -d /data/vcf_index ]] || { MISSING_VOLUMES+=(/data/vcf_index) && EXIT_CODE=1; }
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
@@ -115,28 +117,14 @@ if [[ ! -f ${NEEDED_DICT} ]]; then
 fi
 
 ln -s /data/ref_index/"${REF_DICT}" /tmp/"${REF_DICT}"
-KNOWN_SITE_FILES=()
-cd /tmp/
-wget -q ${KNOWN_SITES[@]}
 
-for KNOWN_SITE_DB in ${KNOWN_SITES[@]}; do
-
-    INDEX=$(echo ${KNOWN_SITE_DB} | grep -o '/' | grep -c '/')
-    INDEX=$((INDEX+1))
-    KNOWN_SITE_DB="$(echo ${KNOWN_SITE_DB} | cut -d '/' -f ${INDEX})"
-
-    if [[ ${KNOWN_SITE_DB: -3} = ".gz" ]]; then
-        NEW_SITES="$(echo ${KNOWN_SITE_DB} | cut -d '.' -f -3)"
-        gunzip -c /tmp/"${KNOWN_SITE_DB}" > /tmp/"${NEW_SITES}"
-        KNOWN_SITE_DB="${NEW_SITES}"
-        INDEX=$(echo ${KNOWN_SITE_DB} | grep -o '\.' | grep -c '\.')
+KNOWN_SITE_COMMANDS=()
+for KNOWN_SITE_FILE in ${KNOWN_SITES[@]}; do
+    if [[ ! -f /data/vcf_files/"${KNOWN_SITE_FILE}.tbi" ]]; then
+        gatk IndexFeatureFile -F /data/vcf_files/"${KNOWN_SITE_FILE}"
     fi
-
-    gatk IndexFeatureFile -F /tmp/${KNOWN_SITE_DB}
-    KNOWN_SITE_FILES+=("--known-sites /tmp/${KNOWN_SITE_DB}")
+    KNOWN_SITE_COMMANDS+=("--known-sites /data/vcf_files/${KNOWN_SITE_FILE}")
 done
-
-cd /data/
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
@@ -144,7 +132,7 @@ if [[ ${VERSION_LOG} != "" ]]; then
 
 Command:
   gatk BaseRecalibrator -R /tmp/\"${REF_GENOME}\" -I /data/bam_files/\"${BAM_FILE}\" \\
-    --known-sites /tmp/\"${KNOWN_SITE_FILES[@]}\" -O /data/output_data/\"${OUTPUT}\"
+    ${KNOWN_SITE_COMMANDS[@]} -O /data/output_data/\"${OUTPUT}\"
 
 Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
@@ -162,4 +150,4 @@ Software used:
 fi
 
 gatk BaseRecalibrator -R /tmp/"${REF_GENOME}" -I /data/bam_files/"${BAM_FILE}" \
-     ${KNOWN_SITE_FILES[@]} -O /data/output_data/"${OUTPUT}"
+     ${KNOWN_SITE_COMMANDS[@]} -O /data/output_data/"${OUTPUT}"

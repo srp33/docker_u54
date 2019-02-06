@@ -8,6 +8,7 @@ set -o errexit
 BAM_FILE=Null
 OUTPUT="/dev/null"
 VERSION_LOG=""
+RM=Null
 ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
@@ -29,7 +30,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       i=$((i+1))
       ;;
     -h | --help )
-      usage_align
+      usage_samblast
       exit 0
       ;;
     * )
@@ -91,7 +92,12 @@ Software used:
 
 fi
 
-samtools view -h /data/bam_files/"${BAM_FILE}" | samblaster --addMateTags --ignoreUnmated \
-| samblaster -a -e --ignoreUnmated \
+samtools view -h /data/bam_files/"${BAM_FILE}" | samblaster --addMateTags  \
+| samblaster -a -e \
 -d /data/output_data/"${SAMPLE}.disc.sam" -s /data/output_data/"${SAMPLE}.split.sam" \
 -o "${OUTPUT}"
+
+samtools view -S -b /data/output_data/"${SAMPLE}.disc.sam" > /data/output_data/"${SAMPLE}.disc.bam"
+samtools view -S -b /data/output_data/"${SAMPLE}.split.sam" > /data/output_data/"${SAMPLE}.split.bam"
+rm /data/output_data/"${SAMPLE}.disc.sam"
+rm /data/output_data/"${SAMPLE}.split.sam"
