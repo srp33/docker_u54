@@ -38,7 +38,7 @@ ENV PATH="/usr/local/bin/wgs:${PATH}"
 RUN conda config --add channels bioconda
 RUN conda install bwa samtools sambamba varscan picard samblaster
 RUN conda create -n py2.7 python=2.7
-RUN conda install strelka manta lumpy-sv -n py2.7
+RUN conda install strelka manta lumpy-sv=0.2.13 -n py2.7
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data
