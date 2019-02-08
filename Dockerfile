@@ -27,9 +27,9 @@ ADD base_recalibrator.sh /usr/local/bin/wgs/base_recalibrator
 ADD apply_bqsr.sh /usr/local/bin/wgs/apply_bqsr
 ADD call_structural_variants_manta.sh /usr/local/bin/wgs/call_structural_variants_manta
 ADD samblast.sh /usr/local/bin/wgs/samblast
+ADD call_structural_variants_lumpy.sh /usr/local/bin/wgs/call_structural_variants_lumpy
 
 ################ ADD OTHER SCRIPTS ####################
-ADD call_structural_variants_lumpy.sh /usr/local/bin/call_structural_variants_lumpy
 
 ################## ADD TO PATH ########################
 ENV PATH="/usr/local/bin/wgs:${PATH}"
