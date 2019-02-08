@@ -630,7 +630,6 @@ created on the host operating system before executing this command:
 "
 }
 
-#TODO: Lumpy usage
 usage_lumpy () {
 echo "call_structural_variants_lumpy
 
@@ -639,8 +638,8 @@ Call structural variants using lumpy
 
 Options:
   -b, --bam_file <name of input BAM file>
-  -s, --split_reads <name of split-reads SAM file>
-  -d, --discordant_reads <name of discordant-reads SAM file>
+  -s, --split_reads <name of split-reads BAM file>
+  -d, --discordant_reads <name of discordant-reads BAM file>
   -o, --output <name of output VCF file>
   -h, --help
   --log <destination file for version log> (Optional)
@@ -648,15 +647,14 @@ Options:
 Usage:
 docker run \\
   -v <location of BAM file>:/data/bam_files \\
-  -v <location of SAM files>:/data/input_data \\
   -v <location for output VCF file>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   call_structural_variants_lumpy \\
     -b <name of input BAM file> \\
-    -s <name of split-reads SAM file> \\
-    -d <name -f discordant-reads SAM file> \\
+    -s <name of split-reads BAM file> \\
+    -d <name -f discordant-reads BAM file> \\
     -o <name of output VCF file> \\
     --log <destination file for version log> (Optional)
 
@@ -666,7 +664,9 @@ Notes:
 created on the host operating system before executing this command:
 
   <location of BAM file>
-  <location of SAM files>
   <location for output VCF file>
+
+  All BAM files must be coordinate-sorted. If not, Lumpy will throw an error. Please ensure that all \
+BAM files are sorted by using sort_bam before using call_structural_variants_lumpy.
 "
 }

@@ -41,7 +41,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       i=$((i+1))
       ;;
     -h | --help )
-      usage_manta
+      usage_lumpy
       exit 0
       ;;
     * )
@@ -53,22 +53,21 @@ done
 
 [[ "${BAM_FILE}" != "Null" ]] || { echo "
 ERROR: BAM FILE (-b <arg>) argument must be provided" && \
- usage_manta && exit 1; }
+ usage_lumpy && exit 1; }
 [[ "${DISC_FILE}" != "Null" ]] || { echo "
 ERROR: DISCORDANT READS SAM FILE (-d <arg>) argument must be provided" && \
- usage_manta && exit 1; }
+ usage_lumpy && exit 1; }
 [[ "${SPLIT_FILE}" != "Null" ]] || { echo "
 ERROR: SPLIT READS SAM FILE (-s <arg>) argument must be provided" && \
- usage_manta && exit 1; }
+ usage_lumpy && exit 1; }
 [[ "${OUTPUT}" != "Null" ]] || { echo "
 ERROR: OUTPUT (-s <arg>) argument must be provided" && \
- usage_manta && exit 1; }
+ usage_lumpy && exit 1; }
 
 EXIT_CODE=0
 MISSING_VOLUMES=()
 
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
-[[ -d /data/input_data ]] || { MISSING_VOLUMES+=(/data/input_data) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
@@ -77,16 +76,17 @@ if [[ ${EXIT_CODE} = 1 ]]; then
 fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
-python /check_permissions.py /data/input_data Read "${SPLIT_FILE}" || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
+
+source activate py2.7
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
     echo "call_somatic_variants_strelka
 
 Commands:
-  lumpyexpress -B /data/bam_files/\"${BAM_FILE}\" -S /data/input_data/\"${SPLIT_FILE}\" \\
-    -D /data/input_data/\"${DISC_FILE}\" -o /data/output_data/\"${OUTPUT}\"
+  lumpyexpress -B /data/bam_files/\"${BAM_FILE}\" -S /data/bam_files/\"${SPLIT_FILE}\" \\
+    -D /data/bam_files/\"${DISC_FILE}\" -o /data/output_data/\"${OUTPUT}\"
 
 Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
 
@@ -100,13 +100,11 @@ Software used:
   lumpy:
     version $( get_conda_version lumpy )
 
-  strelka:
-    version 2.9.10-0
 " > /data/output_data/"${VERSION_LOG}"
 
 fi
 
-source activate py2.7
 
-lumpyexpress -B /data/bam_files/"${BAM_FILE}" -S /data/input_data/"${SPLIT_FILE}" \
-    -D /data/input_data/"${DISC_FILE}" -o /data/output_data/"${OUTPUT}"
+
+lumpyexpress -B /data/bam_files/"${BAM_FILE}" -S /data/bam_files/"${SPLIT_FILE}" \
+    -D /data/bam_files/"${DISC_FILE}" -o /data/output_data/"${OUTPUT}" -v
