@@ -58,9 +58,8 @@ ERROR: BAM FILE (-b <arg>) argument must be provided" && \
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
  usage_apply_bqsr && exit 1; }
 
-[[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
-[[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
+[[ -d /data/input_data ]] || { MISSING_VOLUMES+=(/data/input_data) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
@@ -68,8 +67,7 @@ if [[ ${EXIT_CODE} = 1 ]]; then
     The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
-#python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
-python /check_permissions.py /data/ref_index ReadWrite || exit 1
+python /check_permissions.py /data/input_data Read "${BQSR}" || exit 1
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
