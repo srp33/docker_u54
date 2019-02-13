@@ -10,9 +10,9 @@ ENV PATH="/usr/local/bin/wgs:${PATH}"
 
 ################## INSTALL TOOLS ######################
 #RUN conda config --add channels bioconda
-RUN conda install bwa varscan picard gatk4
+RUN conda install bwa=0.7.17 gatk4=4.1.0.0-0 delly=0.8.1-0
 RUN conda create -n py2.7 python=2.7
-RUN conda install strelka lumpy-sv=0.2.13 -n py2.7
+RUN conda install strelka=2.9.10-0 lumpy-sv=0.2.13 -n py2.7
 
 ## TOOLS THAT DO NOT NEED TO BE INSTALLED UNDER PARLIAMENT2 #####
 # py3.6 samtools sambamba samblaster
@@ -41,6 +41,7 @@ ADD apply_bqsr.sh /usr/local/bin/wgs/apply_bqsr
 ADD call_structural_variants_manta.sh /usr/local/bin/wgs/call_structural_variants_manta
 ADD samblast.sh /usr/local/bin/wgs/samblast
 ADD call_structural_variants_lumpy.sh /usr/local/bin/wgs/call_structural_variants_lumpy
+ADD call_structural_variants_delly.sh /usr/local/bin/wgs/call_structural_variants_delly
 
 ################ ADD OTHER SCRIPTS ####################
 ADD parliament2.sh /usr/local/bin/parliament2

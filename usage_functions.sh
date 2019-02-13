@@ -670,3 +670,47 @@ created on the host operating system before executing this command:
 BAM files are sorted by using sort_bam before using call_structural_variants_lumpy.
 "
 }
+
+usage_delly () {
+
+    echo "call_structural_variants_delly
+
+Description:
+Call structural variants using delly
+
+Options:
+  -b, --bam_file <name of input BAM file>
+  -r, --reference <name of reference FASTA file>
+  -o, --output <name of output VCF file>
+  -h, --help
+  --log <destination file for version log> (Optional)
+
+Usage:
+docker run \\
+  -v <location of BAM file>:/data/bam_files \\
+  -v <location of reference FASTA file>:/data/ref_genome \\
+  -v <location of reference .fai index file>:/data/ref_index \\
+  -v <location for output VCF file>:/data/output_data \\
+  --user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  call_structural_variants_delly \\
+    -b <name of input BAM file> \\
+    -r <name of reference FASTA file> \\
+    -o <name of output VCF file> \\
+    --log <destination file for version log> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of BAM file>
+  <location of reference FASTA file>
+  <location of reference .fai index file>
+  <location for output VCF file>
+
+  From the Delly docs: \"Delly needs a sorted, indexed and duplicate marked \
+bam file for every input sample.\"
+"
+}

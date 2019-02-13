@@ -24,6 +24,7 @@ Currently, we support the following commands:
 * `call_somatic_variants_strelka` (call variants using Strelka)
 * `call_structural_variants_manta` (call variants using Manta)
 * `call_structural_variants_lumpy` (call variants using Lumpy)
+* `call_structural_variants_delly` (call variants using Delly2)
 * `base_recalibrator` (detect systematic errors in base quality scores (GATK 4))
 * `apply_bqsr` (apply base quality score recalibration (GATK 4))
 * `samblast` (create split and discordant read SAM files from BAM file using `samblaster`)

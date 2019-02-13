@@ -46,7 +46,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
 done
 
 [[ ${#BAM_FILES[@]} -gt 1 ]] || { echo "
-ERROR: TWO OR MORE BAM FILE (-b <arg>) arguments must be provided" && \
+ERROR: Two or more BAM FILE (-b <arg>) arguments must be provided" && \
  usage_merge_bams && exit 1; }
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) arguments must be provided" && \
