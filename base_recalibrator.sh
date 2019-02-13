@@ -120,7 +120,7 @@ ln -s /data/ref_index/"${REF_DICT}" /tmp/"${REF_DICT}"
 
 KNOWN_SITE_COMMANDS=()
 for KNOWN_SITE_FILE in ${KNOWN_SITES[@]}; do
-    if [[ ! -f /data/vcf_files/"${KNOWN_SITE_FILE}.tbi" ]]; then
+    if [[ ! -f /data/vcf_files/"${KNOWN_SITE_FILE}.idx" ]]; then
         gatk IndexFeatureFile -F /data/vcf_files/"${KNOWN_SITE_FILE}"
     fi
     KNOWN_SITE_COMMANDS+=("--known-sites /data/vcf_files/${KNOWN_SITE_FILE}")
