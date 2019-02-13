@@ -1,9 +1,22 @@
 # Run bwa
-#################### GATK IMAGE ########################
-FROM dnanexus/parliament2:latest
+#################### GATK IMAGE #######################
+FROM dnanexus/parliament2:v0.1.9-12-ge134fcda
 
 #################### MAINTAINER #######################
 MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
+
+################## ADD TO PATH ########################
+ENV PATH="/usr/local/bin/wgs:${PATH}"
+
+################## INSTALL TOOLS ######################
+#RUN conda config --add channels bioconda
+RUN conda install bwa varscan picard gatk4
+RUN conda create -n py2.7 python=2.7
+RUN conda install strelka lumpy-sv=0.2.13 -n py2.7
+
+## TOOLS THAT DO NOT NEED TO BE INSTALLED UNDER PARLIAMENT2 #####
+# py3.6 samtools sambamba samblaster
+# py2.7 manta
 
 ################## ADD SCRIPTS ########################
 ADD echo_usage.sh /usr/local/bin/echo_usage
@@ -31,19 +44,6 @@ ADD call_structural_variants_lumpy.sh /usr/local/bin/wgs/call_structural_variant
 
 ################ ADD OTHER SCRIPTS ####################
 ADD parliament2.sh /usr/local/bin/parliament2
-
-################## ADD TO PATH ########################
-ENV PATH="/usr/local/bin/wgs:${PATH}"
-
-################## INSTALL TOOLS ######################
-#RUN conda config --add channels bioconda
-RUN conda install bwa varscan picard gatk4
-RUN conda create -n py2.7 python=2.7
-RUN conda install strelka lumpy-sv=0.2.13 -n py2.7
-
-## TOOLS THAT DO NOT NEED TO BE INSTALLED UNDER PARLIAMENT2 #####
-# py3.6 samtools sambamba samblaster
-# py2.7 manta
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data
