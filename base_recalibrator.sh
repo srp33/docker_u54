@@ -70,7 +70,6 @@ ERROR: OUTPUT (-o <arg>) argument must be provided" && \
 [[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
 [[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
 [[ -d /data/vcf_files ]] || { MISSING_VOLUMES+=(/data/vcf_files) && EXIT_CODE=1; }
-[[ -d /data/vcf_index ]] || { MISSING_VOLUMES+=(/data/vcf_index) && EXIT_CODE=1; }
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
@@ -79,8 +78,9 @@ if [[ ${EXIT_CODE} = 1 ]]; then
     The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
-#python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
+python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
 python /check_permissions.py /data/ref_index ReadWrite || exit 1
+python /check_permissions.py /data/vcf_files ReadWrite || exit 1
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
