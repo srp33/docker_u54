@@ -610,6 +610,8 @@ Create split read and discordant read SAM files from BAM file
 
 Options:
   -b, --bam_file <name of input BAM file>
+  -s, --split_file <name of output split-reads BAM file> (Default: SAMPLE.split.bam)
+  -d, --discordant_file <name of output discordant-reads BAM file (Default: SAMPLE.disc.bam)
   -o, --output <destination for output> (Default: /dev/null)
   -h, --help
   --log <destination file for log> (Optional)
@@ -623,6 +625,8 @@ docker run \\
   srp33/somatic_wgs:latest \\
   samblast \\
     -b <name of input BAM file> \\
+    -s <name of output split-reads BAM file> (Default: SAMPLE.split.bam) \\
+    -d <name of output discordant-reads BAM file> (Default: SAMPLE.disc.bam) \\
     -o <destination for output> (Default: /dev/null) \\
     --log <destination file for log> (Optional)
 
@@ -635,6 +639,13 @@ created on the host operating system before executing this command:
   <location for output and SAM files>
 
   BAM file must be sorted by name (read ids) using sort_bam with the -n or --sort_by_name tag.
+
+  If -s or -d is not provided, it will be made automatically by dropping the file extension from the \
+input BAM file and adding either \"disc\" or \"split\" before \".bam\" (e.g. foo.bam would result in \
+foo.disc.bam if -d was not provided and foo.split.bam if -s was not provided). If -s and -d have the \
+same value, the script will throw and error and exit. Again:
+
+  -s and -d must be distinct values.
 "
 }
 

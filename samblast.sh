@@ -6,6 +6,8 @@ source check_functions
 set -o errexit
 
 BAM_FILE=Null
+DISC_FILE=Null
+SPLIT_FILE=Null
 OUTPUT="/dev/null"
 VERSION_LOG=""
 RM=Null
@@ -17,6 +19,16 @@ for (( i=1; i<=ARGNUM; i++ )); do
     -b | --bam_file )
       check_args "${!OPTARG}" "${!i}" || exit 1
       BAM_FILE="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -d | --discordant_file )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      DISC_FILE="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -s | --split_file )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      SPLIT_FILE="${!OPTARG}"
       i=$((i+1))
       ;;
     -o | --output )
@@ -47,7 +59,15 @@ EXIT_CODE=0
 ERROR: BAM FILE (-b <arg>) argument must be provided" && \
  usage_samblast && exit 1; }
 
-SAMPLE="${BAM_FILE%%.*}"
+SAMPLE="${BAM_FILE%.*}"
+
+[[ ${SPLIT_FILE} != "Null" ]] || SPLIT_FILE="${SAMPLE}.split"
+[[ ${SPLIT_FILE##*.} != "bam" ]] || SPLIT_FILE="${SPLIT_FILE%.*}"
+[[ ${DISC_FILE} != "Null" ]] || DISC_FILE="${SAMPLE}.disc"
+[[ ${DISC_FILE##*.} != "bam" ]] || DISC_FILE="${DISC_FILE%.*}"
+[[ ${SPLIT_FILE} != ${DISC_FILE} ]] || { echo "
+ERROR: SPLIT FILE (-s <arg>) must not equal DISCORDANT FILE (-d <arg>)" && \
+ usage_samblast && exit 1; }
 
 # Checks for the necessary directories which are only created by volumes
 
@@ -94,10 +114,8 @@ fi
 
 samtools view -h /data/bam_files/"${BAM_FILE}" | samblaster --addMateTags  \
 | samblaster -a -e \
--d /data/output_data/"${SAMPLE}.disc.sam" -s /data/output_data/"${SAMPLE}.split.sam" \
+-d /tmp/"${DISC_FILE}.sam" -s /tmp/"${SPLIT_FILE}.sam" \
 -o "${OUTPUT}"
 
-samtools view -S -b /data/output_data/"${SAMPLE}.disc.sam" > /data/output_data/"${SAMPLE}.disc.bam"
-samtools view -S -b /data/output_data/"${SAMPLE}.split.sam" > /data/output_data/"${SAMPLE}.split.bam"
-rm /data/output_data/"${SAMPLE}.disc.sam"
-rm /data/output_data/"${SAMPLE}.split.sam"
+samtools view -S -b /tmp/"${DISC_FILE}.sam" > /data/output_data/"${DISC_FILE}.bam"
+samtools view -S -b /tmp/"${SPLIT_FILE}.sam" > /data/output_data/"${SPLIT_FILE}.bam"
