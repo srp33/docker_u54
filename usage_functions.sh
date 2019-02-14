@@ -242,8 +242,8 @@ created on the host operating system before executing this command:
   <location for output>
 
   In most cases, the BAM file should be sorted by coordinates, however, in some cases (for example, \
-in order to run samblast) the BAM file must be sorted by name. In this case, the -n, --sort_by_name \
-tag will be useful.
+in order to run samblast) the BAM file must be sorted by name (read ids). \
+In this case, the -n, --sort_by_name tag will be useful.
 "
 }
 
@@ -634,7 +634,7 @@ created on the host operating system before executing this command:
   <location of BAM file>
   <location for output and SAM files>
 
-  BAM file must be sorted by name using sort_bam with the -n or --sort_by_name tag.
+  BAM file must be sorted by name (read ids) using sort_bam with the -n or --sort_by_name tag.
 "
 }
 
