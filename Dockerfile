@@ -16,13 +16,14 @@ RUN conda install strelka=2.9.10-0 lumpy-sv=0.2.13 -n py2.7
 
 ## TOOLS THAT DO NOT NEED TO BE INSTALLED UNDER PARLIAMENT2 #####
 # py3.6 samtools sambamba samblaster
-# py2.7 manta
+# py2.7 manta (maybe)
 
 ################## ADD SCRIPTS ########################
 ADD echo_usage.sh /usr/local/bin/echo_usage
 ADD usage_functions.sh /usr/local/bin/usage_functions
 ADD check_functions.sh /usr/local/bin/check_functions
 ADD call_somatic_variants_varscan.sh /usr/local/bin/call_somatic_variants_varscan
+ADD parliament2.py /home/dnanexus/parliament2.py
 ADD check_permissions.py /
 
 ################ ADD WGS SCRIPTS ######################

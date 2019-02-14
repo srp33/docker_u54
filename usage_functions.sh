@@ -217,6 +217,7 @@ Options:
   -h, --help
   -t, --nthreads <number of threads> (Optional)
   --log <destination file for log> (Optional)
+  -n, --sort_by_name (Optional)
 
 Usage:
 docker run \\
@@ -229,7 +230,8 @@ docker run \\
     -b <BAM file> \\
     -o <name of output file> \\
     -t <number of threads> (Optional) \\
-    --log <destination file for log> (Optional)
+    --log <destination file for log> (Optional) \\
+    -n (Optional)
 
 Notes:
 
@@ -238,6 +240,10 @@ created on the host operating system before executing this command:
 
   <location of BAM files>
   <location for output>
+
+  In most cases, the BAM file should be sorted by coordinates, however, in some cases (for example, \
+in order to run samblast) the BAM file must be sorted by name. In this case, the -n, --sort_by_name \
+tag will be useful.
 "
 }
 
@@ -627,6 +633,8 @@ created on the host operating system before executing this command:
 
   <location of BAM file>
   <location for output and SAM files>
+
+  BAM file must be sorted by name using sort_bam with the -n or --sort_by_name tag.
 "
 }
 
@@ -654,7 +662,7 @@ docker run \\
   call_structural_variants_lumpy \\
     -b <name of input BAM file> \\
     -s <name of split-reads BAM file> \\
-    -d <name -f discordant-reads BAM file> \\
+    -d <name of discordant-reads BAM file> \\
     -o <name of output VCF file> \\
     --log <destination file for version log> (Optional)
 
@@ -712,5 +720,17 @@ created on the host operating system before executing this command:
 
   From the Delly docs: \"Delly needs a sorted, indexed and duplicate marked \
 bam file for every input sample.\"
+"
+}
+
+usage_parliament2 () {
+
+    echo "parliament2
+
+Needed volumes:
+  <location of input>:/home/dnanexus/in
+  <location for output>:/home/dnanexus/out
+
+$(python /home/dnanexus/parliament2.py -h)
 "
 }

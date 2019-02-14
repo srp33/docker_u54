@@ -120,7 +120,7 @@ if [[ ${VERSION_LOG} != "" ]]; then
     echo "call_somatic_variants_strelka
 
 Commands:
-  python2.7 /opt/miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \\
+  python2.7 /miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \\
     --referenceFasta=/tmp/\"${REF_GENOME}\" --tumorBam=\"/data/bam_files/${TUMOR}\" \\
     --normalBam=\"/data/bam_files/${NORMAL}\" ${INDEL} ${CALL_REGIONS} \"${RUN_DIR_ARG}\"
 
@@ -146,7 +146,7 @@ fi
 
 source activate py2.7
 
-python2.7 /opt/miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \
+python2.7 /miniconda/envs/py2.7/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \
 --referenceFasta=/tmp/"${REF_GENOME}" --tumorBam="/data/bam_files/${TUMOR}" \
 --normalBam="/data/bam_files/${NORMAL}" ${INDEL} ${CALL_REGIONS} "${RUN_DIR_ARG}"
 
