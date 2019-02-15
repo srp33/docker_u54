@@ -107,4 +107,5 @@ fi
 
 
 lumpyexpress -B /data/bam_files/"${BAM_FILE}" -S /data/bam_files/"${SPLIT_FILE}" \
-    -D /data/bam_files/"${DISC_FILE}" -o /data/output_data/"${OUTPUT}"
+    -D /data/bam_files/"${DISC_FILE}" -o /data/output_data/"${OUTPUT}" \
+    -T /tmp/"${OUTPUT%%.*}".XXXXXXXXXXXXXXX
