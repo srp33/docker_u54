@@ -7,7 +7,7 @@ set -o errexit
 
 BAM_FILE=Null
 REF_GENOME=Null
-OUTPUT=Null
+OUT_DIR="parliament2_out"
 VERSION_LOG=""
 ARGNUM=$#
 
@@ -26,7 +26,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       ;;
     -o | --output )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      OUTPUT="${!OPTARG}"
+      OUT_DIR="${!OPTARG}"
       i=$((i+1))
       ;;
     --log )
@@ -62,8 +62,10 @@ MISSING_VOLUMES=()
 
 if [[ ${REF_GENOME##*.} = "gz" ]]; then
     NEW_REF="$(echo ${REF_GENOME%.*})"
-    gunzip -c /data/ref_genome/"${REF_GENOME}" > /home/dnanexus/in/"${NEW_REF}"
+    gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
     REF_GENOME="${NEW_REF}"
+    else
+    ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
 fi
 
 if [[ ${EXIT_CODE} = 1 ]]; then
@@ -83,7 +85,11 @@ fi
 
 ln -s /data/ref_index/"${REF_GENOME}.fai" /tmp/"${REF_GENOME}.fai"
 
+[[ -f /tmp/"${REF_GENOME}" ]] || { echo "
+Daggummit it doesn't exist
+" && exit 1; }
+
 python /home/dnanexus/parliament2.py --bam "${BAM_FILE}" -r "${REF_GENOME}" || \
  { usage_parliament2 && exit 1; }
-mkdir /data/output_data/parliament2_out
-mv /home/dnanexus/out/* /data/output_data/parliament2_out
+[[ -d /data/output_data/"${OUT_DIR}" ]] || mkdir /data/output_data/"${OUT_DIR}"
+mv -r /home/dnanexus/out/* /data/output_data/"${OUT_DIR}"

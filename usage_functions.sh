@@ -262,15 +262,17 @@ Options:
   -d, --runDir <desired name for directory to be created where
                 workflow scripts and output will be written> (Optional)
                 [Default: StrelkaSomaticWorkflow]
+  -e, --exome (Optional)
+  -O, --overwrite_runDir (Optional)
   -h, --help
   --log <destination file for log> (Optional)
 
 Usage:
 docker run \\
-  -v <location of indel alleles VCF and call regions file>:/data/input_data \\
   -v <location of BAM files>:/data/bam_files \\
   -v <location of FASTA reference file>:/data/ref_genome \\
   -v <location of .fai reference index file>:/data/ref_index \\
+  -v <location of supplementary files>:/data/input_data \\
   -v <location for output>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
@@ -282,6 +284,8 @@ docker run \\
     -i <indel candidates VCF file> (Optional) \\
     -c <call regions file> (Optional) \\
     -d <output directory name> \\
+    --exome (Optional) \\
+    --overwrite_runDir (Optional) \\
     --log <destination file for log> (Optional)
 
 Notes:
@@ -289,13 +293,18 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of indel alleles VCF and call regions file>
   <location of BAM files>
   <location of FASTA reference file>
   <location of .fai reference index file>
+  <location of supplementary files>
   <location for output>
 
   This command currently requires tumor and normal BAM files.
+
+  If --runDir already contains a runWorkflow.py script, Strelka will throw an error and exit. \
+In this case the user may overwrite the existing runWorkflow.py using the -O, \
+--overwrite_runDir flag, although it is recommended that the user give a different name for \
+--runDir to avoid any conflicts.
 
   It should also be noted that strelka requires a .fai index file for the reference genome. \
 If this file cannot be found in the /data/ref_index volume, it will be created. Unfortunately,\
@@ -303,7 +312,7 @@ If this file cannot be found in the /data/ref_index volume, it will be created. 
 temporary directory within the container.
 
   The indel candidates VCF file can be created using the call_structural_variants_manta \
-command.
+command. Typically, the name of this file is candidateSmallIndels.vcf.gz.
 "
 }
 

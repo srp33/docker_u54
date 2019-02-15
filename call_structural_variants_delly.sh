@@ -96,7 +96,7 @@ ln -s /data/ref_index/"${REF_GENOME}.fai" /tmp/"${REF_GENOME}.fai"
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
-    echo "call_somatic_variants_strelka
+    echo "call_somatic_variants_delly
 
 Commands:
   delly call -g /data/ref_genome/\"${REF_GENOME}\" \"${BAM_FILES[@]}\" | \\
@@ -118,5 +118,5 @@ Software used:
 
 fi
 
-delly call -g /tmp/"${REF_GENOME}" "${BAM_FILES[@]}" -o /tmp/delly.bcf
-bcftools view /tmp/delly.bcf > /data/output_data/"${OUTPUT}"
+delly call -g /tmp/"${REF_GENOME}" "${BAM_FILES[@]}" -o /tmp/"${OUTPUT%%.*}.bcf"
+bcftools view /tmp/"${OUTPUT%%.*}.bcf" > /data/output_data/"${OUTPUT}"

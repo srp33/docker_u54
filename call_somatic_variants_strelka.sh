@@ -8,12 +8,14 @@ set -o errexit
 TUMOR=Null
 NORMAL=Null
 REF_GENOME=Null
+OVERWRITE=0
 VERSION_LOG=""
 INDEL=""
 CALL_REGIONS=""
 RUN_DIR="/data/output_data/StrelkaSomaticWorkflow"
-RUN_DIR_ARG="--runDir ${RUN_DIR}"
+RUN_DIR_ARG="--runDir=${RUN_DIR}"
 ARGNUM=$#
+EXOME=""
 
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
@@ -48,6 +50,12 @@ for (( i=1; i<=ARGNUM; i++ )); do
       RUN_DIR=/data/output_data/"${!OPTARG}"
       RUN_DIR_ARG="--runDir=${RUN_DIR}"
       i=$((i+1))
+      ;;
+    -e | --exome )\
+      EXOME="--exome"
+      ;;
+    -O | --overwrite_runDir )
+      OVERWRITE=1
       ;;
     --log )
       check_args "${!OPTARG}" "${!i}" || exit 1
@@ -93,6 +101,15 @@ python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
 python /check_permissions.py /data/ref_index ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
+[[ -f /data/bam_files/"${TUMOR}.bai" ]] || { echo "
+ERROR: /data/bam_files/\"${TUMOR}.bai\" does not exist. Please run index_bam on \
+/data/bam_files/\"${TUMOR}\" in order to use this command.
+" && usage_strelka && exit 1; }
+[[ -f /data/bam_files/"${NORMAL}.bai" ]] || { echo "
+ERROR: /data/bam_files/\"${NORMAL}.bai\" does not exist. Please run index_bam on \
+/data/bam_files/\"${NORMAL}\" in order to use this command.
+" && usage_strelka && exit 1; }
+
 #mkdir /temp
 ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
 
@@ -122,7 +139,8 @@ if [[ ${VERSION_LOG} != "" ]]; then
 Commands:
   python2.7 /miniconda/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \\
     --referenceFasta=/tmp/\"${REF_GENOME}\" --tumorBam=\"/data/bam_files/${TUMOR}\" \\
-    --normalBam=\"/data/bam_files/${NORMAL}\" ${INDEL} ${CALL_REGIONS} \"${RUN_DIR_ARG}\"
+    --normalBam=\"/data/bam_files/${NORMAL}\" ${INDEL} ${CALL_REGIONS} \"${RUN_DIR_ARG}\" \\
+    \"${EXOME}\"
 
   python2.7 \"${RUN_DIR}\"/runWorkflow.py --mode=local
 
@@ -144,10 +162,13 @@ Software used:
 
 fi
 
+[[ ${OVERWRITE} = 0 ]] || rm -f "${RUN_DIR_ARG##*=}/runWorkflow.py"
+
 source activate py2.7
 
 python2.7 /miniconda/envs/py2.7/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \
---referenceFasta=/tmp/"${REF_GENOME}" --tumorBam="/data/bam_files/${TUMOR}" \
---normalBam="/data/bam_files/${NORMAL}" ${INDEL} ${CALL_REGIONS} "${RUN_DIR_ARG}"
+    --referenceFasta=/tmp/"${REF_GENOME}" --tumorBam="/data/bam_files/${TUMOR}" \
+    --normalBam="/data/bam_files/${NORMAL}" ${INDEL} ${CALL_REGIONS} "${RUN_DIR_ARG}" \
+    ${EXOME}
 
 python2.7 "${RUN_DIR}"/runWorkflow.py --mode=local

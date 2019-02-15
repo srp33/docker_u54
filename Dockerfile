@@ -45,7 +45,7 @@ ADD call_structural_variants_lumpy.sh /usr/local/bin/wgs/call_structural_variant
 ADD call_structural_variants_delly.sh /usr/local/bin/wgs/call_structural_variants_delly
 
 ################ ADD OTHER SCRIPTS ####################
-ADD parliament2.sh /usr/local/bin/parliament2
+ADD run_parliament2.sh /usr/local/bin/run_parliament2
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data
