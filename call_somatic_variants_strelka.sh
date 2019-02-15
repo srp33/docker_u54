@@ -37,12 +37,12 @@ for (( i=1; i<=ARGNUM; i++ )); do
       ;;
     -i | --indelCandidates )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      INDEL="--indelCandidates ${!OPTARG}"
+      INDEL="--indelCandidates /data/input_data/${!OPTARG}"
       i=$((i+1))
       ;;
     -c | --callRegions )
       check_args "${!OPTARG}" "${!i}" || exit 1
-      CALL_REGIONS="--callRegions ${!OPTARG}"
+      CALL_REGIONS="--callRegions /data/input_data/${!OPTARG}"
       i=$((i+1))
       ;;
     -d | --runDir )
@@ -164,7 +164,7 @@ fi
 
 [[ ${OVERWRITE} = 0 ]] || rm -f "${RUN_DIR_ARG##*=}/runWorkflow.py"
 
-source activate py2.7
+#source activate py2.7
 
 python2.7 /miniconda/envs/py2.7/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \
     --referenceFasta=/tmp/"${REF_GENOME}" --tumorBam="/data/bam_files/${TUMOR}" \
