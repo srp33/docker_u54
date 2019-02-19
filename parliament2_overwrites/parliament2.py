@@ -1,11 +1,9 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 
 import argparse
 import subprocess
-import gzip
 import os
 
-# Modified version of Parliament2 python script changed to bode better with our container
 
 def parse_arguments():
     args = argparse.ArgumentParser(description='Parliament2')
@@ -50,22 +48,11 @@ def parse_arguments():
     return args.parse_args()
 
 
-def gunzip_input(input_file):
-    if input_file.endswith('.gz'):
-        if os.path.isfile(input_file[:-3]):
-            return input_file[:-3]
-        else:
-            subprocess.check_call(['gunzip', input_file])
-            return input_file[:-3]
-    else:
-        return input_file
-
-
 def run_parliament(bam, bai, ref_genome, fai, prefix, filter_short_contigs, breakdancer, breakseq, manta, cnvnator,
                    lumpy, delly_deletion, delly_insertion, delly_inversion, delly_duplication, genotype, svviz,
                    svviz_only_validated_candidates, dnanexus):
-    if bai is not None:
-        if fai is not None:
+    if not bai.endswith("None"):
+        if not fai.endswith("None"):
             subprocess.check_call(
                 ['bash', 'parliament2.sh', bam, bai, ref_genome, fai, prefix, str(filter_short_contigs),
                  str(breakdancer), str(breakseq), str(manta), str(cnvnator), str(lumpy), str(delly_deletion),
@@ -78,7 +65,7 @@ def run_parliament(bam, bai, ref_genome, fai, prefix, filter_short_contigs, brea
                  str(delly_insertion), str(delly_inversion), str(delly_duplication), str(genotype), str(svviz),
                  str(svviz_only_validated_candidates), str(dnanexus)])
     else:
-        if fai is not None:
+        if not fai.endswith("None"):
             subprocess.check_call(
                 ['bash', 'parliament2.sh', bam, "None", ref_genome, fai, prefix, str(filter_short_contigs),
                  str(breakdancer), str(breakseq), str(manta), str(cnvnator), str(lumpy), str(delly_deletion),
@@ -92,6 +79,15 @@ def run_parliament(bam, bai, ref_genome, fai, prefix, filter_short_contigs, brea
                  str(svviz_only_validated_candidates), str(dnanexus)])
 
 
+def check_files(file_paths):
+    for file_path in file_paths:
+        try:
+            open(file_path)
+        except IOError as e:
+            print(os.strerror(e.errno) + ": {}".format(file_path))
+            exit(1)
+
+
 def main():
     args = parse_arguments()
 
@@ -101,14 +97,15 @@ def main():
             prefix = args.bam[:-4]
         else:
             prefix = args.bam[:-5]
-    args.bam = "/data/bam_files/{0}".format(args.bam)
-    args.bai = "{0}.bai".format(args.bam)
-    args.ref_genome = "/tmp/{0}".format(args.ref_genome)
-    args.fai = "{0}.fai".format(args.ref_genome)
 
-    ref_genome_name = gunzip_input(args.ref_genome)
+    args.bai = "/home/dnanexus/in/{0}.bai".format(args.bam)
+    args.fai = "/home/dnanexus/in/{0}.fai".format(args.ref_genome)
+    args.bam = "/home/dnanexus/in/{0}".format(args.bam)
+    args.ref_genome = "/home/dnanexus/in/{0}".format(args.ref_genome)
 
-    run_parliament(args.bam, args.bai, ref_genome_name, args.fai, prefix, args.filter_short_contigs, args.breakdancer,
+    check_files([args.bam, args.bai, args.ref_genome, args.fai])
+
+    run_parliament(args.bam, args.bai, args.ref_genome, args.fai, prefix, args.filter_short_contigs, args.breakdancer,
                    args.breakseq, args.manta, args.cnvnator, args.lumpy, args.delly_deletion, args.delly_insertion,
                    args.delly_inversion, args.delly_duplication, args.genotype, args.svviz,
                    args.svviz_only_validated_candidates, args.dnanexus)

@@ -23,7 +23,9 @@ ADD echo_usage.sh /usr/local/bin/echo_usage
 ADD usage_functions.sh /usr/local/bin/usage_functions
 ADD check_functions.sh /usr/local/bin/check_functions
 ADD call_somatic_variants_varscan.sh /usr/local/bin/call_somatic_variants_varscan
-ADD parliament2.py /home/dnanexus/parliament2.py
+ADD parliament2_overwrites/parliament2.py /home/dnanexus/parliament2.py
+ADD parliament2_overwrites/parliament2.sh /home/dnanexus/parliament2.sh
+ADD parliament2_overwrites/get_reference.py /home/dnanexus/get_reference.py
 ADD check_permissions.py /
 
 ################ ADD WGS SCRIPTS ######################
@@ -46,6 +48,7 @@ ADD call_structural_variants_delly.sh /usr/local/bin/wgs/call_structural_variant
 
 ################ ADD OTHER SCRIPTS ####################
 ADD run_parliament2.sh /usr/local/bin/run_parliament2
+RUN chmod a+rwx -R /home
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data
