@@ -13,6 +13,8 @@ ENV PATH="/usr/local/bin/wgs:${PATH}"
 RUN conda install bwa=0.7.17 gatk4=4.1.0.0-0 delly=0.8.1-0
 RUN conda create -n py2.7 python=2.7
 RUN conda install strelka=2.9.10-0 lumpy-sv=0.2.13 -n py2.7
+ADD parliament2_overwrites/svtyper_env.yml /home/dnanexus/svtyper_env.yml
+RUN conda env create -n svtyper_env --file /home/dnanexus/svtyper_env.yml
 
 ## TOOLS THAT DO NOT NEED TO BE INSTALLED UNDER PARLIAMENT2 #####
 # py3.6 samtools sambamba samblaster

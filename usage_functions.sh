@@ -1,11 +1,11 @@
 #! /bin/bash
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    echo "ERROR: This command is not available to users" && exit 1
+  echo "ERROR: This command is not available to users" && exit 1
 fi
 
 usage_align (){
-echo "bwa_mem_align
+  echo "bwa_mem_align
 
 Description:
 Align FASTQ files to a reference genome using the Burrows-Wheeler Aligner software.
@@ -57,7 +57,7 @@ equal to 0 (the default for --process_chunk is 0). --nchunks must be greater tha
 }
 
 usage_index_bam (){
-echo "index_bam
+  echo "index_bam
 
 Description:
 Index a BAM file.
@@ -94,7 +94,7 @@ created on the host operating system before executing this command:
 }
 
 usage_mark_duplicates (){
-echo "mark_duplicates
+  echo "mark_duplicates
 
 Description:
 Mark duplicates in a BAM file.
@@ -130,7 +130,7 @@ created on the host operating system before executing this command:
 }
 
 usage_merge_bams (){
-echo "merge_bams
+  echo "merge_bams
 
 Description:
 Merge multiple BAM files into one and index it
@@ -168,7 +168,7 @@ created on the host operating system before executing this command:
 }
 
 usage_slice_bam (){
-echo "slice_bam
+  echo "slice_bam
 
 Description:
 Slice a BAM file based on chromosomal coordinates.
@@ -206,7 +206,7 @@ created on the host operating system before executing this command:
 }
 
 usage_sort_bam (){
-echo "sort_bam
+  echo "sort_bam
 
 Description:
 Sort and index a BAM file.
@@ -248,7 +248,7 @@ In this case, the -n, --sort_by_name tag will be useful.
 }
 
 usage_strelka (){
-echo "call_somatic_variants_strelka
+  echo "call_somatic_variants_strelka
 
 Description:
 Calls somatic variants using Strelka for a tumor/normal pair
@@ -317,7 +317,7 @@ command. Typically, the name of this file is candidateSmallIndels.vcf.gz.
 }
 
 usage_manta (){
-echo "call_structural_variants_manta
+  echo "call_structural_variants_manta
 
 Description:
 Calls somatic variants using Manta for a tumor/normal pair
@@ -369,7 +369,7 @@ temporary directory within the container.
 }
 
 usage_varscan (){
-echo "call_somatic_variants_varscan
+  echo "call_somatic_variants_varscan
 
 Options:
   -p --pileup <name of pileup file>
@@ -381,7 +381,7 @@ ERROR: THIS COMMAND IS NOT READY FOR USAGE
 }
 
 usage_mutect (){
-echo "call_somatic_variants_gatk4
+  echo "call_somatic_variants_gatk4
 
 Description:
 Calls somatic variants using Mutect2 for a tumor/normal pair
@@ -437,7 +437,7 @@ the respective BAM files.
 }
 
 usage_add_read_groups (){
-echo "add_read_groups
+  echo "add_read_groups
 
 Description:
 Add/replace read groups in BAM file
@@ -477,7 +477,7 @@ created on the host operating system before executing this command:
 }
 
 usage_mpileup () {
-echo "add_read_groups
+  echo "add_read_groups
 
 Description:
 Create samtools pileup file
@@ -523,7 +523,7 @@ considerably lengthen the process.
 }
 
 usage_apply_bqsr () {
-echo "apply_bqsr
+  echo "apply_bqsr
 
 Description:
 Apply base quality score recalibration
@@ -561,7 +561,7 @@ created on the host operating system before executing this command:
 }
 
 usage_base_recalibrator () {
-echo "base_recalibrator
+  echo "base_recalibrator
 
 Description:
 Detect systematic errors in base quality scores
@@ -612,7 +612,7 @@ considerably lengthen the process.
 }
 
 usage_samblast () {
-echo "samblast
+  echo "samblast
 
 Description:
 Create split read and discordant read SAM files from BAM file
@@ -659,7 +659,7 @@ same value, the script will throw and error and exit. Again:
 }
 
 usage_lumpy () {
-echo "call_structural_variants_lumpy
+  echo "call_structural_variants_lumpy
 
 Description:
 Call structural variants using lumpy
@@ -701,7 +701,7 @@ BAM files are sorted by using sort_bam before using call_structural_variants_lum
 
 usage_delly () {
 
-    echo "call_structural_variants_delly
+  echo "call_structural_variants_delly
 
 Description:
 Call structural variants using delly
@@ -745,12 +745,87 @@ bam file for every input sample.\"
 
 usage_parliament2 () {
 
-    echo "parliament2
+  echo "run_parliament2
 
-Needed volumes:
-  <location of input>:/home/dnanexus/in
-  <location for output>:/home/dnanexus/out
+Options:
+  -h, --help            show this help message and exit
+  -b, --bam <name of BAM file>
+                        The name of the Illumina BAM file for which to call
+                        structural variants containing mapped reads.
+  -r , --ref_genome <name of reference FASTA file>
+                        The name of the reference file that matches the
+                        reference used to map the Illumina inputs.
+  --filter_short_contigs
+                        If selected, SV calls will not be generated on contigs
+                        shorter than 1 MB.
+  --breakdancer         If selected, the program Breakdancer will be one of
+                        the SV callers run.
+  --breakseq            If selected, the program BreakSeq2 will be one of the
+                        SV callers run.
+  --manta               If selected, the program Manta will be one of the SV
+                        callers run.
+  --cnvnator            If selected, the program CNVnator will be one of the
+                        SV callers run.
+  --lumpy               If selected, the program Lumpy will be one of the SV
+                        callers run.
+  --delly_deletion      If selected, the deletion module of the program Delly2
+                        will be one of the SV callers run.
+  --delly_insertion     If selected, the insertion module of the program
+                        Delly2 will be one of the SV callers run.
+  --delly_inversion     If selected, the inversion module of the program
+                        Delly2 will be one of the SV callers run.
+  --delly_duplication   If selected, the duplication module of the program
+                        Delly2 will be one of the SV callers run.
+  --genotype            If selected, candidate events determined from the
+                        individual callers will be genotyped and merged to
+                        create a consensus output.
+  --svviz               If selected, visualizations of genotyped SV events
+                        will be produced with SVVIZ, one screenshot of support
+                        per event. For this option to take effect, Genotype
+                        must be selected.
+  --svviz_only_validated_candidates
+                        Run SVVIZ only on validated candidates? For this
+                        option to be relevant, SVVIZ must be selected. NOT
+                        selecting this will make the SVVIZ component run
+                        longer.
 
-$(python /home/dnanexus/parliament2.py -h)
+Usage:
+docker run \\
+  -v <location of BAM file>:/data/bam_files \\
+  -v <location of reference FASTA file>:/data/ref_genome \\
+  -v <location of reference .fai index file>:/data/ref_index \\
+  -v <location for output directory>:/data/output_data \\
+  --user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  run_parliament2 \\
+    -b <name of BAM file> \\
+    -r <name of reference FASTA file> \\
+    --filter_short_contigs (Optional) \\
+    --breakdancer (Optional) \\
+    --breakseq (Optional) \\
+    --manta (Optional) \\
+    --cnvnator (Optional) \\
+    --lumpy (Optional) \\
+    --delly_deletion (Optional) \\
+    --delly_insertion (Optional) \\
+    --delly_inversion (Optional) \\
+    --delly_duplication (Optional) \\
+    --genotype (Optional) \\
+    --svviz (Optional) \\
+    --svviz_only_validated_candidates (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of BAM file>:/data/bam_files
+  <location of reference FASTA file>:/data/ref_genome
+  <location of reference .fai index file>:/data/ref_index
+  <location for output directory>:/data/output_data
+
+  BAM file is assumed to have been previously indexed. Index file must be in same directory as BAM \
+file with identical name plus the extension '.bai'.
 "
 }
