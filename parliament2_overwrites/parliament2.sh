@@ -448,7 +448,9 @@ if [[ "${run_genotype_candidates}" == "True" ]]; then
         echo "Running SVTyper on Lumpy outputs"
         mkdir svtype_lumpy
         if [[ -f lumpy.vcf ]]; then
-            bash /home/dnanexus/parallelize_svtyper.sh lumpy.vcf svtype_lumpy "${prefix}".lumpy.svtyped.vcf "${illumina_bam}"
+            grep \# lumpy.vcf
+            bash /home/dnanexus/parallelize_svtyper.sh lumpy.vcf svtype_lumpy \
+                      "${prefix}".lumpy.svtyped.vcf "${illumina_bam}"
         else
             echo "No Lumpy VCF file found. Continuing."
         fi
@@ -467,7 +469,7 @@ if [[ "${run_genotype_candidates}" == "True" ]]; then
     wait
 
     # deactivate svtyper
-    source deactivate
+    conda deactivate
 
     # Prepare inputs for SURVIVOR
     echo "Preparing inputs for SURVIVOR"
