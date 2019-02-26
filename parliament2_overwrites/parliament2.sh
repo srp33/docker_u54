@@ -210,8 +210,29 @@ if [[ "${run_cnvnator}" == "True" ]] || [[ "${run_delly}" == "True" ]] || [[ "${
 
                 if [[ "${run_lumpy}" == "True" ]]; then
                     echo "Running Lumpy for contig ${contig}"
-                    timeout 6h /home/dnanexus/lumpy-sv/bin/lumpyexpress -B chr."${count}".bam -o lumpy."${count}".vcf ${lumpy_exclude_string} -k 1> /home/dnanexus/out/log_files/lumpy_logs/"${prefix}".lumpy."${count}".stdout.log 2> /home/dnanexus/out/log_files/lumpy_logs/"${prefix}".lumpy."${count}".stderr.log &
-                    lumpy_merge_command="$lumpy_merge_command lumpy.$count.vcf"
+                    timeout 6h samtools view -h chr."${count}".bam | \
+                        samblaster --addMateTags | \
+                        samblaster \
+                        -a \
+                        -e \
+                        -d /tmp/chr."${count}".disc.sam \
+                        -s /tmp/chr."${count}".split.sam && \
+                    samtools view \
+                        -S \
+                        -b /tmp/chr."${count}".disc.sam > chr."${count}".disc.bam &&
+                    samtools view \
+                        -S \
+                        -b /tmp/chr."${count}".split.sam > chr."${count}".split.bam &&
+                    source activate py2.7 &&
+                    lumpyexpress \
+                        -B chr."${count}".bam \
+                        -S chr."${count}".disc.bam \
+                        -D chr."${count}".split.bam \
+                        -o lumpy."${count}".vcf \
+                        ${lumpy_exclude_string} -k 1> \
+                        /home/dnanexus/out/log_files/lumpy_logs/"${prefix}".lumpy."${count}".stdout.log \
+                        2> /home/dnanexus/out/log_files/lumpy_logs/"${prefix}".lumpy."${count}".stderr.log &
+                        lumpy_merge_command="$lumpy_merge_command lumpy.${count}.vcf"
                 fi
             fi
 
@@ -228,7 +249,7 @@ mkdir -p /home/dnanexus/out/sv_caller_results/
 
 (if [[ "${run_lumpy}" == "True" ]]; then
     echo "Convert Lumpy results to VCF format"
-    ls -sh *.vcf
+    ls -lha
     python /convertHeader.py "${prefix}" "${lumpy_merge_command}" | vcf-sort -c | uniq > lumpy.vcf
 
     if [[ -f lumpy.vcf ]]; then
@@ -448,7 +469,7 @@ if [[ "${run_genotype_candidates}" == "True" ]]; then
         echo "Running SVTyper on Lumpy outputs"
         mkdir svtype_lumpy
         if [[ -f lumpy.vcf ]]; then
-            grep \# lumpy.vcf
+            cat lumpy.vcf
             bash /home/dnanexus/parallelize_svtyper.sh lumpy.vcf svtype_lumpy \
                       "${prefix}".lumpy.svtyped.vcf "${illumina_bam}"
         else
@@ -468,12 +489,9 @@ if [[ "${run_genotype_candidates}" == "True" ]]; then
 
     wait
 
-    # deactivate svtyper
-    conda deactivate
-
     # Prepare inputs for SURVIVOR
     echo "Preparing inputs for SURVIVOR"
-    for item in *svtyped.vcf; do
+    for item in "${prefix}"*svtyped.vcf; do
         python /adjust_svtyper_genotypes.py "${item}" > adjusted.vcf
         mv adjusted.vcf "${item}"
         echo "Adding ${item} to SURVIVOR inputs"
@@ -481,7 +499,7 @@ if [[ "${run_genotype_candidates}" == "True" ]]; then
     done
 
     # Prepare SVtyped VCFs for upload
-    for item in *svtyped.vcf; do
+    for item in "${prefix}"*svtyped.vcf; do
         cp "${item}" /home/dnanexus/out/svtyped_vcfs/"${item}"
     done
 
