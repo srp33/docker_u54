@@ -1,6 +1,6 @@
 # Run bwa
 #################### GATK IMAGE #######################
-FROM dnanexus/parliament2:v0.1.9-12-ge134fcda
+FROM wanpinglee/sve:0.1.0
 
 #################### MAINTAINER #######################
 MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
@@ -9,10 +9,29 @@ MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
 ENV PATH="/usr/local/bin/wgs:${PATH}"
 
 ################## INSTALL TOOLS ######################
-#RUN conda config --add channels bioconda
-RUN conda install bwa=0.7.17 gatk4=4.1.0.0-0 delly=0.8.1-0
+ENV MINICONDA_VERSION=4.5.12
+RUN apt-get update && apt-get install -y curl wget
+RUN cd /
+RUN curl -LO http://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh
+RUN bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -p /miniconda -b
+RUN rm Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh
+ENV PATH=/miniconda/bin:${PATH}
+RUN conda config --add channels bioconda \
+ && conda config --add channels conda-forge
+RUN conda install samtools=1.9 bwa=0.7.17 gatk4=4.1.0.0-0 delly=0.8.1-0 \
+    sambamba=0.6.8 samblaster=0.1.24 manta=1.5.0 pysam=0.15.0 numpy=1.16.2
 RUN conda create -n py2.7 python=2.7
-RUN conda install strelka=2.9.10-0 lumpy-sv=0.2.13 -n py2.7
+RUN conda install strelka=2.9.10-0 lumpy-sv=0.2.13 subprocess32=3.5.3 htseq=0.11.2 cython=0.29.6 -n py2.7
+#RUN activate py2.7 \
+# && pip install --upgrade pip \
+# && pip uninstall bx-python \
+# && pip install numpy==1.16.2 \
+# && pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --no-cache bx-python==0.7.1 \
+# && pip install Cython==0.29.6 \
+# && cd /tools/SVE/scripts/FusorSV/ \
+# && python setup.py build_ext --inplace \
+# && tar -zxvf data.tar.gz \
+# && deactivate
 ADD parliament2_overwrites/svtyper_env.yml /home/dnanexus/svtyper_env.yml
 RUN conda env create -n svtyper_env --file /home/dnanexus/svtyper_env.yml
 
@@ -28,10 +47,10 @@ ADD call_somatic_variants_varscan.sh /usr/local/bin/call_somatic_variants_varsca
 ADD check_permissions.py /
 
 ################# ADD PARLIAMENT2 OVERWRITES ##########
-ADD parliament2_overwrites/parliament2.py /home/dnanexus/parliament2.py
-ADD parliament2_overwrites/parliament2.sh /home/dnanexus/parliament2.sh
-ADD parliament2_overwrites/get_reference.py /home/dnanexus/get_reference.py
-ADD parliament2_overwrites/parallelize_svtyper.sh /home/dnanexus/parallelize_svtyper.sh
+#ADD parliament2_overwrites/parliament2.py /home/dnanexus/parliament2.py
+#ADD parliament2_overwrites/parliament2.sh /home/dnanexus/parliament2.sh
+#ADD parliament2_overwrites/get_reference.py /home/dnanexus/get_reference.py
+#ADD parliament2_overwrites/parallelize_svtyper.sh /home/dnanexus/parallelize_svtyper.sh
 
 ################ ADD WGS SCRIPTS ######################
 ADD bwa_mem_align.sh /usr/local/bin/wgs/bwa_mem_align
@@ -53,7 +72,8 @@ ADD call_structural_variants_delly.sh /usr/local/bin/wgs/call_structural_variant
 
 ################ ADD OTHER SCRIPTS ####################
 ADD run_parliament2.sh /usr/local/bin/run_parliament2
-RUN chmod a+rwx -R /home/dnanexus
+ADD run_fusorsv.sh /usr/local/bin/run_fusorsv
+#RUN chmod a+rwx -R /home/dnanexus
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data

@@ -114,7 +114,13 @@ fi
 
 ln -s /data/ref_index/"${REF_GENOME}.fai" /home/dnanexus/in/"${REF_GENOME}.fai"
 
-python /home/dnanexus/parliament2.py --bam "${BAM_FILE}" -r "${REF_GENOME}" ${FLAGS[@]} || \
- { usage_parliament2 && exit 1; }
+#pip install --upgrade pip
+
+python /home/dnanexus/parliament2.py --bam "${BAM_FILE}" --bai "${BAM_FILE}.bai" \
+  -r "${REF_GENOME}" --fai "${REF_GENOME}.fai" \
+  ${FLAGS[@]} || \
+  { usage_parliament2 && exit 1; }
 [[ -d /data/output_data/"${OUT_DIR}" ]] || mkdir /data/output_data/"${OUT_DIR}"
 cp -rf /home/dnanexus/out/* /data/output_data/"${OUT_DIR}"/
+
+ls -lha

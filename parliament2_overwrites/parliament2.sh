@@ -86,6 +86,7 @@ threads=$((threads - 3))
 echo "Generate contigs"
 
 samtools view -H "${illumina_bam}" | python /getContigs.py "${filter_short_contigs}" > contigs
+cat contigs
 
 mkdir -p /home/dnanexus/out/log_files/
 
@@ -148,13 +149,13 @@ if [[ "${run_cnvnator}" == "True" ]] || [[ "${run_delly}" == "True" ]] || [[ "${
     mkdir -p /home/dnanexus/out/log_files/sambamba_logs/
 
     while read -r contig; do
-        if [[ $(samtools view "${illumina_bam}" "${contig}" 2>/dev/null | head -n 20 | wc -l) -ge 10 ]]; then
+        if [[ $(samtools view ${illumina_bam} "${contig}" 2>/dev/null | head -n 20 | wc -l) -ge 10 ]]; then
             echo "Running on contig ${contig}"
             count=$((count + 1))
 
             if [[ "${run_breakdancer}" == "True" ]]; then
                 echo "Running Breakdancer for contig ${contig}"
-                timeout 4h /breakdancer/cpp/breakdancer-max breakdancer.cfg "${illumina_bam}" -o "${contig}" > breakdancer-"${count}".ctx 2> /home/dnanexus/out/log_files/breakdancer_logs/"${prefix}".breakdancer."${contig}".stderr.log &
+                timeout 4h /breakdancer/cpp/breakdancer-max breakdancer.cfg input.bam -o "${contig}" > breakdancer-"${count}".ctx 2> /home/dnanexus/out/log_files/breakdancer_logs/"${prefix}".breakdancer."${contig}".stderr.log &
                 concat_breakdancer_cmd="${concat_breakdancer_cmd} breakdancer-${count}.ctx"
             fi
 
@@ -170,9 +171,13 @@ if [[ "${run_cnvnator}" == "True" ]] || [[ "${run_delly}" == "True" ]] || [[ "${
 
             if [[ "${run_delly}" == "True" ]] || [[ "${run_lumpy}" == "True" ]]; then
                 echo "Running sambamba view"
-                timeout 2h sambamba view -h -f bam -t "$(nproc)" "${illumina_bam}" "${contig}" > chr."${count}".bam 2> /home/dnanexus/out/log_files/sambamba_logs/"${prefix}".sambamba."${contig}".stderr.log
+                timeout 2h sambamba view -h -f bam -t "$(nproc)" input.bam "${contig}" > chr."${count}".bam 2> /home/dnanexus/out/log_files/sambamba_logs/"${prefix}".sambamba."${contig}".stderr.log
                 echo "Running sambamba index"
                 sambamba index -t "$(nproc)" chr."${count}".bam 1> /home/dnanexus/out/log_files/sambamba_logs/"${prefix}".sambamba."${contig}".stdout.log 2> /home/dnanexus/out/log_files/sambamba_logs/"${prefix}".sambamba."${contig}".stderr.log
+                echo "Running sambamba sort"
+                sambamba sort -t "$(nproc)" -n chr."${count}".bam \
+                              1> /home/dnanexus/out/log_files/sambamba_logs/"${prefix}".sambamba."${contig}".sort.stdout.log \
+                              2> /home/dnanexus/out/log_files/sambamba_logs/"${prefix}".sambamba."${contig}".sort.stderr.log
 
                 check_threads
 
@@ -210,28 +215,31 @@ if [[ "${run_cnvnator}" == "True" ]] || [[ "${run_delly}" == "True" ]] || [[ "${
 
                 if [[ "${run_lumpy}" == "True" ]]; then
                     echo "Running Lumpy for contig ${contig}"
-                    timeout 6h samtools view -h chr."${count}".bam | \
+                    #sambamba sort -n -o tmp.chr."${count}".bam chr."${count}".bam
+                    #mv -f tmp.chr."${count}".bam chr."${count}".bam
+                    timeout 6h bash -c "samtools view -h chr.\"${count}\".sorted.bam | \
                         samblaster --addMateTags | \
                         samblaster \
                         -a \
                         -e \
-                        -d /tmp/chr."${count}".disc.sam \
-                        -s /tmp/chr."${count}".split.sam && \
+                        -d /tmp/chr.\"${count}\".disc.sam \
+                        -s /tmp/chr.\"${count}\".split.sam \
+                        -o /dev/null && \
                     samtools view \
                         -S \
-                        -b /tmp/chr."${count}".disc.sam > chr."${count}".disc.bam &&
+                        -b /tmp/chr.\"${count}\".disc.sam > chr.\"${count}\".disc.bam &&
                     samtools view \
                         -S \
-                        -b /tmp/chr."${count}".split.sam > chr."${count}".split.bam &&
+                        -b /tmp/chr.\"${count}\".split.sam > chr.\"${count}\".split.bam &&
                     source activate py2.7 &&
                     lumpyexpress \
-                        -B chr."${count}".bam \
-                        -S chr."${count}".disc.bam \
-                        -D chr."${count}".split.bam \
-                        -o lumpy."${count}".vcf \
+                        -B chr.\"${count}\".bam \
+                        -S chr.\"${count}\".disc.bam \
+                        -D chr.\"${count}\".split.bam \
+                        -o lumpy.\"${count}\".vcf \
                         ${lumpy_exclude_string} -k 1> \
-                        /home/dnanexus/out/log_files/lumpy_logs/"${prefix}".lumpy."${count}".stdout.log \
-                        2> /home/dnanexus/out/log_files/lumpy_logs/"${prefix}".lumpy."${count}".stderr.log &
+                        /home/dnanexus/out/log_files/lumpy_logs/\"${prefix}\".lumpy.\"${count}\".stdout.log \
+                        2> /home/dnanexus/out/log_files/lumpy_logs/\"${prefix}\".lumpy.\"${count}\".stderr.log &"
                         lumpy_merge_command="$lumpy_merge_command lumpy.${count}.vcf"
                 fi
             fi
@@ -469,7 +477,7 @@ if [[ "${run_genotype_candidates}" == "True" ]]; then
         echo "Running SVTyper on Lumpy outputs"
         mkdir svtype_lumpy
         if [[ -f lumpy.vcf ]]; then
-            cat lumpy.vcf
+            # cat lumpy.vcf
             bash /home/dnanexus/parallelize_svtyper.sh lumpy.vcf svtype_lumpy \
                       "${prefix}".lumpy.svtyped.vcf "${illumina_bam}"
         else
