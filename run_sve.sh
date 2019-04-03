@@ -5,7 +5,7 @@ source check_functions
 
 set -o errexit
 
-VCF_FILES_DIR=Null
+BAM_FILE=Null
 REF_GENOME=Null
 THREADS=1
 OUT_DIR=Null
@@ -15,19 +15,14 @@ ARGNUM=$#
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case "${!i}" in
-    -v | --vcf_directory )
+    -b | --bam_file )
       check_args "${!OPTARG}" "{$i}" || exit 1
-      VCF_FILES_DIR="${!OPTARG}"
+      BAM_FILE="${!OPTARG}"
       i=$((i+1))
       ;;
     -r | --reference_genome )
       check_args "${!OPTARG}" "{$i}" || exit 1
       REF_GENOME="${!OPTARG}"
-      i=$((i+1))
-      ;;
-    -t | --number_threads )
-      check_args "${!OPTARG}" "{$i}" || exit 1
-      THREADS="${!OPTARG}"
       i=$((i+1))
       ;;
     -o | --output_directory )
@@ -41,7 +36,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       i=$((i+1))
       ;;
     -h | --help )
-      usage_fusor
+      usage_sve
       exit 0
       ;;
     * )
@@ -51,20 +46,20 @@ for (( i=1; i<=ARGNUM; i++ )); do
   esac
 done
 
-[[ "${VCF_FILES_DIR}" != "Null" ]] || { echo "
-ERROR: VCF FILES DIRECTORY (-v <arg>) argument must be provided" && \
- usage_fusor && exit 1; }
+[[ "${BAM_FILE}" != "Null" ]] || { echo "
+ERROR: BAM FILE (-b <arg>) argument must be provided" && \
+ usage_sve && exit 1; }
 [[ "${REF_GENOME}" != "Null" ]] || { echo "
 ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
- usage_fusor && exit 1; }
+ usage_sve && exit 1; }
 [[ "${OUT_DIR}" != "Null" ]] || { echo "
 ERROR: OUTPUT DIRECTORY (-o <arg>) argument must be provided" && \
- usage_fusor && exit 1; }
+ usage_sve && exit 1; }
 
 EXIT_CODE=0
 MISSING_VOLUMES=()
 
-[[ -d /data/input_data ]] || { MISSING_VOLUMES+=(/data/input_data) && EXIT_CODE=1; }
+[[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
 [[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
 [[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
@@ -74,19 +69,19 @@ if [[ ${EXIT_CODE} = 1 ]]; then
     The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
-python /check_permissions.py /data/input_data ReadWrite || exit 1
+python /check_permissions.py /data/bam_files Read ${BAM_FILE} || exit 1
 python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
 python /check_permissions.py /data/ref_index ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
-    echo "run_fusorsv
+    echo "run_sve
 
 Commands:
   /usr/local/bin/python2.7 /tools/SVE/scripts/FusorSV/FusorSV.py \
   -r /tmp/\"${REF_GENOME}\" \
-  -i /data/input_data/\"${VCF_FILES_DIR}\" \
+  -i /data/input_data/\"${BAM_FILE}\" \
   -p \"${THREADS}\" \
   -o /data/output_data/\"${OUT_DIR}\"
 
@@ -106,8 +101,13 @@ Software used:
 
 fi
 
-/usr/local/bin/python2.7 /tools/SVE/scripts/FusorSV/FusorSV.py \
-  -r /data/ref_genome/"${REF_GENOME}" \
-  -i /data/input_data/"${VCF_FILES_DIR}" \
-  -p "${THREADS}" \
-  -o /data/output_data/"${OUT_DIR}"
+SV_CALLERS=("breakdancer" "breakseq" "cnvnator" "hydra" "delly" "lumpy" "cnmops")
+
+for caller in ${SV_CALLERS[@]}; do
+  timeout 6h /usr/local/bin/python2.7 /tools/SVE/bin/sve call \
+                -r /data/ref_genome/${REF_GENOME} \
+                -o /data/output_data/${OUT_DIR} \
+                -a ${caller} \
+                -g hg19 \
+                /data/bam_files/${BAM_FILE}
+done

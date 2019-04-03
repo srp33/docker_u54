@@ -1,5 +1,5 @@
 #################### SVE IMAGE #######################
-FROM debian:9.8
+FROM wanpinglee/sve:0.1.0
 
 #################### MAINTAINER #######################
 MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
@@ -9,8 +9,7 @@ ENV PATH="/usr/local/bin/wgs:${PATH}"
 
 ################## INSTALL TOOLS ######################
 ENV MINICONDA_VERSION=4.5.12
-RUN apt-get update \
- && apt-get install -y curl wget bzip2 git-all
+RUN apt-get update && apt-get install -y curl wget
 RUN cd /
 RUN curl -LO http://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh
 RUN bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -p /miniconda -b
@@ -19,21 +18,11 @@ ENV PATH=/miniconda/bin:${PATH}
 RUN conda config --add channels bioconda \
  && conda config --add channels conda-forge
 RUN conda install samtools=1.9 bwa=0.7.17 gatk4=4.1.0.0-0 delly=0.8.1-0 \
-    sambamba=0.6.8 samblaster=0.1.24 manta=1.5.0 pysam=0.15.0 numpy=1.16.2 \
-    picard=2.18.29-0 perl-list-moreutils=0.428
+    sambamba=0.6.8 samblaster=0.1.24 manta=1.5.0 pysam=0.15.0 numpy=1.16.2
 RUN conda create -n py2.7 python=2.7
-RUN conda install strelka=2.9.10-0 lumpy-sv=0.2.13 subprocess32=3.5.3 \
-    htseq=0.11.2 cython=0.29.6 svtyper=0.7.0 survivor=1.0.6 -n py2.7
+RUN conda install strelka=2.9.10-0 lumpy-sv=0.2.13 subprocess32=3.5.3 htseq=0.11.2 cython=0.29.6 -n py2.7
 ADD parliament2_overwrites/svtyper_env.yml /home/dnanexus/svtyper_env.yml
 RUN conda env create -n svtyper_env --file /home/dnanexus/svtyper_env.yml
-RUN alias awk=gawk
-
-################## INSTALL GOSU ########################
-ARG GOSU_VERSION=1.10
-RUN dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
- && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
- && chmod +x /usr/local/bin/gosu \
- && gosu nobody true
 
 ## TOOLS THAT DO NOT NEED TO BE INSTALLED UNDER PARLIAMENT2 #####
 # py3.6 samtools sambamba samblaster
@@ -69,8 +58,6 @@ ADD call_structural_variants_manta.sh /usr/local/bin/wgs/call_structural_variant
 ADD samblast.sh /usr/local/bin/wgs/samblast
 ADD call_structural_variants_lumpy.sh /usr/local/bin/wgs/call_structural_variants_lumpy
 ADD call_structural_variants_delly.sh /usr/local/bin/wgs/call_structural_variants_delly
-ADD entrypoint.sh /usr/local/bin/wgs/entrypoint
-ADD test_svtyper_env.sh /usr/local/bin/wgs/test_svtyper_env
 
 ################ ADD OTHER SCRIPTS ####################
 ADD run_parliament2.sh /usr/local/bin/run_parliament2
@@ -79,14 +66,10 @@ ADD run_sve.sh /usr/local/bin/run_sve
 #RUN chmod a+rwx -R /home/dnanexus
 
 ################## SETUP WORKDIR #######################
-RUN chmod 777 /etc/passwd
 WORKDIR /data
-ENV LOGNAME=dockuser
-ENV USER=dockuser
-ENV HOME=/data
 
 ######## OVERRIDE PARLIAMENT2 ENTRYPOINT ##############
-ENTRYPOINT ["entrypoint"]
+ENTRYPOINT [""]
 
 ##################### RUN BWA #########################
 CMD echo_usage

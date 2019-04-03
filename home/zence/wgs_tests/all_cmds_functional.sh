@@ -1,0 +1,18 @@
+#! /bin/bash
+
+add_read_groups
+apply_bqsr
+base_recalibrator
+bwa_mem_align
+call_somatic_variants_gatk4
+call_somatic_variants_strelka
+call_structural_variants_delly
+call_structural_variants_lumpy
+call_structural_variants_manta
+index_bam
+mark_duplicates
+merge_bams
+samblast
+samtools_mpileup
+slice_bam
+sort_bam

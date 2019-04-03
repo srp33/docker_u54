@@ -84,7 +84,7 @@ if [[ ${EXIT_CODE} = 1 ]]; then
     The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
-python /check_permissions.py /data/bam_files ReadWrite || exit 1
+python /check_permissions.py /data/bam_files Read "${BAM_FILE}" || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
 
 if [[ ${VERSION_LOG} != "" ]]; then

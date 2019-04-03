@@ -2,5 +2,6 @@ name: svtyper_env
 channels:
 dependencies:
    - python=2.7
+   - pip=19.0.3
    - pip:
-     - "--editable=git+https://github.com/hall-lab/svtyper.git#egg=svtyper_git"
+     - "git+https://github.com/hall-lab/svtyper.git#egg=svtyper_git"
