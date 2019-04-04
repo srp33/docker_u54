@@ -1,11 +1,13 @@
 #################### SVE IMAGE #######################
-FROM debian:9.8
+FROM ubuntu:18.04
 
 #################### MAINTAINER #######################
 MAINTAINER Zachary Elias Ence <zac.ence@gmail.com>
 
 ################## ADD TO PATH ########################
 ENV PATH="/usr/local/bin/wgs:${PATH}"
+ENV TZ=US
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 ################## INSTALL TOOLS ######################
 ENV MINICONDA_VERSION=4.5.12
@@ -70,17 +72,22 @@ ADD samblast.sh /usr/local/bin/wgs/samblast
 ADD call_structural_variants_lumpy.sh /usr/local/bin/wgs/call_structural_variants_lumpy
 ADD call_structural_variants_delly.sh /usr/local/bin/wgs/call_structural_variants_delly
 ADD entrypoint.sh /usr/local/bin/wgs/entrypoint
-ADD test_svtyper_env.sh /usr/local/bin/wgs/test_svtyper_env
+ADD svtype_vcf.sh /usr/local/bin/wgs/svtype_vcf
+ADD run_survivor.sh /usr/local/bin/wgs/run_survivor
+ADD test_survivor.sh /usr/local/bin/wgs/test_survivor
 
 ################ ADD OTHER SCRIPTS ####################
 ADD run_parliament2.sh /usr/local/bin/run_parliament2
 ADD run_fusorsv.sh /usr/local/bin/run_fusorsv
 ADD run_sve.sh /usr/local/bin/run_sve
+ADD sample_files /miniconda/envs/py2.7/bin/sample_files
 #RUN chmod a+rwx -R /home/dnanexus
 
 ################## SETUP WORKDIR #######################
-RUN chmod 777 /etc/passwd
 WORKDIR /data
+RUN chmod 777 /data \
+ && chmod 777 /etc/passwd \
+ && chmod 777 /miniconda/envs/py2.7/bin/sample_files
 ENV LOGNAME=dockuser
 ENV USER=dockuser
 ENV HOME=/data
