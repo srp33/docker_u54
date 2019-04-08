@@ -102,10 +102,10 @@ source activate py2.7
 
 if [[ -d /data/input_data/"${VCF_ARG}" ]]; then
   for vcf_file in /data/input_data/"${VCF_ARG}"/"${SAMPLE}"*.vcf; do
-    cp /data/input_data/"${VCF_ARG}"/"${vcf_file##*/}" ./"${vcf_file##*/}"
+    ln -s /data/input_data/"${VCF_ARG}"/"${vcf_file##*/}" ./"${vcf_file##*/}"
   done
   #cd /data/input_data/"${VCF_ARG}"
-  ls /data/input_data/"${VCF_ARG}"/${SAMPLE}*.vcf > sample_files
+  ls ${SAMPLE}*.vcf > sample_files
   VCF_FILE=sample_files
 elif [[ -f /data/input_data/"${VCF_ARG}" ]]; then
   echo "ERROR: File with VCF names not currently supported. Please give directory containing \
