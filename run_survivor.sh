@@ -82,23 +82,6 @@ ERROR: VCF FILE (-i <arg>) argument must be provided" && \
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
  usage_survivor && exit 1; }
 
-if [[ -d /data/input_data/"${VCF_ARG}" ]]; then
-  for vcf_file in /data/input_data/"${VCF_ARG}"/"${SAMPLE}"*.vcf; do
-    ln -s /data/input_data/"${VCF_ARG}"/"${vcf_file##*/}" ./"${vcf_file##*/}"
-  done
-  ls ${SAMPLE}*.vcf > sample_files
-  #chmod 755 sample_files
-  VCF_FILE=sample_files
-elif [[ -f /data/input/data/"${VCF_ARG}" ]]; then
-  echo "ERROR: File with VCF names not currently supported. Please give directory containing \
-VCF files as input. If necessary, give sample (or common beginning) of desired VCF files."
-  exit 1
-else
-  echo "ERROR: ${VCF_ARG} not found!!"
-  exit 1
-fi
-
-
 EXIT_CODE=0
 MISSING_VOLUMES=()
 
@@ -112,8 +95,26 @@ if [[ ${EXIT_CODE} = 1 ]]; then
 fi
 
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
-python /check_permissions.py /data/input_data Read "${VCF_FILE}" || exit 1
+python /check_permissions.py /data/input_data Read $(cd /data/input_data && ls | head -1) || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
+
+source activate py2.7
+
+if [[ -d /data/input_data/"${VCF_ARG}" ]]; then
+  for vcf_file in /data/input_data/"${VCF_ARG}"/"${SAMPLE}"*.vcf; do
+    cp /data/input_data/"${VCF_ARG}"/"${vcf_file##*/}" ./"${vcf_file##*/}"
+  done
+  #cd /data/input_data/"${VCF_ARG}"
+  ls /data/input_data/"${VCF_ARG}"/${SAMPLE}*.vcf > sample_files
+  VCF_FILE=sample_files
+elif [[ -f /data/input_data/"${VCF_ARG}" ]]; then
+  echo "ERROR: File with VCF names not currently supported. Please give directory containing \
+VCF files as input. If necessary, give sample (or common beginning) of desired VCF files."
+  exit 1
+else
+  echo "ERROR: /data/input_data/${VCF_ARG} not found!!"
+  exit 1
+fi
 
 if [[ ${VERSION_LOG} != "" ]]; then
 
@@ -145,9 +146,7 @@ Software used:
 
 fi
 
-source activate py2.7
-
-survivor merge \
+SURVIVOR merge \
   "${VCF_FILE}" \
   ${MAX_DISTANCE} \
   ${MIN_AGREEMENT} \

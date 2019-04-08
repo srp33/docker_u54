@@ -8,6 +8,8 @@ which SURVIVOR
 
 cd /data/input_data/piped_vcfs/101024
 
-ls /data/input_data/piped_vcfs/101024*.vcf > sample_files
+ls /data/input_data/piped_vcfs/101024/*.vcf > sample_files
 
-SURVIVOR merge sample_files 1000 2 1 1 0 30 testing.surv.vcf
+cat sample_files
+
+SURVIVOR merge sample_files 1000 2 1 1 0 30 /data/output_data/testing.surv.vcf

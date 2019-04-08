@@ -663,7 +663,7 @@ considerably lengthen the process.
 "
 }
 
-usage_mpileup () {
+usage_survivor () {
   echo "run_survivor
 
 Description:
