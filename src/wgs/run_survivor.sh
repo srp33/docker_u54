@@ -140,8 +140,8 @@ Software used:
   Python:
     version $( get_python_version )
 
-  svtyper:
-    version $( get_conda_version svtyper )
+  SURVIVOR:
+    version $( get_conda_version SURVIVOR )
 " > /data/output_data/"${VERSION_LOG}"
 
 fi

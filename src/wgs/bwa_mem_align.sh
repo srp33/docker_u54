@@ -203,6 +203,11 @@ if [[ ${READ2} = "" ]]; then
               'int((NR-1)/4)%chunks==process_chunk') | \
             samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
     else
+        #if [[ ${WORK_QUEUE} = 1 ]]; then
+        #    use_make_queue \
+        #        -c "bwa" \
+        #        -c "samtools" \
+        #        -i /data/input_data/"${READ1}" \
         bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
             /data/input_data/"${READ1}" | \
             samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"

@@ -92,4 +92,8 @@ Software used:
 
 fi
 
-sambamba sort -t ${THREADS} ${BY_NAME} -o /data/output_data/"${OUTPUT}" /data/bam_files/"${BAM_FILE}"
+sambamba sort \
+  -t ${THREADS} \
+  ${BY_NAME} \
+  -o /data/output_data/"${OUTPUT}" \
+  /data/bam_files/"${BAM_FILE}"
