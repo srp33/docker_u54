@@ -77,6 +77,9 @@ A variety of arguments must be specified, as described below:
     - The `-s1` and `-s2` arguments indicate the names of the FASTQ files that will be aligned; these files should be stored in the input_data volume specified above and should represent the first and second side of the paired-end reads, respectively.
     - The `-t` argument indicates the number of threads/cores that should be used during alignment; this argument should be a positive integer and is optional.
     - The `-o` argument indicates the name of the `bam` file that will be created (extension should be included).
+    
+###Running through Singularity
+[TODO]
 
 ## Feedback
 
