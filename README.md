@@ -78,8 +78,38 @@ A variety of arguments must be specified, as described below:
     - The `-t` argument indicates the number of threads/cores that should be used during alignment; this argument should be a positive integer and is optional.
     - The `-o` argument indicates the name of the `bam` file that will be created (extension should be included).
     
-###Running through Singularity
-[TODO]
+##Running through Singularity
+
+This container may also be run using [Singularity](https://www.sylabs.io/singularity/). With Singularity installed, the user
+will execute commands in the following manner (using the example from before):
+
+```bash
+singularity run \
+  --bind /MyData/Reference_Genomes/hg19:/data/ref_genome \
+  --bind /MyData/FASTQ:/data/input_data \
+  --bind /MyData/BAM:/data/output_data \
+  docker://srp33/somatic_wgs:latest \
+  bwa_mem_align \
+    -r ucsc.hg19.fasta.gz \
+    -s1 101024.1.fastq.gz \
+    -s2 101024.2.fastq.gz \
+    -o 101024.bam \
+    -t 10
+```
+
+There are three major differences here:
+
+1. The `-v` flag should be replaced with `--bind` or `-B`
+   * The user should ask for the system administrator to [allow bind paths](https://singularity-admindoc.readthedocs.io/en/latest/the_singularity_config_file.html#user-bind-control-boolean-default-yes),
+   which will allow for this behavior
+2. The `--user` flag is useless since Singularity does not give root permissions
+3. The `--rm` flag is not available. If the user wishes to  remove the current container from the
+cache, the command `singularity cache clean` will remove oci blob files without removing
+images from the `~/.singularity` directory
+
+The user should also be aware that Singularity will attempt to bind the `$HOME` directory
+to the container. This should not cause any issues with commands in this container,
+however, the user should still be cautious and aware of the default behavior of Singularity.
 
 ## Feedback
 

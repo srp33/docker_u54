@@ -114,18 +114,18 @@ python /check_permissions.py input_data Read "${READ1}" || exit 1
 python /check_permissions.py output_data ReadWrite || exit 1
 python /check_permissions.py ref_index ReadWrite || exit 1
 
-ln -s ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
 
 # Check for necessary index files in ref_index directory
 #   If one of the files is missing, bwa index will be run
 
-for filename in ref_index/*; do
+for filename in /data/ref_index/*; do
     REF_INDEX_FILES+=($(echo "${filename##*/}"))
 done
 
 for NEEDED_FILE in ${NEEDED_FILES[@]}; do
     { [[ " ${REF_INDEX_FILES[@]} " =~ " ${NEEDED_FILE} " ]] \
-&& ln -s ref_index/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
+&& ln -s /data/ref_index/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
 done
 
 if [[ ${CHUNKS} -gt 1 ]]; then
@@ -141,7 +141,7 @@ if [[ ${REF_INDEXED} == 1 ]]; then
 
     for NEEDED_FILE in ${NEEDED_FILES[@]}; do
         mv /tmp/"${NEEDED_FILE}" ref_index
-        ln -s ref_index/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"
+        ln -s /data/ref_index/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"
     done
 fi
 
@@ -150,26 +150,26 @@ if [[ ${VERSION_LOG} != "" ]]; then
     if [[ ${READ2} = "" ]]; then
         if [[ ${CHUNKS} -gt 1 ]]; then
             COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \\
-    <(zcat input_data/\"${READ1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
+    <(zcat /data/input_data/\"${READ1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
       'int((NR-1)/4)%chunks==process_chunk') |\\
-    samtools view -@ ${THREADS} -S -b > output_data/\"${OUT_NAME}\".${PROCESS_CHUNK}.bam"
+    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUT_NAME}\".${PROCESS_CHUNK}.bam"
         else
             COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \
-    input_data/\"${READ1}\" | \
-    samtools view -@ ${THREADS} -S -b > output_data/\"${OUTPUT}\""
+    /data/input_data/\"${READ1}\" | \
+    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
         fi
     else
         if [[ ${CHUNKS} -gt 1 ]]; then
             COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \\
-    <(zcat input_data/\"${READ1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
+    <(zcat /data/input_data/\"${READ1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
       'int((NR-1)/4)%chunks==process_chunk') \\
-    <(zcat input_data/\"${READ2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
+    <(zcat /data/input_data/\"${READ2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
       'int((NR-1)/4)%chunks==process_chunk') | \\
-    samtools view -@ ${THREADS} -S -b > output_data/\"${OUT_NAME}\".${PROCESS_CHUNK}.bam"
+    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUT_NAME}\".${PROCESS_CHUNK}.bam"
         else
             COMMAND="bwa mem -t ${THREADS} /tmp/\"${REF_GENOME}\" \\
-    input_data/\"${READ1}\" input_data/\"${READ2}\" | \\
-    samtools view -@ ${THREADS} -S -b > output_data/\"${OUTPUT}\""
+    /data/input_data/\"${READ1}\" /data/input_data/\"${READ2}\" | \\
+    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
         fi
     fi
 
@@ -192,38 +192,38 @@ Software used:
 
   samtools:
     version $( get_conda_version samtools )
-" > output_data/"${VERSION_LOG}"
+" > /data/output_data/"${VERSION_LOG}"
 
 fi
 
 if [[ ${READ2} = "" ]]; then
     if [[ ${CHUNKS} -gt 1 ]]; then
         bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
-            <(zcat input_data/"${READ1}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
+            <(zcat /data/input_data/"${READ1}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
               'int((NR-1)/4)%chunks==process_chunk') | \
-            samtools view -@ ${THREADS} -S -b > output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
+            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
     else
         #if [[ ${WORK_QUEUE} = 1 ]]; then
         #    use_make_queue \
         #        -c "bwa" \
         #        -c "samtools" \
-        #        -i input_data/"${READ1}" \
+        #        -i /data/input_data/"${READ1}" \
         bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
-            input_data/"${READ1}" | \
-            samtools view -@ ${THREADS} -S -b > output_data/"${OUTPUT}"
+            /data/input_data/"${READ1}" | \
+            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
     fi
 else
     if [[ ${CHUNKS} -gt 1 ]]; then
         bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
-            <(zcat input_data/"${READ1}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
+            <(zcat /data/input_data/"${READ1}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
               'int((NR-1)/4)%chunks==process_chunk') \
-            <(zcat input_data/"${READ2}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
+            <(zcat /data/input_data/"${READ2}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
               'int((NR-1)/4)%chunks==process_chunk') | \
-            samtools view -@ ${THREADS} -S -b > output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
+            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
     else
         bwa mem -t ${THREADS} /tmp/"${REF_GENOME}" \
-            input_data/"${READ1}" input_data/"${READ2}" | \
-            samtools view -@ ${THREADS} -S -b > output_data/"${OUTPUT}"
+            /data/input_data/"${READ1}" /data/input_data/"${READ2}" | \
+            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
     fi
 
 fi
