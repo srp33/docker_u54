@@ -12,6 +12,7 @@ To get started, install the [Docker CE](https://docs.docker.com/install) softwar
 
 Currently, we support the following commands:
 
+* `index_fasta` (index a FASTA file using `bwa` and `samtools`)
 * `bwa_mem_align` (align FASTA files to a reference genome using `bwa mem`)
 * `sort_bam` (sort a BAM file using `sambamba`)
 * `index_bam` (index a BAM file using `sambamba`)

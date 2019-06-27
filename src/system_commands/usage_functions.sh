@@ -4,6 +4,42 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   echo "ERROR: This command is not available to users" && exit 1
 fi
 
+usage_index_fasta (){
+  echo "index_fasta
+
+Description:
+Index a FASTA file (reference genome) using bwa
+
+Options:
+  -r, --reference <name of FASTA file>
+  -h, --help
+  --log <destination file for version log> (Optional)
+
+Usage:
+docker run \\
+  -v <location of FASTA file>:/data/ref_genome \\
+  -v <location where output files will be stored>:/data/output_data \\
+  --user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:latest \\
+  index_fasta \\
+    -r <FASTA file> \\
+    --log <destination file for version log> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directories have been \
+created on the host operating system before executing this command:
+
+  <location of FASTA file>
+  <location where output files will be stored>
+
+  If the reference FASTA file is gzipped, a temporary \
+copy will be gunzipped into the container for the duration of this process. This will \
+considerably lengthen the process.
+"
+}
+
 usage_add_read_groups (){
   echo "add_read_groups
 
@@ -17,7 +53,7 @@ Options:
   -s, --sample <name of sample>
   -o, --output <name of output file>
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -32,7 +68,7 @@ docker run \\
     -lb <Library Identifier> \\
     -s <Sample> \\
     -o <name of output file> \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -55,7 +91,7 @@ Options:
   -bqsr, --bqsr_recal_file <name of input recalibration table for BQSR>
   -o, --output <name of output BAM file>
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -69,7 +105,7 @@ docker run \\
     -b <name of input BAM file> \\
     -bqsr <name of recalibration table> \\
     -o <name of output BAM file> \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -94,7 +130,7 @@ Options:
   -s, --known_sites <URL to database of known polymorphic sites> (May be called more than once)
   -o, --output <name of output recalibration table file>
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -112,7 +148,7 @@ docker run \\
     -s <name of VCF file> \\
     -s <name of VCF file> \\
     -o <name of output recalibration table file> \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -125,7 +161,7 @@ created on the host operating system before executing this command:
   <location of .fai index file>
   <location for output>
 
-  If .fai is not found, it will be created. If reference FASTA file is gzipped, a temporary \
+  If .fai is not found, it will be created. If the reference FASTA file is gzipped, a temporary \
 copy will be gunzipped into the container for the duration of this process. This will \
 considerably lengthen the process.
 
@@ -148,7 +184,7 @@ Options:
   -t, --nthreads <number of threads> (Optional)
   -c, --nchunks <number of chunks> (Optional)
   -p, --process_chunk <chunk to be processed> (Optional)
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -167,7 +203,7 @@ docker run \\
     -t <number of threads> (Optional) \\
     -c <number of chunks> (Optional) \\
     -p <chunk to be processed (Optional) \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -199,7 +235,7 @@ Options:
   -o, --output <name of output file>
   -r, --reference <name of reference FASTA file>
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -217,7 +253,7 @@ docker run \\
     -ns <normal sample> (Optional) \\
     -r <reference FASTA file> \\
     -o <name of output BAM file> \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -259,7 +295,7 @@ Options:
   -e, --exome (Optional)
   -O, --overwrite_runDir (Optional)
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -280,7 +316,7 @@ docker run \\
     -d <output directory name> \\
     --exome (Optional) \\
     --overwrite_runDir (Optional) \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -421,7 +457,7 @@ Options:
                 workflow scripts and output will be written> (Optional)
                 [Default: MantaWorkflow]
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -437,7 +473,7 @@ docker run \\
     -n <normal BAM file> \\
     -r <reference FASTA file> \\
     -d <output directory name> \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -469,19 +505,19 @@ Options:
   -t, --nthreads <number of threads> (Optional)
   -b, --bam <name of BAM file>
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
   -v <location of BAM files>:/data/bam_files \\
-  -v <location for version log>:/data/output_data \\
+  -v <location where version log will be stored>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
   index_bam \\
      -b <BAM file> \\
      -t <number of threads> (Optional)
-     --log <destination file for log> (Optional)
+     --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -489,10 +525,10 @@ Notes:
 created on the host operating system before executing this command:
 
   <location of BAM files>
-  <location for version log>
+  <location where version log will be stored>
 
   --log is an optional argument, meaning that the volume \
-<location for version log>:/data/output_data is only required if --log is called.
+<location where version log will be stored>:/data/output_data is only required if --log is called.
 "
 }
 
@@ -507,7 +543,7 @@ Options:
   -b, --bam <name of BAM file>
   -o, --output <name of output file>
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -520,7 +556,7 @@ docker run \\
     -b <BAM file> \\
     -o <name of output file> \\
     -t <number of threads> (Optional) \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -543,7 +579,7 @@ Options:
   -o, --output <name of output file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -558,7 +594,7 @@ docker run \\
     ... \\
     -o <name of output file> \\
     -t <number of threads> (Optional) \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -582,7 +618,7 @@ Options:
   -d, --discordant_file <name of output discordant-reads BAM file (Default: SAMPLE.disc.bam)
   -o, --output <destination for output> (Default: /dev/null)
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -596,7 +632,7 @@ docker run \\
     -s <name of output split-reads BAM file> (Default: SAMPLE.split.bam) \\
     -d <name of output discordant-reads BAM file> (Default: SAMPLE.disc.bam) \\
     -o <destination for output> (Default: /dev/null) \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -629,7 +665,7 @@ Options:
   -r, --reference <name of reference FASTA file>
   -o, --output <name of output file>
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -645,7 +681,7 @@ docker run \\
     -n <normal BAM file> \\
     -r <reference FASTA file> \\
     -o <name of output file> \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -657,7 +693,7 @@ created on the host operating system before executing this command:
   <location of .fai index file>
   <location for output>
 
-  If .fai is not found, it will be created. If reference FASTA file is gzipped, a temporary \
+  If .fai is not found, it will be created. If the reference FASTA file is gzipped, a temporary \
 copy will be gunzipped into the container for the duration of this process. This will \
 considerably lengthen the process.
 "
@@ -680,7 +716,7 @@ Options:
   --ignore_strand (Optional)
   --estimate_by_size (Optional)
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -699,7 +735,7 @@ docker run \\
     --ignore_type \\
     --ignore_strand \\
     --estimate_by_size \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -729,7 +765,7 @@ Options:
   -o, --output <name of output file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -743,7 +779,7 @@ docker run \\
     -r <region to slice> \\
     -o <name of output file> \\
     -t <number of threads> (Optional) \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
@@ -766,7 +802,7 @@ Options:
   -o, --output <name of output file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
   -n, --sort_by_name (Optional)
 
 Usage:
@@ -780,7 +816,7 @@ docker run \\
     -b <BAM file> \\
     -o <name of output file> \\
     -t <number of threads> (Optional) \\
-    --log <destination file for log> (Optional) \\
+    --log <destination file for version log> (Optional) \\
     -n (Optional)
 
 Notes:
@@ -809,7 +845,7 @@ Options:
   -o, --output <name of output VCF file>
   -l, --lib_info <name of JSON file to read/write> (Optional)
   -h, --help
-  --log <destination file for log> (Optional)
+  --log <destination file for version log> (Optional)
 
 Usage:
 docker run \\
@@ -824,7 +860,7 @@ docker run \\
     -b <BAM file> \\
     -l <JSON file> \\
     -o <output name> \\
-    --log <destination file for log> (Optional)
+    --log <destination file for version log> (Optional)
 
 Notes:
 
