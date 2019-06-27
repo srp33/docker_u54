@@ -1,4 +1,0 @@
-#! /bin/bash
-
-#docker login -u=srp33
-docker push srp33/somatic_wgs

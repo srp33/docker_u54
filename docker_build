@@ -17,3 +17,6 @@ set -o errexit
 docker build -t srp33/somatic_wgs:version$(cat VERSION) .
 
 #docker run -i -t --rm srp33/somatic_wgs:version$(cat VERSION) /bin/bash
+
+#docker login -u=srp33
+docker push srp33/somatic_wgs
