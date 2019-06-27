@@ -31,6 +31,7 @@ ADD src/system_commands/entrypoint.sh /usr/local/bin/wgs/entrypoint
 ADD src/system_commands/check_permissions.py /
 
 ################ ADD WGS SCRIPTS ######################
+ADD src/wgs/index_fasta.sh /usr/local/bin/wgs/index_fasta
 ADD src/wgs/bwa_mem_align.sh /usr/local/bin/wgs/bwa_mem_align
 ADD src/wgs/call_somatic_variants_gatk4.sh /usr/local/bin/wgs/call_somatic_variants_gatk4
 ADD src/wgs/call_somatic_variants_strelka.sh /usr/local/bin/wgs/call_somatic_variants_strelka

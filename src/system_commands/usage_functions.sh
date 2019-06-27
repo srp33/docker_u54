@@ -17,8 +17,8 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of FASTA file>:/data/ref_genome \\
-  -v <location where output files will be stored>:/data/output_data \\
+  -v <directory where FASTA file is stored>:/data/ref_genome \\
+  -v <directory where output files will be stored>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -31,8 +31,8 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of FASTA file>
-  <location where output files will be stored>
+  <directory where FASTA file is stored>
+  <directory where output files will be stored>
 
   If the reference FASTA file is gzipped, a temporary \
 copy will be gunzipped into the container for the duration of this process. This will \
@@ -57,8 +57,8 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -75,8 +75,8 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location for output>
+  <directory with BAM files>
+  <output directory>
 "
 }
 
@@ -95,9 +95,9 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location of input recalibration table for BQSR>:/data/input_data \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <directory with input recalibration table for BQSR>:/data/input_data \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -112,9 +112,9 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location of input recalibration table for BQSR>
-  <location for output>
+  <directory with BAM files>
+  <directory with input recalibration table for BQSR>
+  <output directory>
 "
 }
 
@@ -134,11 +134,11 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location of VCF known sites files>:/data/vcf_files \\
-  -v <location of reference FASTA file>:/data/ref_genome \\
-  -v <location of reference .fai index file>:/data/ref_index \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <directory with VCF known sites files>:/data/vcf_files \\
+  -v <directory with reference FASTA file>:/data/ref_genome \\
+  -v <directory with reference .fai index file>:/data/ref_index \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -155,11 +155,11 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location of VCF known sites files>
-  <location of reference FASTA file>
-  <location of .fai index file>
-  <location for output>
+  <directory with BAM files>
+  <directory with VCF known sites files>
+  <directory with reference FASTA file>
+  <directory with .fai index file>
+  <output directory>
 
   If .fai is not found, it will be created. If the reference FASTA file is gzipped, a temporary \
 copy will be gunzipped into the container for the duration of this process. This will \
@@ -179,7 +179,7 @@ Options:
   -r, --reference <name of reference genome FASTA file>
   -s1, --sample1 <file 1>
   -s2, --sample2 <file 2> (Optional)
-  -o, --output <name of outputted BAM file>
+  -o, --output <name of output BAM file>
   -h, --help
   -t, --nthreads <number of threads> (Optional)
   -c, --nchunks <number of chunks> (Optional)
@@ -188,10 +188,10 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of reference FASTA file>:/data/ref_genome \\
-  -v <location of reference index files>:/data/ref_index \\
-  -v <location of FASTQ files>:/data/input_data \\
-  -v <location for outputted BAM file>:/data/output_data \\
+  -v <directory with reference FASTA file>:/data/ref_genome \\
+  -v <directory with reference index files>:/data/ref_index \\
+  -v <directory with FASTQ files>:/data/input_data \\
+  -v <directory for output BAM file>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -199,7 +199,7 @@ docker run \\
     -r <reference FASTA file> \\
     -s1 <file 1> \\
     -s2 <file 2> (Optional) \\
-    -o <name of outputted BAM file> \\
+    -o <name of output BAM file> \\
     -t <number of threads> (Optional) \\
     -c <number of chunks> (Optional) \\
     -p <chunk to be processed (Optional) \\
@@ -210,9 +210,9 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of reference FASTA file>
-  <location of FASTQ files>
-  <location for outputted BAM file>
+  <directory with reference FASTA file>
+  <directory with FASTQ files>
+  <directory for output BAM file>
 
   The --nchunks argument divides the FASTQ files into n number of chunks. The --process_chunk argument \
 specifies which chunk should be aligned. --process_chunk must be less than --nchunks and greater than or \
@@ -239,10 +239,10 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location of FASTA reference file>:/data/ref_genome \\
-  -v <location of .fai reference index file>:/data/ref_index \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <directory with FASTA reference file>:/data/ref_genome \\
+  -v <directory with .fai reference index file>:/data/ref_index \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -260,9 +260,9 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location of FASTA reference file>
-  <location for output>
+  <directory with BAM files>
+  <directory with FASTA reference file>
+  <output directory>
 
   Read group information must be included for in the tumor and normal BAM files. \
 See 'add_read_groups' for details on how to add this information.
@@ -299,11 +299,11 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location of FASTA reference file>:/data/ref_genome \\
-  -v <location of .fai reference index file>:/data/ref_index \\
-  -v <location of supplementary files>:/data/input_data \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <directory with FASTA reference file>:/data/ref_genome \\
+  -v <directory with .fai reference index file>:/data/ref_index \\
+  -v <directory with supplementary files>:/data/input_data \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -323,11 +323,11 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location of FASTA reference file>
-  <location of .fai reference index file>
-  <location of supplementary files>
-  <location for output>
+  <directory with BAM files>
+  <directory with FASTA reference file>
+  <directory with .fai reference index file>
+  <directory with supplementary files>
+  <output directory>
 
   This command currently requires tumor and normal BAM files.
 
@@ -374,10 +374,10 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM file>:/data/bam_files \\
-  -v <location of reference FASTA file>:/data/ref_genome \\
-  -v <location of reference .fai index file>:/data/ref_index \\
-  -v <location for output VCF file>:/data/output_data \\
+  -v <directory with BAM file>:/data/bam_files \\
+  -v <directory with reference FASTA file>:/data/ref_genome \\
+  -v <directory with reference .fai index file>:/data/ref_index \\
+  -v <directory for output VCF file>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -392,10 +392,10 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM file>
-  <location of reference FASTA file>
-  <location of reference .fai index file>
-  <location for output VCF file>
+  <directory with BAM file>
+  <directory with reference FASTA file>
+  <directory with reference .fai index file>
+  <directory for output VCF file>
 
   From the Delly docs: \"Delly needs a sorted, indexed and duplicate marked \
 bam file for every input sample.\"
@@ -418,8 +418,8 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM file>:/data/bam_files \\
-  -v <location for output VCF file>:/data/output_data \\
+  -v <directory with BAM file>:/data/bam_files \\
+  -v <directory for output VCF file>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -435,8 +435,8 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM file>
-  <location for output VCF file>
+  <directory with BAM file>
+  <directory for output VCF file>
 
   All BAM files must be coordinate-sorted. If not, Lumpy will throw an error. Please ensure that all \
 BAM files are sorted by using sort_bam before using call_structural_variants_lumpy.
@@ -461,10 +461,10 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location of FASTA reference file>:/data/ref_genome \\
-  -v <location of .fai reference index file>:/data/ref_index \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <directory with FASTA reference file>:/data/ref_genome \\
+  -v <directory with .fai reference index file>:/data/ref_index \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -480,10 +480,10 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location of FASTA reference file>
-  <location of .fai reference index file>
-  <location for output>
+  <directory with BAM files>
+  <directory with FASTA reference file>
+  <directory with .fai reference index file>
+  <output directory>
 
   This command currently requires tumor and normal BAM files. Both files must have been \
 previously sorted. This can be done using the sort_bam command.
@@ -509,7 +509,7 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
+  -v <directory with BAM files>:/data/bam_files \\
   -v <location where version log will be stored>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
@@ -524,7 +524,7 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
+  <directory with BAM files>
   <location where version log will be stored>
 
   --log is an optional argument, meaning that the volume \
@@ -547,8 +547,8 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -563,8 +563,8 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location for output>
+  <directory with BAM files>
+  <output directory>
 "
 }
 
@@ -583,8 +583,8 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -601,8 +601,8 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location for output>
+  <directory with BAM files>
+  <output directory>
 "
 }
 
@@ -622,8 +622,8 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM file>:/data/bam_files \\
-  -v <location for output and SAM files>:/data/output_data \\
+  -v <directory with BAM file>:/data/bam_files \\
+  -v <directory for output and SAM files>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -639,8 +639,8 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM file>
-  <location for output and SAM files>
+  <directory with BAM file>
+  <directory of output and SAM files>
 
   BAM file must be sorted by name (read ids) using sort_bam with the -n or --sort_by_name tag.
 
@@ -669,10 +669,10 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location of reference FASTA file>:/data/ref_genome \\
-  -v <location of reference .fai index file>:/data/ref_index \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <directory with reference FASTA file>:/data/ref_genome \\
+  -v <directory with reference .fai index file>:/data/ref_index \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -688,10 +688,10 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location of reference FASTA file>
-  <location of .fai index file>
-  <location for output>
+  <directory with BAM files>
+  <directory with reference FASTA file>
+  <directory with .fai index file>
+  <output directory>
 
   If .fai is not found, it will be created. If the reference FASTA file is gzipped, a temporary \
 copy will be gunzipped into the container for the duration of this process. This will \
@@ -720,8 +720,8 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of VCF directory>:/data/input_data \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with VCF directory>:/data/input_data \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -742,8 +742,8 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of VCF directory>
-  <location for output>
+  <directory with VCF directory>
+  <output directory>
 
   If the VCF directory contains VCF files that the user does not desire to include the \
 sample id (if the names of the desired VCF files begin with the sample id) or the common \
@@ -769,8 +769,8 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -786,8 +786,8 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location for output>
+  <directory with BAM files>
+  <output directory>
 "
 }
 
@@ -807,8 +807,8 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location for output>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -824,8 +824,8 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location for output>
+  <directory with BAM files>
+  <output directory>
 
   In most cases, the BAM file should be sorted by coordinates, however, in some cases (for example, \
 in order to run samblast) the BAM file must be sorted by name (read ids). \
@@ -849,9 +849,9 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM files>:/data/bam_files \\
-  -v <location of VCF file and JSON file to be read>:/data/input_data \\
-  -v <location for output and JSON file to be written>:/data/output_data \\
+  -v <directory with BAM files>:/data/bam_files \\
+  -v <directory with VCF file and JSON file to be read>:/data/input_data \\
+  -v <directory of output and JSON file to be written>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -867,9 +867,9 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM files>
-  <location of VCF file and JSON file to be read>
-  <location for output and JSON file to be written>
+  <directory with BAM files>
+  <directory with VCF file and JSON file to be read>
+  <directory of output and JSON file to be written>
 
   There is currently not functionality for JSON file to be written, but may eventually \
 come to light.
@@ -932,10 +932,10 @@ Options:
 
 Usage:
 docker run \\
-  -v <location of BAM file>:/data/bam_files \\
-  -v <location of reference FASTA file>:/data/ref_genome \\
-  -v <location of reference .fai index file>:/data/ref_index \\
-  -v <location for output directory>:/data/output_data \\
+  -v <directory with BAM file>:/data/bam_files \\
+  -v <directory with reference FASTA file>:/data/ref_genome \\
+  -v <directory with reference .fai index file>:/data/ref_index \\
+  -v <directory of output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
   srp33/somatic_wgs:latest \\
@@ -961,10 +961,10 @@ Notes:
   To avoid permissions issues, please ensure that the following directories have been \
 created on the host operating system before executing this command:
 
-  <location of BAM file>:/data/bam_files
-  <location of reference FASTA file>:/data/ref_genome
-  <location of reference .fai index file>:/data/ref_index
-  <location for output directory>:/data/output_data
+  <directory with BAM file>:/data/bam_files
+  <directory with reference FASTA file>:/data/ref_genome
+  <directory with reference .fai index file>:/data/ref_index
+  <directory of output directory>:/data/output_data
 
   BAM file is assumed to have been previously indexed. Index file must be in same directory as BAM \
 file with identical name plus the extension '.bai'.

@@ -15,3 +15,5 @@ set -o errexit
 
 #cd $tmpDir
 docker build -t srp33/somatic_wgs:version$(cat VERSION) .
+
+#docker run -i -t --rm srp33/somatic_wgs:version$(cat VERSION) /bin/bash

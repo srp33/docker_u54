@@ -4,4 +4,4 @@ echo "Additional details about this software can be found at https://github.com/
 
 Available commands:
 "
-ls /usr/local/bin/wgs | awk "{print $1;}"
+ls /usr/local/bin/wgs | grep -v entrypoint | awk "{print $1;}"
