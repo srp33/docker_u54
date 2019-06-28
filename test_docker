@@ -1,0 +1,5 @@
+#! /bin/bash
+
+set -o errexit
+
+docker run -i -t --rm srp33/somatic_wgs:version$(cat VERSION) /bin/bash

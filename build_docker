@@ -21,7 +21,5 @@ docker build -t srp33/somatic_wgs:$tag .
 cd "$currentDir"
 rm -rf $tmpDir
 
-#docker run -i -t --rm srp33/somatic_wgs:version$(cat VERSION) /bin/bash
-
 ##docker login -u=srp33
 docker push srp33/somatic_wgs

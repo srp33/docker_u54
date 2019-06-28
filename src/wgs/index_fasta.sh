@@ -66,7 +66,7 @@ fi
 
 bwa index -a bwtsw ${REF_GENOME_PATH}
 samtools faidx ${REF_GENOME_PATH}
-java -jar picard.jar CreateSequenceDictionary REFERENCE=${REF_GENOME_PATH} OUTPUT=${REF_GENOME_PATH}.dict
+picard CreateSequenceDictionary REFERENCE=${REF_GENOME_PATH} OUTPUT=${REF_GENOME_PATH}.dict
 
 REF_INDEX_FILES=("${REF_GENOME_PATH}".amb "${REF_GENOME_PATH}".ann "${REF_GENOME_PATH}".bwt "${REF_GENOME_PATH}".pac "${REF_GENOME_PATH}".sa "${REF_GENOME_PATH}".fai "${REF_GENOME_PATH}".dict)
 for REF_INDEX_FILE in ${REF_INDEX_FILES[@]}; do
