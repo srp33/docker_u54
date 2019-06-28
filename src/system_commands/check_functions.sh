@@ -8,7 +8,7 @@ check_args (){
     { [[ $1 != -* ]] && [[ $1 != "" ]]; } || { echo "$2 requires 1 argument" && exit 1; }
 }
 
-print_bash_version (){
+get_bash_version (){
     bash --version
 }
 
