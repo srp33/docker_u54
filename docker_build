@@ -2,21 +2,26 @@
 
 set -o errexit
 
-#tmpDir=/tmp/somatic-wgs-build
+currentDir="$(pwd)"
+tmpDir=/tmp/somatic-wgs-build
 
-#mkdir -p $tmpDir
-#rm -rf $tmpDir/*
+mkdir -p $tmpDir
+rm -rf $tmpDir/*
+cp -r * $tmpDir/
 
-#cp -v Dockerfile $tmpDir
-#cp -v *.sh $tmpDir
-#cp -v *.py $tmpDir
-#cp -v LICENSE $tmpDir
-#cp -v README.md $tmpDir
+tag=version$(cat VERSION)
 
-#cd $tmpDir
-docker build -t srp33/somatic_wgs:version$(cat VERSION) .
+cd $tmpDir
+
+sed "s/{tag}/$tag/g" src/system_commands/usage_functions_template.sh > src/system_commands/usage_functions.sh
+rm src/system_commands/usage_functions_template.sh
+
+docker build -t srp33/somatic_wgs:$tag .
+
+cd "$currentDir"
+rm -rf $tmpDir
 
 #docker run -i -t --rm srp33/somatic_wgs:version$(cat VERSION) /bin/bash
 
-#docker login -u=srp33
+##docker login -u=srp33
 docker push srp33/somatic_wgs

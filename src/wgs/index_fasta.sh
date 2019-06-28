@@ -53,38 +53,39 @@ fi
 python /check_permissions.py ref_genome Read "${REF_GENOME}" || exit 1
 python /check_permissions.py output_data ReadWrite || exit 1
 
-if [[ ${VERSION_LOG} != "" ]]; then
+REF_GENOME_PATH=/tmp/ref.fa
 
-  echo "index_fasta
-
-Commands:
-  bwa index -a bwtsw /tmp/"${REF_GENOME}"
-  samtools faidx /tmp/"${REF_GENOME}"
-
-Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
-
-Software used:
-  Bash:
-    $( bash --version )
-
-  Python:
-    version $( get_python_version )
-
-  bwa:
-    version $( get_conda_version bwa )
-
-  samtools:
-    version $( get_conda_version samtools )
-" > /data/output_data/"${VERSION_LOG}"
+if file --mime-type "/data/ref_genome/${REF_GENOME}" | grep -q gzip$
+then
+  gunzip -c "/data/ref_genome/${REF_GENOME}" >${REF_GENOME_PATH}
+  OUTPUT_PREFIX=$(get_file_without_extension ${REF_GENOME})
+else
+  ln -s "/data/ref_genome/${REF_GENOME}" ${REF_GENOME_PATH}
+  OUTPUT_PREFIX=${REF_GENOME}
 fi
 
-ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+bwa index -a bwtsw ${REF_GENOME_PATH}
+samtools faidx ${REF_GENOME_PATH}
+java -jar picard.jar CreateSequenceDictionary REFERENCE=${REF_GENOME_PATH} OUTPUT=${REF_GENOME_PATH}.dict
 
-bwa index -a bwtsw /tmp/"${REF_GENOME}"
-samtools faidx /tmp/"${REF_GENOME}"
-
-REF_INDEX_FILES=("${REF_GENOME}".amb "${REF_GENOME}".ann "${REF_GENOME}".bwt "${REF_GENOME}".pac "${REF_GENOME}".sa "${REF_GENOME}".fai)
-
+REF_INDEX_FILES=("${REF_GENOME_PATH}".amb "${REF_GENOME_PATH}".ann "${REF_GENOME_PATH}".bwt "${REF_GENOME_PATH}".pac "${REF_GENOME_PATH}".sa "${REF_GENOME_PATH}".fai "${REF_GENOME_PATH}".dict)
 for REF_INDEX_FILE in ${REF_INDEX_FILES[@]}; do
-    mv /tmp/"${REF_INDEX_FILE}" /data/output_data
+    REF_INDEX_FILE_EXTENSION="$(get_file_extension ${REF_INDEX_FILE})"
+    mv "${REF_INDEX_FILE}" /data/output_data/${OUTPUT_PREFIX}.${REF_INDEX_FILE_EXTENSION}
 done
+
+if [[ ${VERSION_LOG} != "" ]]; then
+  echo "
+Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
+
+$( get_bash_version )
+
+$( get_python_version )
+
+$( get_conda_version bwa )
+
+$( get_conda_version samtools )
+
+$( get_conda_version picard )
+" > /data/output_data/"${VERSION_LOG}"
+fi

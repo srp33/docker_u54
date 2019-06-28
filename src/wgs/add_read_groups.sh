@@ -110,8 +110,5 @@ Software used:
 
 fi
 
-#samtools addreplacerg -r ID:"${GROUP_ID}" -r LB:"${GROUP_LB}" -r SM:"${SAMPLE}" \
-#-r PL:Illumina -o /data/output_data/"${OUTPUT}" /data/bam_files/"${BAM_FILE}"
-
 picard AddOrReplaceReadGroups I=/data/bam_files/"${BAM_FILE}" O=/data/output_data/"${OUTPUT}" \
 ID="${GROUP_ID}" LB="${GROUP_LB}" SM="${SAMPLE}" PL=ILLUMINA PU=platform

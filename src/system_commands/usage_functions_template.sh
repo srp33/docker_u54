@@ -8,7 +8,7 @@ usage_index_fasta (){
   echo "index_fasta
 
 Description:
-Index a FASTA file (reference genome) using bwa
+This command creates index files from a reference genome (FASTA file). It uses bwa, samtools, and Picard to create index files.
 
 Options:
   -r, --reference <name of FASTA file>
@@ -21,7 +21,7 @@ docker run \\
   -v <directory where output files will be stored>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   index_fasta \\
     -r <FASTA file> \\
     --log <destination file for version log> (Optional)
@@ -61,7 +61,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   add_read_groups \\
     -b <BAM file> \\
     -id <Group ID> \\
@@ -100,7 +100,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   apply_bqsr \\
     -b <name of input BAM file> \\
     -bqsr <name of recalibration table> \\
@@ -141,7 +141,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   base_recalibrator \\
     -b <name of input BAM file \\
     -r <reference FASTA file> \\
@@ -194,7 +194,7 @@ docker run \\
   -v <directory for output BAM file>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   bwa_mem_align \\
     -r <reference FASTA file> \\
     -s1 <file 1> \\
@@ -245,7 +245,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   call_somatic_variants_gatk4 \\
     -t <tumor BAM file> \\
     -ts <tumor sample> (Optional) \\
@@ -306,7 +306,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   call_somatic_variants_strelka \\
     -t <tumor BAM file> \\
     -n <normal BAM file> \\
@@ -380,7 +380,7 @@ docker run \\
   -v <directory for output VCF file>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   call_structural_variants_delly \\
     -b <name of input BAM file> \\
     -r <name of reference FASTA file> \\
@@ -422,7 +422,7 @@ docker run \\
   -v <directory for output VCF file>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   call_structural_variants_lumpy \\
     -b <name of input BAM file> \\
     -s <name of split-reads BAM file> \\
@@ -467,7 +467,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   call_structural_variants_manta \\
     -t <tumor BAM file> \\
     -n <normal BAM file> \\
@@ -513,7 +513,7 @@ docker run \\
   -v <location where version log will be stored>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   index_bam \\
      -b <BAM file> \\
      -t <number of threads> (Optional)
@@ -551,7 +551,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   mark_duplicates \\
     -b <BAM file> \\
     -o <name of output file> \\
@@ -587,7 +587,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   merge_bams \\
     -b <BAM file> \\
     -b <BAM file> \\
@@ -626,7 +626,7 @@ docker run \\
   -v <directory for output and SAM files>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   samblast \\
     -b <name of input BAM file> \\
     -s <name of output split-reads BAM file> (Default: SAMPLE.split.bam) \\
@@ -675,7 +675,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   samtools_mpileup \\
     -t <tumor BAM file> \\
     -n <normal BAM file> \\
@@ -724,7 +724,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   run_survivor \\
     -v <VCF file directory> \\
     -o <name of output file> \\
@@ -773,7 +773,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   slice_bam \\
     -b <BAM file> \\
     -r <region to slice> \\
@@ -811,7 +811,7 @@ docker run \\
   -v <output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   sort_bam \\
     -b <BAM file> \\
     -o <name of output file> \\
@@ -854,7 +854,7 @@ docker run \\
   -v <directory of output and JSON file to be written>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   svtype_vcf \\
     -i <VCF file> \\
     -b <BAM file> \\
@@ -938,7 +938,7 @@ docker run \\
   -v <directory of output directory>:/data/output_data \\
   --user \$(id -u):\$(id -g) \\
   --rm \\
-  srp33/somatic_wgs:latest \\
+  srp33/somatic_wgs:{tag} \\
   run_parliament2 \\
     -b <name of BAM file> \\
     -r <name of reference FASTA file> \\

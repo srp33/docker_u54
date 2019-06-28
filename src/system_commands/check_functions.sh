@@ -8,6 +8,10 @@ check_args (){
     { [[ $1 != -* ]] && [[ $1 != "" ]]; } || { echo "$2 requires 1 argument" && exit 1; }
 }
 
+print_bash_version (){
+    bash --version
+}
+
 get_conda_version (){
     conda list --json $1 | python -c "import sys, json; print(json.load(sys.stdin)[0]['version'])"
 }
@@ -18,4 +22,15 @@ get_python_version (){
 
 get_python2_version (){
     python2.7 -c "import sys; print('.'.join(str(x) for x in sys.version_info[:3]))"
+}
+
+get_file_extension (){
+    filename=$(basename -- "$1")
+    extension="${filename##*.}"
+    echo "$extension"
+}
+
+get_file_without_extension (){
+    extension="$(get_file_extension $1)"
+    basename "$1" ".${extension}"
 }
