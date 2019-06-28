@@ -76,10 +76,14 @@ done
 
 if [[ ${VERSION_LOG} != "" ]]; then
   echo "Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
-  $( get_bash_version )
-  $( get_python_version )
-  $( get_conda_version bwa )
-  $( get_conda_version samtools )
-  $( get_conda_version picard )
+$( get_bash_version )
+
+$( get_python_version )
+
+$( get_conda_version bwa )
+
+$( get_conda_version samtools )
+
+$( get_conda_version picard )
   " > /data/output_data/"${VERSION_LOG}"
 fi

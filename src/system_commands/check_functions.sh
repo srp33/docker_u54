@@ -10,25 +10,21 @@ check_args (){
 
 get_bash_version (){
     bash --version
-    echo
 }
 
 get_conda_version (){
     echo "${1}:"
     conda list --json $1 | python -c "import sys, json; print(json.load(sys.stdin)[0]['version'])"
-    echo
 }
 
 get_python_version (){
     echo "Python:"
     python -c "import sys; print('.'.join(str(x) for x in sys.version_info[:3]))"
-    echo
 }
 
 get_python2_version (){
     echo "Python:"
     python2.7 -c "import sys; print('.'.join(str(x) for x in sys.version_info[:3]))"
-    echo
 }
 
 get_file_extension (){
