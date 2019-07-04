@@ -76,6 +76,7 @@ done
 
 if [[ ${VERSION_LOG} != "" ]]; then
   echo "Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
+
 $( get_bash_version )
 
 $( get_python_version )
