@@ -13,8 +13,8 @@ tag=version$(cat VERSION)
 
 cd $tmpDir
 
-sed "s/{tag}/$tag/g" src/system_commands/usage_functions_template.sh > src/system_commands/usage_functions.sh
-rm src/system_commands/usage_functions_template.sh
+sed "s/{tag}/$tag/g" src/system_commands/usage_functions_template > src/system_commands/usage_functions
+rm src/system_commands/usage_functions_template
 
 docker build -t srp33/somatic_wgs:$tag .
 

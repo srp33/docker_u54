@@ -22,6 +22,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
   && conda install strelka=2.9.10-0 lumpy-sv=0.2.13 subprocess32=3.5.3 \
                    htseq=0.11.2 cython=0.29.6 svtyper=0.7.0 survivor=1.0.6 manta=1.5.0 -n py2.7 \
   && alias awk=gawk \
+  && mkdir -p /data \
   && chmod 777 /data
 
 ################## ADD SCRIPTS ########################
