@@ -40,6 +40,44 @@ considerably lengthen the process.
 "
 }
 
+usage_trim (){
+  echo "trim_fastq
+
+Description:
+Trim adapter sequences and low-quality bases from FASTQ files using the atropos software. 
+It will automatically detect the adapter sequences using atropos. Only paired-end reads are
+supported currently.
+
+Options:
+  -i1, --input1 <input FASTQ file 1>
+  -i2, --output2 <input FASTQ file 2>
+  -o1, --output1 <output FASTQ file 1>
+  -o2, --output2 <output FASTQ file 2>
+  --log <destination file for version log> (Optional)
+
+Usage:
+docker run \\
+  -v <directory with input FASTQ files>:/data/input_data \\
+  -v <directory for output FASTQ files>:/data/output_data \\
+  --user \$(id -u):\$(id -g) \\
+  --rm \\
+  srp33/somatic_wgs:{tag} \\
+  trim_fastq \\
+    -i1 <input FASTQ file 1> \\
+    -i2 <input FASTQ file 2> \\
+    -o1 <output FASTQ file 1> \\
+    -o2 <output FASTQ file 2> \\
+    --log <destination file for version log> (Optional)
+
+Notes:
+
+  To avoid permissions issues, please ensure that the following directory has been \
+created on the host operating system before executing this command:
+
+  <directory for output FASTQ files>
+"
+}
+
 usage_add_read_groups (){
   echo "add_read_groups
 

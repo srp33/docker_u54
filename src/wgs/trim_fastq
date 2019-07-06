@@ -1,0 +1,98 @@
+#! /bin/bash
+
+source usage_functions
+source check_functions
+
+set -o errexit
+
+INPUT1=Null
+INPUT2=Null
+OUTPUT1=Null
+OUTPUT2=Null
+VERSION_LOG=""
+ARGNUM=$#
+
+for (( i=1; i<=ARGNUM; i++ )); do
+  OPTARG=$((i+1))
+  case ${!i} in
+    -i1 | --input1 )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      INPUT1="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -i2 | --input2 )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      INPUT2="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -o1 | --output1 )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      OUTPUT1="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -o2 | --output2 )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      OUTPUT2="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    --log )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      VERSION_LOG="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -h | --help )
+      usage_trim
+      exit 0
+      ;;
+    * )
+      echo "Invalid option: ${!i}" 1>&2
+      exit 1
+      ;;
+  esac
+done
+
+
+MISSING_VOLUMES=()
+EXIT_CODE=0
+
+# Since the default value for some arguments is "Null", we will check if those have been changed
+
+[[ ${INPUT1} != "Null" ]] || { echo "
+ERROR: The (-i1 or --input1) argument must be provided" && \
+ usage_trim && exit 1; }
+[[ ${INPUT2} != "Null" ]] || { echo "
+ERROR: The (-i2 or --input2) argument must be provided" && \
+ usage_trim && exit 1; }
+[[ ${OUTPUT1} != "Null" ]] || { echo "
+ERROR: The (-o1 or --output1) argument must be provided" && \
+ usage_trim && exit 1; }
+[[ ${OUTPUT2} != "Null" ]] || { echo "
+ERROR: The (-o2 or --output2) argument must be provided" && \
+ usage_trim && exit 1; }
+
+# Checks for the necessary directories which are only created by volumes
+
+[[ -d input_data ]] || { MISSING_VOLUMES+=(input_data) && EXIT_CODE=1; }
+[[ -d output_data ]] || { MISSING_VOLUMES+=(output_data) && EXIT_CODE=1; }
+
+if [[ ${EXIT_CODE} = 1 ]]; then
+    echo "
+    The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
+fi
+
+# Check permissions of each directory
+
+python /check_permissions.py input_data Read "${INPUT1}" || exit 1
+python /check_permissions.py input_data Read "${INPUT2}" || exit 1
+python /check_permissions.py output_data ReadWrite || exit 1
+
+atropos detect -pe1 $INPUT1 -pe2 $INPUT2
+
+if [[ ${VERSION_LOG} != "" ]]; then
+  echo "Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
+
+$( get_bash_version )
+
+$( get_conda_version atropos )
+  " > /data/output_data/"${VERSION_LOG}"
+fi
