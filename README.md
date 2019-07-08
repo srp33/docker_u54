@@ -13,6 +13,8 @@ To get started, install the [Docker CE](https://docs.docker.com/install) softwar
 Currently, we support the following commands:
 
 * `index_fasta` (index a FASTA file using `bwa` and `samtools`)
+* `detect_adapters` (detect adapter sequences in FASTQ files using `atropos`)
+* `estimate_error_rate` (estimate error rate for FASTQ files using `atropos`)
 * `trim_fastq` (trim FASTQ files using `atropos`)
 * `bwa_mem_align` (align FASTA files to a reference genome using `bwa mem`)
 * `sort_bam` (sort a BAM file using `sambamba`)
@@ -21,7 +23,7 @@ Currently, we support the following commands:
 * `slice_bam` (slice/split a BAM file using `sambamba`)
 * `merge_bams` (merge BAM files using `sambamba`)
 * `add_read_groups` (add read groups to a BAM file)
-* `samtools_mpileup.sh` (create pileup file using `samtools`)
+* `samtools_mpileup` (create pileup file using `samtools`)
 * `call_somatic_variants_gatk4` (call variants using Mutect2 (GATK 4))
 * `call_somatic_variants_strelka` (call variants using Strelka)
 * `call_structural_variants_manta` (call variants using Manta)

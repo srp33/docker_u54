@@ -7,9 +7,6 @@ set -o errexit
 
 INPUT1=Null
 INPUT2=Null
-OUTPUT1=Null
-OUTPUT2=Null
-ARGS=Null
 VERSION_LOG=""
 ARGNUM=$#
 
@@ -26,28 +23,13 @@ for (( i=1; i<=ARGNUM; i++ )); do
       INPUT2="${!OPTARG}"
       i=$((i+1))
       ;;
-    -o1 | --output1 )
-      check_args "${!OPTARG}" "${!i}" || exit 1
-      OUTPUT1="${!OPTARG}"
-      i=$((i+1))
-      ;;
-    -o2 | --output2 )
-      check_args "${!OPTARG}" "${!i}" || exit 1
-      OUTPUT2="${!OPTARG}"
-      i=$((i+1))
-      ;;
-    --args )
-      check_args "${!OPTARG}" "${!i}" || exit 1
-      ARGS="${!OPTARG}"
-      i=$((i+1))
-      ;;
     --log )
       check_args "${!OPTARG}" "${!i}" || exit 1
       VERSION_LOG="${!OPTARG}"
       i=$((i+1))
       ;;
     -h | --help )
-      usage_trim
+      usage_detect_adapters
       exit 0
       ;;
     * )
@@ -65,24 +47,14 @@ EXIT_CODE=0
 
 [[ ${INPUT1} != "Null" ]] || { echo "
 ERROR: The (-i1 or --input1) argument must be provided" && \
- usage_trim && exit 1; }
+ usage_detect_adapters && exit 1; }
 [[ ${INPUT2} != "Null" ]] || { echo "
 ERROR: The (-i2 or --input2) argument must be provided" && \
- usage_trim && exit 1; }
-[[ ${OUTPUT1} != "Null" ]] || { echo "
-ERROR: The (-o1 or --output1) argument must be provided" && \
- usage_trim && exit 1; }
-[[ ${OUTPUT2} != "Null" ]] || { echo "
-ERROR: The (-o2 or --output2) argument must be provided" && \
- usage_trim && exit 1; }
-[[ ${ARGS} != "Null" ]] || { echo "
-ERROR: The (--args) argument must be provided" && \
- usage_trim && exit 1; }
+ usage_detect_adapters && exit 1; }
 
 # Checks for the necessary directories which are only created by volumes
 
 [[ -d input_data ]] || { MISSING_VOLUMES+=(input_data) && EXIT_CODE=1; }
-[[ -d output_data ]] || { MISSING_VOLUMES+=(output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
     echo "
@@ -93,13 +65,10 @@ fi
 
 python /check_permissions.py input_data Read "${INPUT1}" || exit 1
 python /check_permissions.py input_data Read "${INPUT2}" || exit 1
-python /check_permissions.py output_data ReadWrite || exit 1
 
-atropos $ARGS \
+atropos detect \
     -pe1 /data/input_data/$INPUT1 \
-    -pe2 /data/input_data/$INPUT2 \
-    -o /data/output_data/$OUTPUT1 \
-    -p /data/output_data/$OUTPUT2
+    -pe2 /data/input_data/$INPUT2
 
 if [[ ${VERSION_LOG} != "" ]]; then
   echo "Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
