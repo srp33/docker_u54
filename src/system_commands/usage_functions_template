@@ -279,6 +279,7 @@ Options:
   -t, --nthreads <number of threads> (Optional)
   -c, --nchunks <number of chunks> (Optional)
   -p, --process_chunk <chunk to be processed> (Optional)
+  -rg, --read-group <read group string> (Optional)
   --log <destination file for version log> (Optional)
 
 Usage:
@@ -298,6 +299,7 @@ docker run \\
     -t <number of threads> (Optional) \\
     -c <number of chunks> (Optional) \\
     -p <chunk to be processed (Optional) \\
+    -rg <read group string> (Optional)
     --log <destination file for version log> (Optional)
 
 Notes:
