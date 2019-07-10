@@ -88,4 +88,6 @@ Software used:
 
 fi
 
-sambamba markdup /data/bam_files/"${BAM_FILE}" /data/output_data/"${OUTPUT}"
+sambamba --version
+#
+#sambamba markdup /data/bam_files/"${BAM_FILE}" /data/output_data/"${OUTPUT}"

@@ -14,6 +14,7 @@ VERSION_LOG=""
 CHUNKS=1
 PROCESS_CHUNK=0
 READ_GROUP_STRING=""
+SORT_COMMAND=false
 ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
@@ -59,6 +60,11 @@ for (( i=1; i<=ARGNUM; i++ )); do
       READ_GROUP_STRING="${!OPTARG}"
       i=$((i+1))
       ;;
+    --sort )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      SORT_COMMAND="${!OPTARG}"
+      i=$((i+1))
+      ;;
     --log )
       check_args "${!OPTARG}" "${!i}" || exit 1
       VERSION_LOG="${!OPTARG}"
@@ -100,6 +106,14 @@ ERROR: CHUNKS [${CHUNKS}](-c <arg>) argument must be greater than or equal to 1"
 ERROR: PROCESS_CHUNK [${PROCESS_CHUNK}] (-p <arg>) argument must be smaller than \
 CHUNKS [${CHUNKS}] (-c <arg>) argument" && \
  usage_align && exit 1; }
+
+# This is longer format than the previous checks, but I couldn't get the shorter syntax to work.
+if [[ "${SORT_COMMAND}" != "false" && "${SORT_COMMAND}" != "true" ]]
+then
+  echo "ERROR: The --sort argument must be true or false"
+  usage_align
+  exit 1
+fi
 
 # Checks for the necessary directories which are only created by volumes
 
@@ -151,85 +165,110 @@ if [[ ${REF_INDEXED} == 1 ]]; then
     done
 fi
 
+#if [[ ${VERSION_LOG} != "" ]]; then
+#
+#    if [[ ${READ2} = "" ]]; then
+#        if [[ ${CHUNKS} -gt 1 ]]; then
+#            COMMAND="bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/\"${REF_GENOME}\" \\
+#    <(zcat /data/input_data/\"${READ1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
+#      'int((NR-1)/4)%chunks==process_chunk') |\\
+#    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUT_NAME}\".${PROCESS_CHUNK}.bam"
+#        else
+#            COMMAND="bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/\"${REF_GENOME}\" \
+#    /data/input_data/\"${READ1}\" | \
+#    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
+#        fi
+#    else
+#        if [[ ${CHUNKS} -gt 1 ]]; then
+#            COMMAND="bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/\"${REF_GENOME}\" \\
+#    <(zcat /data/input_data/\"${READ1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
+#      'int((NR-1)/4)%chunks==process_chunk') \\
+#    <(zcat /data/input_data/\"${READ2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
+#      'int((NR-1)/4)%chunks==process_chunk') | \\
+#    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUT_NAME}\".${PROCESS_CHUNK}.bam"
+#        else
+#            COMMAND="bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/\"${REF_GENOME}\" \\
+#    /data/input_data/\"${READ1}\" /data/input_data/\"${READ2}\" | \\
+#    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
+#        fi
+#    fi
+#
+#    echo "bwa_mem_align
+#
+#Command:
+#  ${COMMAND}
+#
+#Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
+#
+#Software used:
+#  Bash:
+#    $( bash --version )
+#
+#  Python:
+#    version $( get_python_version )
+#
+#  bwa:
+#    version $( get_conda_version bwa )
+#
+#  samtools:
+#    version $( get_conda_version samtools )
+#" > /data/output_data/"${VERSION_LOG}"
+#
+#fi
+
+COMMAND_STRING="bwa mem -t ${THREADS} "
+
 if [[ "$READ_GROUP_STRING" != "" ]]
 then
-  READ_GROUP_STRING="-R \"$READ_GROUP_STRING\""
+  COMMAND_STRING+="-R \"$READ_GROUP_STRING\" "
 fi
 
-if [[ ${VERSION_LOG} != "" ]]; then
+COMMAND_STRING+="/tmp/\"${REF_GENOME}\" "
+COMMAND_STRING+="/data/input_data/\"${READ1}\" /data/input_data/\"${READ2}\" "
 
-    if [[ ${READ2} = "" ]]; then
-        if [[ ${CHUNKS} -gt 1 ]]; then
-            COMMAND="bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/\"${REF_GENOME}\" \\
-    <(zcat /data/input_data/\"${READ1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
-      'int((NR-1)/4)%chunks==process_chunk') |\\
-    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUT_NAME}\".${PROCESS_CHUNK}.bam"
-        else
-            COMMAND="bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/\"${REF_GENOME}\" \
-    /data/input_data/\"${READ1}\" | \
-    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
-        fi
-    else
-        if [[ ${CHUNKS} -gt 1 ]]; then
-            COMMAND="bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/\"${REF_GENOME}\" \\
-    <(zcat /data/input_data/\"${READ1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
-      'int((NR-1)/4)%chunks==process_chunk') \\
-    <(zcat /data/input_data/\"${READ2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \\
-      'int((NR-1)/4)%chunks==process_chunk') | \\
-    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUT_NAME}\".${PROCESS_CHUNK}.bam"
-        else
-            COMMAND="bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/\"${REF_GENOME}\" \\
-    /data/input_data/\"${READ1}\" /data/input_data/\"${READ2}\" | \\
-    samtools view -@ ${THREADS} -S -b > /data/output_data/\"${OUTPUT}\""
-        fi
-    fi
-
-    echo "bwa_mem_align
-
-Command:
-  ${COMMAND}
-
-Timestamp: $(date '+%d/%m/%Y %H:%M:%S')
-
-Software used:
-  Bash:
-    $( bash --version )
-
-  Python:
-    version $( get_python_version )
-
-  bwa:
-    version $( get_conda_version bwa )
-
-  samtools:
-    version $( get_conda_version samtools )
-" > /data/output_data/"${VERSION_LOG}"
-
-fi
-
-if [[ ${READ2} = "" ]]; then
-    if [[ ${CHUNKS} -gt 1 ]]; then
-        bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/"${REF_GENOME}" \
-            <(zcat /data/input_data/"${READ1}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
-              'int((NR-1)/4)%chunks==process_chunk') | \
-            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
-    else
-        bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/"${REF_GENOME}" \
-            /data/input_data/"${READ1}" | \
-            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
-    fi
+if [[ "$SORT_COMMAND" == "true" ]]
+then
+  COMMAND_STRING+="| samtools sort -@ ${THREADS} -o /data/output_data/\"${OUTPUT}\" - "
 else
-    if [[ ${CHUNKS} -gt 1 ]]; then
-        bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/"${REF_GENOME}" \
-            <(zcat /data/input_data/"${READ1}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
-              'int((NR-1)/4)%chunks==process_chunk') \
-            <(zcat /data/input_data/"${READ2}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
-              'int((NR-1)/4)%chunks==process_chunk') | \
-            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
-    else
-        bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/"${REF_GENOME}" \
-            /data/input_data/"${READ1}" /data/input_data/"${READ2}" | \
-            samtools view -@ ${THREADS} -S -b > /data/output_data/"${OUTPUT}"
-    fi
-
+  COMMAND_STRING+="| samtools view -@ ${THREADS} -b > /data/output_data/\"${OUTPUT}\" "
 fi
+
+echo $COMMAND_STRING
+eval "$COMMAND_STRING"
+
+#if [[ ${READ2} = "" ]]; then
+#    if [[ ${CHUNKS} -gt 1 ]]; then
+#        bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/"${REF_GENOME}" \
+#            <(zcat /data/input_data/"${READ1}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
+#              'int((NR-1)/4)%chunks==process_chunk') | \
+#            samtools view -@ ${THREADS} -S -b \
+#            $SORT_COMMAND \
+#            > /data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
+#    else
+#        bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/"${REF_GENOME}" \
+#            /data/input_data/"${READ1}" | \
+#            samtools view -@ ${THREADS} -S -b \
+#            $SORT_COMMAND \
+#            > /data/output_data/"${OUTPUT}"
+#    fi
+#else
+#    if [[ ${CHUNKS} -gt 1 ]]; then
+#        bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/"${REF_GENOME}" \
+#            <(zcat /data/input_data/"${READ1}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
+#              'int((NR-1)/4)%chunks==process_chunk') \
+#            <(zcat /data/input_data/"${READ2}" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} \
+#              'int((NR-1)/4)%chunks==process_chunk') | \
+#            samtools view -@ ${THREADS} -S -b \
+#            $SORT_COMMAND \
+#            > /data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
+#    else
+#        bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/"${REF_GENOME}" \
+#            /data/input_data/"${READ1}" /data/input_data/"${READ2}" \
+#            | $SORT_COMMAND
+##        bwa mem -t ${THREADS} ${READ_GROUP_STRING} /tmp/"${REF_GENOME}" \
+##            /data/input_data/"${READ1}" /data/input_data/"${READ2}" | \
+##            samtools view -@ ${THREADS} -S -b \
+##            $SORT_COMMAND #\
+##            > /data/output_data/"${OUTPUT}"
+#    fi
+#fi

@@ -16,7 +16,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
   && conda config --add channels bioconda \
   && conda config --add channels conda-forge \
   && conda install samtools=1.9 bwa=0.7.17 gatk4=4.1.0.0-0 delly=0.8.1-0 \
-                   sambamba=0.6.8 samblaster=0.1.24 pysam=0.15.0 numpy=1.16.2 \
+                   sambamba=0.7.0 samblaster=0.1.24 pysam=0.15.0 numpy=1.16.2 \
                    picard=2.18.29-0 perl-list-moreutils=0.428 atropos=1.1.22-0 \
   && conda create -n py2.7 python=2.7 \
   && conda install strelka=2.9.10-0 lumpy-sv=0.2.13 subprocess32=3.5.3 \

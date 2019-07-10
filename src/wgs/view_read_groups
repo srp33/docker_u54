@@ -1,0 +1,46 @@
+#! /bin/bash
+
+source usage_functions
+source check_functions
+
+set -o errexit
+
+BAM_FILE=Null
+ARGNUM=$#
+
+for (( i=1; i<=ARGNUM; i++ )); do
+  OPTARG=$((i+1))
+  case "${!i}" in
+    -b | --bam_file )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      BAM_FILE="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -h | --help )
+      usage_view_read_groups
+      exit 0
+      ;;
+    * )
+      echo "Invalid option: ${!i}" 1>&2
+      exit 1
+      ;;
+  esac
+done
+
+MISSING_VOLUMES=()
+EXIT_CODE=0
+
+[[ ${BAM_FILE} != "Null" ]] || { echo "
+ERROR: BAM FILE (-b <arg>) argument must be provided" && \
+ usage_view_read_groups && exit 1; }
+
+[[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
+
+if [[ ${EXIT_CODE} = 1 ]]; then
+    echo "
+    The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
+fi
+
+python /check_permissions.py /data/bam_files Read "${BAM_FILE}" || exit 1
+
+samtools view -H /data/bam_files/${BAM_FILE} | grep '@RG'
