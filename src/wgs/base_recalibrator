@@ -6,6 +6,7 @@ source check_functions
 set -o errexit
 
 REF_GENOME=Null
+THREADS=1
 KNOWN_SITES=()
 BAM_FILE=Null
 VERSION_LOG=""
@@ -15,6 +16,11 @@ ARGNUM=$#
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case "${!i}" in
+    -t | --nthreads )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      THREADS=${!OPTARG}
+      i=$((i+1))
+      ;;
     -s | --known_sites )
       check_args "${!OPTARG}" "${!i}" || exit 1
       KNOWN_SITES+=("${!OPTARG}")
@@ -112,7 +118,7 @@ if [[ ! -f ${NEEDED_DICT} ]]; then
     echo "
     Fasta dict file (${NEEDED_DICT}) is missing. Running gatk CreateSequenceDictionary
 "
-    gatk CreateSequenceDictionary --REF_GENOME /tmp/"${REF_GENOME}"
+    gatk CreateSequenceDictionary --REFERENCE /tmp/"${REF_GENOME}"
     mv /tmp/"${REF_DICT}" /data/ref_index/"${REF_DICT}"
 fi
 
@@ -123,7 +129,7 @@ for KNOWN_SITE_FILE in ${KNOWN_SITES[@]}; do
     if [[ ! -f /data/vcf_files/"${KNOWN_SITE_FILE}.idx" ]]; then
         gatk IndexFeatureFile -F /data/vcf_files/"${KNOWN_SITE_FILE}"
     fi
-    KNOWN_SITE_COMMANDS+=("--known-sites /data/vcf_files/${KNOWN_SITE_FILE}")
+    KNOWN_SITE_COMMANDS+=("--knownSites /data/vcf_files/${KNOWN_SITE_FILE}")
 done
 
 if [[ ${VERSION_LOG} != "" ]]; then
@@ -149,5 +155,10 @@ Software used:
 
 fi
 
-gatk BaseRecalibrator -R /tmp/"${REF_GENOME}" -I /data/bam_files/"${BAM_FILE}" \
-     ${KNOWN_SITE_COMMANDS[@]} -O /data/output_data/"${OUTPUT}"
+
+
+gatk3 -T BaseRecalibrator \
+  -R /tmp/"${REF_GENOME}" \
+  -I /data/bam_files/"${BAM_FILE}" \
+  ${KNOWN_SITE_COMMANDS[@]} \
+  -o /data/output_data/"${OUTPUT}"

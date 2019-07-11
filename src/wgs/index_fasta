@@ -68,11 +68,13 @@ bwa index -a bwtsw ${REF_GENOME_PATH}
 samtools faidx ${REF_GENOME_PATH}
 picard CreateSequenceDictionary REFERENCE=${REF_GENOME_PATH} OUTPUT=${REF_GENOME_PATH}.dict
 
-REF_INDEX_FILES=("${REF_GENOME_PATH}".amb "${REF_GENOME_PATH}".ann "${REF_GENOME_PATH}".bwt "${REF_GENOME_PATH}".pac "${REF_GENOME_PATH}".sa "${REF_GENOME_PATH}".fai "${REF_GENOME_PATH}".dict)
+REF_INDEX_FILES=("${REF_GENOME_PATH}".amb "${REF_GENOME_PATH}".ann "${REF_GENOME_PATH}".bwt "${REF_GENOME_PATH}".pac "${REF_GENOME_PATH}".sa "${REF_GENOME_PATH}".fai)
 for REF_INDEX_FILE in ${REF_INDEX_FILES[@]}; do
     REF_INDEX_FILE_EXTENSION="$(get_file_extension ${REF_INDEX_FILE})"
     mv "${REF_INDEX_FILE}" /data/output_data/${OUTPUT_PREFIX}.${REF_INDEX_FILE_EXTENSION}
 done
+
+mv ${REF_GENOME_PATH}.dict /data/output_data/${OUTPUT_PREFIX/\.$(get_file_extension ${REF_GENOME_PATH})/}.dict 
 
 if [[ ${VERSION_LOG} != "" ]]; then
   echo "Timestamp: $(date '+%d/%m/%Y %H:%M:%S')

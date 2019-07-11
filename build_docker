@@ -22,4 +22,4 @@ cd "$currentDir"
 rm -rf $tmpDir
 
 ##docker login -u=srp33
-docker push srp33/somatic_wgs
+#docker push srp33/somatic_wgs

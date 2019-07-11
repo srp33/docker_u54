@@ -155,14 +155,15 @@ fi
 
 if [[ ${REF_INDEXED} == 1 ]]; then
 
-    echo "The reference does not contain the proper index files. Running bwa index"
+    echo "The reference genome does not contain the proper index files."
+    exit 1
 
-    bwa index /tmp/"${REF_GENOME}"
-
-    for NEEDED_FILE in ${NEEDED_FILES[@]}; do
-        mv /tmp/"${NEEDED_FILE}" ref_index
-        ln -s /data/ref_index/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"
-    done
+#    bwa index /tmp/"${REF_GENOME}"
+#
+#    for NEEDED_FILE in ${NEEDED_FILES[@]}; do
+#        mv /tmp/"${NEEDED_FILE}" ref_index
+#        ln -s /data/ref_index/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"
+#    done
 fi
 
 #if [[ ${VERSION_LOG} != "" ]]; then
