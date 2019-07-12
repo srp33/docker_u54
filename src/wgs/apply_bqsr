@@ -5,6 +5,8 @@ source check_functions
 
 set -o errexit
 
+REF_GENOME=Null
+THREADS=1
 BQSR=Null
 BAM_FILE=Null
 VERSION_LOG=""
@@ -14,6 +16,16 @@ ARGNUM=$#
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case "${!i}" in
+    -r | --reference )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      REF_GENOME="${!OPTARG}"
+      i=$((i+1))
+      ;;
+    -t | --nthreads )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      THREADS=${!OPTARG}
+      i=$((i+1))
+      ;;
     -bqsr | --bqsr_recal_file | -BQSR )
       check_args "${!OPTARG}" "${!i}" || exit 1
       BQSR="${!OPTARG}"
@@ -48,6 +60,9 @@ done
 MISSING_VOLUMES=()
 EXIT_CODE=0
 
+[[ ${REF_GENOME} != "Null" ]] || { echo "
+ERROR: REF_GENOME (-r <arg>) argument must be provided" && \
+ usage_base_recalibrator && exit 1; }
 [[ ${BQSR} != "Null" ]] || { echo "
 ERROR: BQSR (-bqsr <arg>) argument must be provided" && \
  usage_apply_bqsr && exit 1; }
@@ -58,6 +73,8 @@ ERROR: BAM FILE (-b <arg>) argument must be provided" && \
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
  usage_apply_bqsr && exit 1; }
 
+[[ -d /data/ref_genome ]] || { MISSING_VOLUMES+=(/data/ref_genome) && EXIT_CODE=1; }
+[[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
 [[ -d /data/bam_files ]] || { MISSING_VOLUMES+=(/data/bam_files) && EXIT_CODE=1; }
 [[ -d /data/input_data ]] || { MISSING_VOLUMES+=(/data/input_data) && EXIT_CODE=1; }
 [[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
@@ -67,6 +84,8 @@ if [[ ${EXIT_CODE} = 1 ]]; then
     The following volumes are missing: ${MISSING_VOLUMES[@]}" && echo_usage && exit 1
 fi
 
+python /check_permissions.py /data/ref_genome Read "${REF_GENOME}" || exit 1
+python /check_permissions.py /data/ref_index ReadWrite || exit 1
 python /check_permissions.py /data/input_data Read "${BQSR}" || exit 1
 python /check_permissions.py /data/bam_files ReadWrite || exit 1
 python /check_permissions.py /data/output_data ReadWrite || exit 1
@@ -94,6 +113,17 @@ Software used:
 
 fi
 
-gatk ApplyBQSR -I /data/bam_files/"${BAM_FILE}" \
-  -bqsr /data/input_data/"${BQSR}"
-  -O /data/output_data/"${OUTPUT}"
+ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+ln -s /data/ref_index/"${REF_GENOME}".fai /tmp/"${REF_GENOME}".fai
+ln -s /data/ref_index/"${REF_GENOME/\.fa/.dict}" /tmp/"${REF_GENOME/\.fa/.dict}"
+
+gatk3 -Xms512m -Xmx8g -T PrintReads \
+    -R /tmp/"${REF_GENOME}" \
+    -I /data/bam_files/"${BAM_FILE}" \
+    -BQSR /data/input_data/"${BQSR}" \
+    -o /data/output_data/"${OUTPUT}" \
+    -nct "${THREADS}"
+
+#gatk ApplyBQSR -I /data/bam_files/"${BAM_FILE}" \
+#  -bqsr /data/input_data/"${BQSR}" \
+#  -O /data/output_data/"${OUTPUT}"

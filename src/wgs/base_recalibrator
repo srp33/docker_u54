@@ -155,8 +155,9 @@ Software used:
 
 fi
 
-gatk3 -T BaseRecalibrator \
+gatk3 -Xms512m -Xmx8g -T BaseRecalibrator \
   -R /tmp/"${REF_GENOME}" \
   -I /data/bam_files/"${BAM_FILE}" \
   ${KNOWN_SITE_COMMANDS[@]} \
-  -o /data/output_data/"${OUTPUT}"
+  -o /data/output_data/"${OUTPUT}" \
+  -nct ${THREADS}
