@@ -96,6 +96,9 @@ ERROR: REFERENCE GENOME (-r <arg>) argument must be provided" && \
 [[ ${READ1} != "Null" ]] || { echo "
 ERROR: READ 1 (-s1 <arg>) argument must be provided" && \
  usage_align && exit 1; }
+[[ ${READ2} != "Null" ]] || { echo "
+ERROR: READ 2 (-s2 <arg>) argument must be provided" && \
+ usage_align && exit 1; }
 [[ ${OUTPUT} != "Null" ]] || { echo "
 ERROR: OUTPUT (-o <arg>) argument must be provided" && \
  usage_align && exit 1; }

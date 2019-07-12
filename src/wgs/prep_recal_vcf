@@ -5,22 +5,22 @@ source check_functions
 
 set -o errexit
 
+VCF_URL=Null
 DICT_FILE=Null
-VCF_FILE=Null
 VERSION_LOG=""
 ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
   OPTARG=$((i+1))
   case "${!i}" in
+    -u | --vcf_url )
+      check_args "${!OPTARG}" "${!i}" || exit 1
+      VCF_URL="${!OPTARG}"
+      i=$((i+1))
+      ;;
     -d | --dict_file )
       check_args "${!OPTARG}" "${!i}" || exit 1
       DICT_FILE="${!OPTARG}"
-      i=$((i+1))
-      ;;
-    -i | --vcf_file )
-      check_args "${!OPTARG}" "${!i}" || exit 1
-      VCF_FILE="${!OPTARG}"
       i=$((i+1))
       ;;
     --log )
@@ -29,7 +29,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
       i=$((i+1))
       ;;
     -h | --help )
-      usage_sort_vcf
+      usage_prep_recal_vcf
       exit 0
       ;;
     * )
@@ -42,15 +42,15 @@ done
 MISSING_VOLUMES=()
 EXIT_CODE=0
 
+[[ ${VCF_URL} != "Null" ]] || { echo "
+ERROR: VCF URL (-u <arg>) argument must be provided" && \
+ usage_prep_recal_vcf && exit 1; }
 [[ ${DICT_FILE} != "Null" ]] || { echo "
 ERROR: DICT_FILE (-d <arg>) argument must be provided" && \
- usage_sort_vcf && exit 1; }
-[[ ${VCF_FILE} != "Null" ]] || { echo "
-ERROR: VCF FILE (-i <arg>) argument must be provided" && \
- usage_sort_vcf && exit 1; }
+ usage_prep_recal_vcf && exit 1; }
 
 [[ -d /data/ref_index ]] || { MISSING_VOLUMES+=(/data/ref_index) && EXIT_CODE=1; }
-[[ -d /data/input_data ]] || { MISSING_VOLUMES+=(/data/input_data) && EXIT_CODE=1; }
+[[ -d /data/output_data ]] || { MISSING_VOLUMES+=(/data/output_data) && EXIT_CODE=1; }
 
 if [[ ${EXIT_CODE} = 1 ]]; then
     echo "
@@ -58,16 +58,19 @@ if [[ ${EXIT_CODE} = 1 ]]; then
 fi
 
 python /check_permissions.py /data/ref_index ReadWrite || exit 1
-python /check_permissions.py /data/input_data ReadWrite || exit 1
+python /check_permissions.py /data/output_data ReadWrite || exit 1
 
-VCF_FILE=/data/input_data/"$VCF_FILE" \
-TMP_FILE=/tmp/"$(basename $VCF_FILE)" \
+VCF_FILE=/tmp/"$(basename ${VCF_URL/\.gz/})" \
+TMP_FILE=/tmp/"$(basename ${VCF_FILE}).2" \
+OUT_FILE=/data/output_data/"$(basename ${VCF_FILE})"
+
+wget -O "${VCF_FILE}.gz" "${VCF_URL}"
+gunzip "${VCF_FILE}.gz"
 
 python /reconcile_vcf_with_dict.py "${VCF_FILE}" /data/ref_index/"${DICT_FILE}" "${TMP_FILE}"
 
-picard SortVcf \
+picard -Xms512m -Xmx8g SortVcf \
     I="${TMP_FILE}" \
-    O="${VCF_FILE}" \
-    SEQUENCE_DICTIONARY=/data/ref_index/"${DICT_FILE}"
-
-rm "${VCF_FILE}.idx"
+    O="${OUT_FILE}" \
+    SEQUENCE_DICTIONARY=/data/ref_index/"${DICT_FILE}" \
+    CREATE_INDEX=true

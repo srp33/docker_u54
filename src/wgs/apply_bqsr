@@ -95,4 +95,5 @@ Software used:
 fi
 
 gatk ApplyBQSR -I /data/bam_files/"${BAM_FILE}" \
--bqsr /data/input_data/"${BQSR}" -O /data/output_data/"${OUTPUT}"
+  -bqsr /data/input_data/"${BQSR}"
+  -O /data/output_data/"${OUTPUT}"

@@ -4,8 +4,8 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   echo "ERROR: This command is not available to users" && exit 1
 fi
 
-usage_sort_vcf (){
-    echo "Under construction..."
+usage_prep_recal_vcf (){
+    echo "Under construction...we assume the URL ends with .gz."
 }
 
 usage_index_fasta (){

@@ -8,7 +8,8 @@ ENV MINICONDA_VERSION=4.6.14
 ################## INSTALL TOOLS ######################
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
   && apt-get update \
-  && apt-get install -y curl wget bzip2 git-all build-essential zlib1g-dev \
+  && apt-get install -y curl wget bzip2 git-all build-essential zlib1g-dev locales \
+  && locale-gen en_US.UTF-8 \
   && cd / \
   && curl -LO http://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh \
   && bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -p /miniconda -b \
