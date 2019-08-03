@@ -14,8 +14,8 @@ VERSION_LOG=""
 CHUNKS=1
 PROCESS_CHUNK=0
 READ_GROUP_STRING=""
-SORT=false
-INDEX=false
+SORT=False
+INDEX=False
 ARGNUM=$#
 
 for (( i=1; i<=ARGNUM; i++ )); do
@@ -117,15 +117,15 @@ CHUNKS [${CHUNKS}] (-c <arg>) argument" && \
  usage_align && exit 1; }
 
 # This is longer format than the previous checks, but I couldn't get the shorter syntax to work.
-if [[ "${SORT}" != "false" && "${SORT}" != "true" ]]
+if [[ "${SORT}" != "False" && "${SORT}" != "True" ]]
 then
-  echo "ERROR: The --sort argument must be true or false"
+  echo "ERROR: The --sort argument must be True or False"
   usage_align
   exit 1
 fi
-if [[ "${INDEX}" != "false" && "${INDEX}" != "true" ]]
+if [[ "${INDEX}" != "False" && "${INDEX}" != "True" ]]
 then
-  echo "ERROR: The --index argument must be true or false"
+  echo "ERROR: The --index argument must be True or False"
   usage_align
   exit 1
 fi
@@ -218,14 +218,14 @@ if [[ ${CHUNKS} -gt 1 ]]; then
 fi
 
 
-if [[ "$SORT" == "true" ]]
+if [[ "$SORT" == "True" ]]
 then
   COMMAND_STRING+="| samtools sort -@ ${THREADS} -o \"${OUTPUT_PATH}\" - "
 else
   COMMAND_STRING+="| samtools view -@ ${THREADS} -b > \"${OUTPUT_PATH}\" "
 fi
 
-if [[ "$INDEX" == "true" ]]
+if [[ "$INDEX" == "True" ]]
 then
   COMMAND_STRING+=" && sambamba index -t ${THREADS} \"${OUTPUT_PATH}\" \"${OUTPUT_PATH}\".bai"
 fi

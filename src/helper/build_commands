@@ -1,0 +1,11 @@
+#! /bin/bash
+
+for f in /starling/command_meta/*.yaml
+do
+    out_f=$(basename $f)
+    out_f=${out_f/\.yaml/}
+    out_f=/starling/bin/${out_f}
+    help_f=/starling/docs/$(basename $out_f)
+
+    python /starling/helper/build_commands.py $f ${out_f} ${help_f}
+done

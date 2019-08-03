@@ -2,4 +2,7 @@
 
 set -o errexit
 
-docker run -i -t --rm srp33/somatic_wgs:version$(cat VERSION) /bin/bash
+docker run -i -t --rm \
+    -v /tmp:/tmp \
+    srp33/somatic_wgs:version$(cat VERSION) \
+    /bin/bash
