@@ -1,21 +1,94 @@
 description: Detect systematic errors in base quality scores.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - REF_GENOME:
+        default: "Null"
+        opts: "-r | --reference"
+        description: "Name of the reference genome FASTA file."
         required: True
-        example: ""
+        example: "-r hg19.fa"
+    - KNOWN_SITES:
+        default: "()"
+        opts: "-s | --known_sites"
+        description: "Path to VCF file with known polymorphic sites> (may be listed more than once)."
+        required: True
+        example: "-s dbsnp_146.hg19.vcf"
+    - BAM_FILE:
+        default: "Null"
+        opts: "-b | --bam_file"
+        description: "Name of the input BAM file."
+        required: True
+        example: "-o SampleA.bam"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output"
+        description: "Name of the output BAM file."
+        required: True
+        example: "-o SampleA.bam"
+    - THREADS:
+        default: 1
+        opts: "-t | --nthreads"
+        description: "The number of threads that GATK should use."
+        required: False
+        example: "-t 4"
 volumes:
+    - ref_genome:
+        description: "Directory where the reference genome FASTA file is stored."
+        permissions: Read
+    - ref_index:
+        description: "Directory where the index files for the reference genome are stored."
+        permissions: Read
     - bam_files:
         description: "Directory where the BAM file is stored."
         permissions: Read
+    - vcf_files:
+        description: "Directory where the VCF file is stored."
+        permissions: Read
     - output_data:
-        description: "Directory where the output file will be stored."
+        description: "Directory where the output BAM file will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+
+    INDEX=$(echo "${REF_GENOME}" | grep -o '\.' | grep -c '\.')
+    if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
+        NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
+        gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
+        REF_GENOME="${NEW_REF}"
+        INDEX=$(echo "${REF_GENOME}" | grep -o '\.' | grep -c '\.')
+    fi
+
+    NEEDED_INDEX=/data/ref_index/"${REF_GENOME}".fai
+    REF_DICT="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})".dict
+    NEEDED_DICT=/data/ref_index/"${REF_DICT}"
+
+    if [[ ! -f "${NEEDED_INDEX}" ]]; then
+        echo "Samtools reference index (${NEEDED_INDEX}) is missing."
+        exit 1
+    fi
+
+    ln -s /data/ref_index/"${REF_GENOME}.fai" /tmp/"${REF_GENOME}.fai"
+
+    if [[ ! -f ${NEEDED_DICT} ]]; then
+        echo "Fasta dict file (${NEEDED_DICT}) is missing."
+        exit 1
+    fi
+
+    ln -s /data/ref_index/"${REF_DICT}" /tmp/"${REF_DICT}"
+
+    KNOWN_SITE_COMMANDS=()
+    for KNOWN_SITE_FILE in ${KNOWN_SITES[@]}; do
+        if [[ ! -f /data/vcf_files/"${KNOWN_SITE_FILE}.idx" ]]; then
+            gatk IndexFeatureFile -F /data/vcf_files/"${KNOWN_SITE_FILE}"
+        fi
+        KNOWN_SITE_COMMANDS+=("--knownSites /data/vcf_files/${KNOWN_SITE_FILE}")
+    done
+
+    gatk3 -Xms512m -Xmx8g -T BaseRecalibrator \
+      -R /tmp/"${REF_GENOME}" \
+      -I /data/bam_files/"${BAM_FILE}" \
+      ${KNOWN_SITE_COMMANDS[@]} \
+      -o /data/output_data/"${OUTPUT}" \
+      -nct ${THREADS}
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    gatk3 --version
