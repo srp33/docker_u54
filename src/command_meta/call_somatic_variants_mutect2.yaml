@@ -1,0 +1,21 @@
+description: Calls somatic variants using Mutect2 for a tumor/normal pair.
+args:
+    - :
+        default: ""
+        opts: ""
+        description: ""
+        required: True
+        example: ""
+volumes:
+    - bam_files:
+        description: "Directory where the BAM file is stored."
+        permissions: Read
+    - output_data:
+        description: "Directory where the output file will be stored."
+        permissions: ReadWrite
+command_template: |
+
+receipt_commands: |
+    get_bash_version
+    get_python_version
+    get_conda_version picard

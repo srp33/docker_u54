@@ -1,0 +1,21 @@
+description: Trim adapter sequences and low-quality bases from FASTQ files using the atropos software.  Only paired-end reads are supported currently. Please consult the atropos documentation for information about arguments that can be specified.
+args:
+    - :
+        default: ""
+        opts: ""
+        description: ""
+        required: True
+        example: ""
+volumes:
+    - bam_files:
+        description: "Directory where the BAM file is stored."
+        permissions: Read
+    - output_data:
+        description: "Directory where the output file will be stored."
+        permissions: ReadWrite
+command_template: |
+
+receipt_commands: |
+    get_bash_version
+    get_python_version
+    get_conda_version picard

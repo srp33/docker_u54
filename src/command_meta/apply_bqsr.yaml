@@ -1,0 +1,62 @@
+description: Apply base quality score recalibration.
+args:
+    - REF_GENOME:
+        default: "Null"
+        opts: "-r | --reference"
+        description: "Name of the reference genome FASTA file."
+        required: True
+        example: "-r hg19.fa"
+    - BQSR:
+        default: "Null"
+        opts: "-bqsr | --bqsr_recal_file | -BQSR"
+        description: "Path to a file with BQSR data."
+        required: True
+        example: "-bqsr myscores.bqsr"
+    - BAM_FILE:
+        default: "Null"
+        opts: "-b | --bam_file"
+        description: "Name of the input BAM file."
+        required: True
+        example: "-o SampleA.bam"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output"
+        description: "Name of the output BAM file."
+        required: True
+        example: "-o SampleA.bam"
+    - THREADS:
+        default: 1
+        opts: "-t | --nthreads"
+        description: "The number of threads that GATK should use."
+        required: False
+        example: "-t 4"
+volumes:
+    - ref_genome:
+        description: "Directory where the reference genome FASTA file is stored."
+        permissions: Read
+    - ref_index:
+        description: "Directory where the index files for the reference genome are stored."
+        permissions: Read
+    - bam_files:
+        description: "Directory where the BAM file is stored."
+        permissions: Read
+    - input_data:
+        description: "Directory where the BQSR file is stored."
+        permissions: ReadWrite
+    - output_data:
+        description: "Directory where the output BAM file will be stored."
+        permissions: ReadWrite
+command_template: |
+    ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+    ln -s /data/ref_index/"${REF_GENOME}".fai /tmp/"${REF_GENOME}".fai
+    ln -s /data/ref_index/"${REF_GENOME/\.fa/.dict}" /tmp/"${REF_GENOME/\.fa/.dict}"
+
+    gatk3 -Xms512m -Xmx8g -T PrintReads 
+        -R /tmp/"${REF_GENOME}" \\
+        -I /data/bam_files/"${BAM_FILE}" \\
+        -BQSR /data/input_data/"${BQSR}" \\
+        -o /data/output_data/"${OUTPUT}" \\
+        -nct "${THREADS}"
+receipt_commands: |
+    get_bash_version
+    gatk3 --version
