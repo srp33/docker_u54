@@ -38,8 +38,7 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    picard AddOrReplaceReadGroups I=/data/bam_files/"${BAM_FILE}" O=/data/output_data/"${OUTPUT}" \
-ID="${GROUP_ID}" LB="${GROUP_LB}" SM="${SAMPLE}" PL=ILLUMINA PU=platform
+    picard AddOrReplaceReadGroups I=/data/bam_files/"${BAM_FILE}" O=/data/output_data/"${OUTPUT}" ID="${GROUP_ID}" LB="${GROUP_LB}" SM="${SAMPLE}" PL=ILLUMINA PU=platform
 receipt_commands: |
     get_bash_version
     get_python_version
