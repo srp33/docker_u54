@@ -1,0 +1,46 @@
+description: Add or replace read group information in BAM file.
+args:
+    - SAMPLE:
+        default: "Null"
+        opts: "-s | --sample"
+        description: "Name of sample."
+        required: True
+        example: "-s SampleA"
+    - GROUP_ID:
+        default: "Null"
+        opts: "-id | --group_id"
+        description: "Group identifier."
+        required: True
+        example: "-id SampleA_lane1"
+    - GROUP_LB:
+        default: "Null"
+        opts: "-lb | --library_identifier"
+        description: "Library name (often the same as the group identifier)."
+        required: True
+        example: "-lb SampleA_lane1"
+    - BAM_FILE:
+        default: "Null"
+        opts: "-b | --bam_file"
+        description: "Name of the input BAM file."
+        required: True
+        example: "-b SampleA.bam"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output"
+        description: "Name of the output BAM file."
+        required: True
+        example: "-o SampleA.bam"
+volumes:
+    - bam_files:
+        description: "Directory where the BAM file is stored."
+        permissions: Read
+    - output_data:
+        description: "Directory where the output file will be stored."
+        permissions: ReadWrite
+command_template: |
+    picard AddOrReplaceReadGroups I=/data/bam_files/"${BAM_FILE}" O=/data/output_data/"${OUTPUT}" \
+ID="${GROUP_ID}" LB="${GROUP_LB}" SM="${SAMPLE}" PL=ILLUMINA PU=platform
+receipt_commands: |
+    get_bash_version
+    get_python_version
+    get_conda_version picard

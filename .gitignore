@@ -1,3 +1,4 @@
 nohup*
 bin
 docs
+.DS_Store
