@@ -2,24 +2,11 @@
 
 set -o errexit
 
-currentDir="$(pwd)"
-tmpDir=/tmp/somatic-wgs-build
-
-mkdir -p $tmpDir
-rm -rf $tmpDir/*
-cp -r * $tmpDir/
-
 tag=version$(cat VERSION)
 
-cd $tmpDir
-
-#sed "s/{tag}/$tag/g" src/helper/usage_functions_template > src/helper/usage_functions
-#rm src/helper/usage_functions_template
+src/helper/build_commands $tag
 
 docker build -t srp33/somatic_wgs:$tag .
-
-cd "$currentDir"
-rm -rf $tmpDir
 
 ##docker login -u=srp33
 #docker push srp33/somatic_wgs

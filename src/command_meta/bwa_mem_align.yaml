@@ -1,107 +1,82 @@
+description: Align FASTQ files to a reference genome using the Burrows-Wheeler Aligner software (bwa mem). Default options are used for bwa mem unless specified otherwise.
 args:
-    REF_GENOME:
+    - REF_GENOME:
         default: "Null"
         opts: "-r | --reference"
+        description: "Name of the reference genome FASTA file."
         required: True
-    THREADS:
-        default: 1
-        opts: "-t | --nthreads"
-        required: False
-    READS1:
+        example: "-r hg19.fa"
+    - READS1:
         default: "Null"
         opts: "-s1 | --sample1"
+        description: "Name of the first FASTQ file."
         required: True
-    READS2:
+        example: "-s1 SampleA_1.fastq.gz"
+    - READS2:
         default: "Null"
         opts: "-s2 | --sample2"
+        description: "Name of the second FASTQ file."
         required: True
-    OUTPUT:
+        example: "-s2 SampleA_2.fastq.gz"
+    - OUTPUT:
         default: "Null"
         opts: "-o | --output"
+        description: "Name of the output BAM file."
         required: True
-    CHUNKS:
+        example: "-o SampleA.bam"
+    - THREADS:
+        default: 1
+        opts: "-t | --nthreads"
+        description: "The number of threads that BWA should use during alignment."
+        required: False
+        example: "-t 4"
+    - CHUNKS:
         default: 1
         opts: "-c | --nchunks"
+        description: "This argument indicates how the FASTQ files should be \"chunked\" during the alignment process. When this feature is enabled, a subset (chunk) of the FASTQ data will be streamed into BWA. Accordingly, different chunks of the file can be aligned in parallel, potentially reducing execution times. This argument indicates the total number of chunks (default of 1 indicates no chunking). When performing chunking, you should also specify the --process_chunk argument, which indicates the chunk number that should be processed (this counting scheme is zero-based)."
         required: False
-    PROCESS_CHUNK:
+    - PROCESS_CHUNK:
         default: 0
         opts: "-p | --process_chunk"
+        description: "This argument indicates the chunk number to be processed. Please see the description for the --nchunks argument."
         required: False
-    READ_GROUP_STRING:
+    - READ_GROUP_STRING:
         default: ""
         opts: "-rg | --read-group"
+        description: "This argument allows you to specify read-group information during alignment. Please specify the whole read-group string, including the @RG prefix, surround in quotes. You can find a helpful tutorial here: https://software.broadinstitute.org/gatk/documentation/article.php?id=6472."
         required: False
-    SORT:
+        example: "-rg \"@RG\\tID:SampleA_lane1\\tPL:ILLUMINA\\tPU:SampleA_lane1\\tLB:SampleA_lane1\\tSM:SampleA\""
+    - SORT:
         default: False
         opts: "--sort"
+        description: "Whether the output BAM file should be sorted after alignment. Acceptable values are True or False."
         required: False
         acceptable_values:
             - False
             - True
-    INDEX:
+        example: "--sort True"
+    - INDEX:
         default: False
         opts: "--index"
+        description: "Whether the output BAM file should be indexed after alignment. Acceptable values are True or False."
         required: False
         acceptable_values:
             - False
             - True
-help: |
-    Description:
-      Align FASTQ files to a reference genome using the Burrows-Wheeler Aligner software.
-
-    Options:
-      -r, --reference <name of reference genome FASTA file>
-      -s1, --sample1 <file 1>
-      -s2, --sample2 <file 2> (Optional)
-      -o, --output <name of output BAM file>
-      -h, --help
-      -t, --nthreads <number of threads> (Optional)
-      -c, --nchunks <number of chunks> (Optional)
-      -p, --process_chunk <chunk to be processed> (Optional)
-      -rg, --read-group <read group string> (Optional)
-      --log <destination file for version log> (Optional)
-
-    Usage:
-      docker run \\
-        -v <directory with reference FASTA file>:/data/ref_genome \\
-        -v <directory with reference index files>:/data/ref_index \\
-        -v <directory with FASTQ files>:/data/input_data \\
-        -v <directory for output BAM file>:/data/output_data \\
-        --user \$(id -u):\$(id -g) \\
-        --rm \\
-        srp33/somatic_wgs:{tag} \\
-        bwa_mem_align \\
-          -r <reference FASTA file> \\
-          -s1 <file 1> \\
-          -s2 <file 2> (Optional) \\
-          -o <name of output BAM file> \\
-          -t <number of threads> (Optional) \\
-          -c <number of chunks> (Optional) \\
-          -p <chunk to be processed (Optional) \\
-          -rg <read group string> (Optional)
-          --log <destination file for version log> (Optional)
-  
-    Notes:
-      To avoid permissions issues, please ensure that the following directories have been \
-      created on the host operating system before executing this command:
-
-      <directory with reference FASTA file>
-      <directory with FASTQ files>
-      <directory for output BAM file>
-
-      The --nchunks argument divides the FASTQ files into n number of chunks. The --process_chunk argument \
-      specifies which chunk should be aligned. --process_chunk must be less than --nchunks and greater than or \
-      equal to 0 (the default for --process_chunk is 0). --nchunks must be greater than 0, however, inputting \
-      1 for --nchunks will not change anything since that is the default behavior.
-
-      The --rg argument allows you to specify read-group information during alignment. \
-      Please specify the whole read-group string, including the @RG prefix, surround in quotes. \
-      You can find a helpful tutorial here: https://software.broadinstitute.org/gatk/documentation/article.php?id=6472.
+        example: "--index True"
 volumes:
-    ref_genome: Read
-    ref_index: Read
-    input_data: ReadWrite
-    output_data: ReadWrite
+    - ref_genome:
+        description: "Directory where the reference genome FASTA file is stored."
+        permissions: Read
+    - ref_index:
+        description: "Directory where the index files for the reference genome are stored."
+        permissions: Read
+    - input_data:
+        description: "Directory where the FASTQ files are stored."
+        permissions: ReadWrite
+    - output_data:
+        description: "Directory where the output files will be stored."
+        permissions: ReadWrite
 command_template: |
     NEEDED_FILES=("${REF_GENOME}".amb "${REF_GENOME}".ann "${REF_GENOME}".bwt "${REF_GENOME}".pac "${REF_GENOME}".sa)
     REF_INDEX_FILES=()

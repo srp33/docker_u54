@@ -27,17 +27,14 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
  && conda install strelka=2.9.10-0 lumpy-sv=0.2.13 subprocess32=3.5.3 \
                    htseq=0.11.2 cython=0.29.6 svtyper=0.7.0 survivor=1.0.6 manta=1.5.0 -n py2.7 \
  && alias awk=gawk \
- && mkdir -p /data /starling/bin /starling/helper /starling/command_meta /starling/docs \
- && chmod 777 /data /starling -R \
- && pip install PyYAML
+ && mkdir -p /data /starling/bin /starling/helper /starling/docs \
+ && chmod 777 /data /starling -R
+# && pip install PyYAML
 
 ################## ADD SCRIPTS ########################
-ADD src/command_meta/* /starling/command_meta/
+ADD bin/* /starling/bin/
+ADD docs/* /starling/docs/
 ADD src/helper/* /starling/helper/
-
-################## BUILD USER SCRIPTS #################
-RUN /starling/helper/build_commands \
- && chmod 777 /starling -R
 
 ################## SETUP WORKDIR #######################
 WORKDIR /data
