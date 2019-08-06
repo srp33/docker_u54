@@ -1,12 +1,36 @@
 description: Calls somatic variants using Mutect2 for a tumor/normal pair.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - REF_GENOME:
+        default: "Null"
+        opts: "-r | --reference"
+        description: "Name of the reference genome FASTA file."
         required: True
-        example: ""
+        example: "-r hg19.fa"
+    - TUMOR:
+        default: "Null"
+        opts: "-t | --tumor"
+        description: "Path to a BAM file with tumor data."
+        required: True
+        example: "-t SampleA_Tumor.bam"
+    - NORMAL:
+        default: "Null"
+        opts: "-n | --normal"
+        description: "Path to a BAM file with normal data."
+        required: True
+        example: "-n SampleA_Normal.bam"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output"
+        description: "Name of the output VCF file."
+        required: True
+        example: "-o SampleA.vcf"
 volumes:
+    - ref_genome:
+        description: "Directory where the reference genome FASTA file is stored."
+        permissions: Read
+    - ref_index:
+        description: "Directory where the index files for the reference genome are stored."
+        permissions: Read
     - bam_files:
         description: "Directory where the BAM file is stored."
         permissions: Read
@@ -14,8 +38,37 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+
+    INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
+    if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
+        NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
+        gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
+        REF_GENOME="${NEW_REF}"
+        INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
+    fi
+
+    NEEDED_INDEX=/data/ref_index/"${REF_GENOME}".fai
+    REF_DICT="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})".dict
+    NEEDED_DICT=/data/ref_index/"${REF_DICT}"
+
+    if [[ ! -f "${NEEDED_INDEX}" ]]; then
+        echo "Samtools reference index (${NEEDED_INDEX}) is missing."
+        exit 1
+    fi
+
+    ln -s /data/ref_index/"${REF_GENOME}.fai" /tmp/"${REF_GENOME}.fai"
+
+    if [[ ! -f ${NEEDED_DICT} ]]; then
+        echo "Fasta dict file (${NEEDED_DICT}) is missing."
+        exit 1
+    fi
+
+    ln -s /data/ref_index/"${REF_DICT}" /tmp/"${REF_DICT}"
+
+    gatk4 Mutect2 -I /data/bam_files/"${TUMOR}" -tumor "${TUMOR/\.bam/}" \
+      -I /data/bam_files/"${NORMAL}" -normal "${NORMAL_SAMPLE/\.bam/}" \
+      -O /data/output_data/"${OUTPUT}" -R /tmp/"${REF_GENOME}"
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    get_conda_version gatk4
