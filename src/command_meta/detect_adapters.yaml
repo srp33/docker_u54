@@ -1,6 +1,6 @@
 description: Detect adapter sequences from FASTQ files using the atropos software. Only paired-end reads are supported currently. The adapter-detection information will be displayed to standard output.
 args:
-    - :
+    - TEMP:
         default: ""
         opts: ""
         description: ""
@@ -14,7 +14,7 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-
+    TEMP
 receipt_commands: |
     get_bash_version
     get_python_version

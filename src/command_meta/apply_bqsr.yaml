@@ -42,7 +42,7 @@ volumes:
         permissions: Read
     - input_data:
         description: "Directory where the BQSR file is stored."
-        permissions: ReadWrite
+        permissions: Read
     - output_data:
         description: "Directory where the output BAM file will be stored."
         permissions: ReadWrite

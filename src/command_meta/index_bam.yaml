@@ -1,6 +1,6 @@
 description: Index a BAM file.
 args:
-    - :
+    - TEMP:
         default: ""
         opts: ""
         description: ""
@@ -14,7 +14,7 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-
+    TEMP
 receipt_commands: |
     get_bash_version
     get_python_version
