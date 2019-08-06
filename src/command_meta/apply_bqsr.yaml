@@ -52,10 +52,10 @@ command_template: |
     ln -s /data/ref_index/"${REF_GENOME/\.fa/.dict}" /tmp/"${REF_GENOME/\.fa/.dict}"
 
     gatk3 -Xms512m -Xmx8g -T PrintReads 
-        -R /tmp/"${REF_GENOME}" \\
-        -I /data/bam_files/"${BAM_FILE}" \\
-        -BQSR /data/input_data/"${BQSR}" \\
-        -o /data/output_data/"${OUTPUT}" \\
+        -R /tmp/"${REF_GENOME}" \
+        -I /data/bam_files/"${BAM_FILE}" \
+        -BQSR /data/input_data/"${BQSR}" \
+        -o /data/output_data/"${OUTPUT}" \
         -nct "${THREADS}"
 receipt_commands: |
     get_bash_version
