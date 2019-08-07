@@ -1,21 +1,44 @@
 description: This command creates index files from a reference genome (FASTA file). It uses bwa, samtools, and Picard to create index files.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - REF_GENOME:
+        default: "Null"
+        opts: "-r | --reference"
+        description: "Name of the reference genome FASTA file."
         required: True
-        example: ""
+        example: "-r hg19.fa"
 volumes:
-    - bam_files:
+    - ref_genome:
         description: "Directory where the BAM file is stored."
         permissions: Read
-    - output_data:
-        description: "Directory where the output file will be stored."
+    - ref_index:
+        description: "Directory where the output files will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    REF_GENOME_PATH=/tmp/ref.fa
+
+    if file --mime-type "/data/ref_genome/${REF_GENOME}" | grep -q gzip$
+    then
+      gunzip -c "/data/ref_genome/${REF_GENOME}" >${REF_GENOME_PATH}
+      OUTPUT_PREFIX=$(get_file_without_extension ${REF_GENOME})
+    else
+      ln -s "/data/ref_genome/${REF_GENOME}" ${REF_GENOME_PATH}
+      OUTPUT_PREFIX=${REF_GENOME}
+    fi
+
+    bwa index -a bwtsw ${REF_GENOME_PATH}
+    samtools faidx ${REF_GENOME_PATH}
+    picard CreateSequenceDictionary REFERENCE=${REF_GENOME_PATH} OUTPUT=${REF_GENOME_PATH}.dict
+
+    REF_INDEX_FILES=("${REF_GENOME_PATH}".amb "${REF_GENOME_PATH}".ann "${REF_GENOME_PATH}".bwt "${REF_GENOME_PATH}".pac "${REF_GENOME_PATH}".sa "${REF_GENOME_PATH}".fai)
+    for REF_INDEX_FILE in ${REF_INDEX_FILES[@]}; do
+        REF_INDEX_FILE_EXTENSION="$(get_file_extension ${REF_INDEX_FILE})"
+        mv "${REF_INDEX_FILE}" /data/ref_index/${OUTPUT_PREFIX}.${REF_INDEX_FILE_EXTENSION}
+    done
+
+    mv ${REF_GENOME_PATH}.dict /data/ref_index/${OUTPUT_PREFIX/\.$(get_file_extension ${REF_GENOME_PATH})/}.dict
 receipt_commands: |
     get_bash_version
     get_python_version
+    get_conda_version bwa
+    get_conda_version samtools
     get_conda_version picard

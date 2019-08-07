@@ -1,21 +1,49 @@
 description: Downloads a recalibration VCF file from the GATK FTP server and performs some preprocessing so VCF file will work properly even if the reference genome was sorted differently than the VCF file.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - VCF_URL:
+        default: "Null"
+        opts: "-u | --vcf_url"
+        description: "URL for a recalibration VCF file from the GATK VCF file."
         required: True
-        example: ""
+        example: "-u ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/hg38/dbsnp_146.hg38.vcf.gz"
+    - REF_GENOME:
+        default: "Null"
+        opts: "-r | --reference"
+        description: "Name of the reference genome FASTA file."
+        required: True
+        example: "-r hg19.fa"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output_file"
+        description: "Name of the output VCF file."
+        required: True
+        example: "-o dbsnp_146.hg38.vcf.gz"
 volumes:
-    - bam_files:
-        description: "Directory where the BAM file is stored."
+    - ref_index:
+        description: "Directory where the index files for the reference genome are stored."
         permissions: Read
     - output_data:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    VCF_FILE=/tmp/"$(basename ${VCF_URL/\.gz/})" \
+    TMP_FILE=/tmp/"$(basename ${VCF_FILE}).2" \
+    OUT_FILE=/data/output_data/"$(basename ${OUTPUT})"
+
+    wget -O "${VCF_FILE}.gz" "${VCF_URL}"
+    gunzip "${VCF_FILE}.gz"
+
+    DICT_FILE=/data/ref_index/${REF_GENOME/\.$(get_file_extension ${REF_GENOME})/}.dict
+    python /starling/helper/reconcile_vcf_with_dict.py "${VCF_FILE}" "${DICT_FILE}" "${TMP_FILE}"
+
+    picard -Xms512m -Xmx8g SortVcf \
+        I="${TMP_FILE}" \
+        O="${OUT_FILE}" \
+        SEQUENCE_DICTIONARY="${DICT_FILE}" \
+        CREATE_INDEX=true
 receipt_commands: |
     get_bash_version
+    wget --version
+    gzip --version
     get_python_version
     get_conda_version picard

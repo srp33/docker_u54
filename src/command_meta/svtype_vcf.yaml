@@ -1,21 +1,51 @@
 description: Apply the SVType tool to a VCF file.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - VCF_FILE:
+        default: "Null"
+        opts: "-c | --vcf_file"
+        description: "Path to a VCF file."
         required: True
-        example: ""
+        example: "-c SampleA.vcf"
+    - BAM_FILE:
+        default: "Null"
+        opts: "-b | --bam_file"
+        description: "Path to a BAM file."
+        required: True
+        example: "-b SampleA.bam"
+    - JSON_FILE:
+        default: "Null"
+        opts: "-j | --json_file"
+        description: "Path to a JSON file with configuration settings."
+        required: True
+        example: "-j svtyper_settings.json"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output"
+        description: "Name of the output file."
+        required: True
+        example: "-o SampleA_SVgenotypes.vcf"
 volumes:
     - bam_files:
         description: "Directory where the BAM file is stored."
+        permissions: Read
+    - vcf_files:
+        description: "Directory where the VCF file is stored."
+        permissions: Read
+    - config:
+        description: "Directory where the JSON file is stored."
         permissions: Read
     - output_data:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    source activate py2.7
+
+    svtyper \
+        -i /data/input_data/"${VCF_FILE}" \
+        -B /data/bam_files/"${BAM_FILE}" \
+        -l /data/config/"${JSON_FILE}" \
+        > /data/output_data/"${OUTPUT}"
 receipt_commands: |
     get_bash_version
     get_python_version
-    get_conda_version picard
+    get_conda_version svtyper

@@ -1,11 +1,29 @@
 description: Slice a BAM file based on chromosomal coordinates.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - BAM_FILE:
+        default: "Null"
+        opts: "-b | --bam_file"
+        description: "Path to a BAM file."
         required: True
-        example: ""
+        example: "-b SampleA.bam"
+    - REGION:
+        default: "Null"
+        opts: "-r | --region"
+        description: "Genomic region to slice (e.g. \"chr2\" or \"chr2:1000-2000\")"
+        required: True
+        example: "-r chr2:1000-2000"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output"
+        description: "Name of the output file."
+        required: True
+        example: "-o SampleA_regionA.bam"
+    - THREADS:
+        default: 1
+        opts: "-t | --nthreads"
+        description: "The number of threads that should be used."
+        required: False
+        example: "-t 4"
 volumes:
     - bam_files:
         description: "Directory where the BAM file is stored."
@@ -14,8 +32,7 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    sambamba slice -t ${THREADS} -o /data/output_data/"${OUTPUT}" /data/bam_files/"${BAM_FILE}" "${REGION}"
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    get_conda_version sambamba

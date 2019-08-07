@@ -1,21 +1,74 @@
 description: Use the survivor tool merge VCF files so they can be used for identifying structural variants.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - VCF_PATTERN:
+        default: "Null"
+        opts: "-i | --input_vcf"
+        description: "Wildcard representation of VCF file names to be merged."
         required: True
-        example: ""
+        example: "-i \"*.vcf\""
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output_file"
+        description: "Name of the output VCF file."
+        required: True
+        example: "-o Survivor.vcf"
+    - AGREE_TYPE:
+        default: True
+        opts: "-t | --agree_type"
+        description: "Whether the variants must agree on their type to be merged."
+        required: False
+        acceptable_values:
+            - False
+            - True
+        example: "-t False"
+    - AGREE_STRAND:
+        default: True
+        opts: "-s | --agree_strand"
+        description: "Whether the variants must agree on their strand to be merged."
+        required: False
+        acceptable_values:
+            - False
+            - True
+        example: "-s False"
+    - MAX_DISTANCE:
+        default: "1000"
+        opts: "-d | --max_distance"
+        description: "Maximum distance between breakpoints."
+        required: False
+        example: "-d 500"
+    - MIN_AGREEMENT:
+        default: "2"
+        opts: "-a | --min_agreement"
+        description: "Minimum number of callers that must agree to keep SV."
+        required: False
+        example: "-a 3"
+    - MIN_SIZE:
+        default: "30"
+        opts: "-z | --min_size"
+        description: "Minimum size of SV in base pairs."
+        required: False
+        example: "-z 50"
 volumes:
-    - bam_files:
-        description: "Directory where the BAM file is stored."
+    - input_data:
+        description: "Directory where the input files are stored."
         permissions: Read
     - output_data:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    source activate py2.7
+
+    ls /data/input_data/${VCF_PATTERN} > /tmp/sample_files
+
+    SURVIVOR merge \
+      /tmp/sample_files \
+      ${MAX_DISTANCE} \
+      ${MIN_AGREEMENT} \
+      ${AGREE_TYPE} \
+      ${AGREE_STRAND} \
+      0 \
+      ${MIN_SIZE} \
+      /data/output_data/"${OUTPUT}"
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    get_conda_version survivor

@@ -1,21 +1,17 @@
-description: Display read-group information for a BAM file.
+description: Display read-group information for a BAM file. This information will be printed to standard output.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - BAM_FILE:
+        default: "Null"
+        opts: "-b | --bam_file"
+        description: "Path to a BAM file."
         required: True
-        example: ""
+        example: "-b SampleA.bam"
 volumes:
     - bam_files:
         description: "Directory where the BAM file is stored."
         permissions: Read
-    - output_data:
-        description: "Directory where the output file will be stored."
-        permissions: ReadWrite
 command_template: |
-    TEMP
+    samtools view -H /data/bam_files/${BAM_FILE} | grep '@RG'
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    get_conda_version samtools

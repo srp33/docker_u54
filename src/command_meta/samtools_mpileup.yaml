@@ -1,12 +1,36 @@
-description: Create a pileup file using samtools.
+description: Create a pileup file using samtools. This file will show differences between a normal BAM file and a tumor BAM file.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - REF_GENOME:
+        default: "Null"
+        opts: "-r | --reference"
+        description: "Name of the reference genome FASTA file."
         required: True
-        example: ""
+        example: "-r hg19.fa"
+    - TUMOR:
+        default: "Null"
+        opts: "-t | --tumor"
+        description: "Path to a BAM file with tumor data."
+        required: True
+        example: "-t SampleA_Tumor.bam"
+    - NORMAL:
+        default: "Null"
+        opts: "-n | --normal"
+        description: "Path to a BAM file with normal data."
+        required: True
+        example: "-n SampleA_Normal.bam"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output"
+        description: "Name of the output file."
+        required: True
+        example: "-o SampleA.pileup"
 volumes:
+    - ref_genome:
+        description: "Directory where the reference genome FASTA file is stored."
+        permissions: Read
+    - ref_index:
+        description: "Directory where the index files for the reference genome are stored."
+        permissions: Read
     - bam_files:
         description: "Directory where the BAM file is stored."
         permissions: Read
@@ -14,8 +38,28 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+
+    # Check for necessary index files in ref_index directory
+
+    INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
+    if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
+        NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
+        gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
+        REF_GENOME="${NEW_REF}"
+    fi
+
+    NEEDED_FILE=/data/ref_index/${REF_GENOME}.fai
+
+    if [[ ! -f "${NEEDED_FILE}" ]]; then
+        echo "Samtools reference index (${NEEDED_FILE}) is missing."
+        exit 1
+    fi
+
+    ln -s /data/ref_index/"${REF_GENOME}.fai" /tmp/"${REF_GENOME}.fai"
+
+    samtools mpileup -B -q 1 -f /tmp/"${REF_GENOME}" \
+      /data/bam_files/"${NORMAL}" /data/bam_files/"${TUMOR}" > /data/output_data/"${OUTPUT}"
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    get_conda_version samtools

@@ -1,21 +1,43 @@
-description: Call structural variants using LUMPY.
+description: Call structural variants using LUMPY. All BAM files must be coordinate-sorted. Also ensure that all BAM files have been sorted, indexed, and duplicate-marked.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - TUMOR:
+        default: "Null"
+        opts: "-t | --tumor"
+        description: "Path to a BAM file with tumor data."
         required: True
-        example: ""
+        example: "-t SampleA_Tumor.bam"
+    - SPLIT:
+        default: "Null"
+        opts: "-s | --split_reads"
+        description: "Path to a BAM file with split reads."
+        required: True
+        example: "-s SampleA_Tumor_Split.bam"
+    - DISCORDANT:
+        default: "Null"
+        opts: "-d | --discordant_reads"
+        description: "Path to a BAM file with discordant reads."
+        required: True
+        example: "-d SampleA_Tumor_Discordant.bam"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output"
+        description: "Name of the output VCF file."
+        required: True
+        example: "-o SampleA.vcf"
 volumes:
     - bam_files:
-        description: "Directory where the BAM file is stored."
+        description: "Directory where the BAM files are stored."
         permissions: Read
     - output_data:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    source activate py2.7
+
+    lumpyexpress -B /data/bam_files/"${TUMOR}" -S /data/bam_files/"${SPLIT}" \
+        -D /data/bam_files/"${DISC}" -o /data/output_data/"${OUTPUT}" \
+        -T /tmp/"${OUTPUT%%.*}".XXXXXXXXXXXXXXX
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    get_python2_version
+    get_conda_version lumpy

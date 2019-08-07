@@ -1,21 +1,55 @@
 description: Trim adapter sequences and low-quality bases from FASTQ files using the atropos software.  Only paired-end reads are supported currently. Please consult the atropos documentation for information about arguments that can be specified.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - INPUT1:
+        default: "Null"
+        opts: "-i1 | --input1"
+        description: "Name of the first input (FASTQ) file."
         required: True
-        example: ""
+        example: "-i1 SampleA_1.fastq.gz"
+    - INPUT2:
+        default: "Null"
+        opts: "-i2 | --input2"
+        description: "Name of the second input (FASTQ) file."
+        required: True
+        example: "-i2 SampleA_2.fastq.gz"
+    - OUTPUT1:
+        default: "Null"
+        opts: "-o1 | --output1"
+        description: "Name of the first output (FASTQ) file."
+        required: True
+        example: "-o1 SampleA_1.fastq.gz"
+    - OUTPUT2:
+        default: "Null"
+        opts: "-o2 | --output2"
+        description: "Name of the second output (FASTQ) file."
+        required: True
+        example: "-o2 SampleA_2.fastq.gz"
+    - ARGS:
+        default: "Null"
+        opts: "-a | --args"
+        description: "Arguments that will be passed through to the atropos software."
+        required: True
+        example: "-a \"-q 20 -Q 20 --minimum-length 40\""
+    - THREADS:
+        default: 1
+        opts: "-t | --nthreads"
+        description: "The number of threads that should be used."
+        required: False
+        example: "-t 4"
 volumes:
-    - bam_files:
-        description: "Directory where the BAM file is stored."
+    - input_data:
+        description: "Directory where the input (FASTQ) files are stored."
         permissions: Read
     - output_data:
-        description: "Directory where the output file will be stored."
+        description: "Directory where the output (FASTQ) files will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    atropos $ARGS \
+      -T $THREADS \
+      -pe1 /data/input_data/$INPUT1 \
+      -pe2 /data/input_data/$INPUT2 \
+      -o /data/output_data/$OUTPUT1 \
+      -p /data/output_data/$OUTPUT2
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    get_conda_version atropos

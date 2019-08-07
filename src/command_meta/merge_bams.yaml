@@ -1,11 +1,23 @@
 description: Merge multiple BAM files into one and index it.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - BAM_FILE:
+        default: "()"
+        opts: "-b | --bam_file"
+        description: "Name of an input BAM file."
         required: True
-        example: ""
+        example: "-b SampleA_part1.bam -b SampleA_part2.bam"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output_file"
+        description: "Name of the output BAM file."
+        required: True
+        example: "-o SampleA.bam"
+    - THREADS:
+        default: 1
+        opts: "-t | --nthreads"
+        description: "The number of threads that should be used."
+        required: False
+        example: "-t 4"
 volumes:
     - bam_files:
         description: "Directory where the BAM file is stored."
@@ -14,8 +26,7 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    sambamba merge -t ${THREADS} /data/output_data/"${OUTPUT}" ${BAM_FILES[@]}
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    get_conda_version sambamba

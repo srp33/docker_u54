@@ -18,16 +18,22 @@ args:
         description: "Path to a BAM file with normal data."
         required: True
         example: "-n SampleA_Normal.bam"
+    - OUTPUT:
+        default: "Null"
+        opts: "-o | --output"
+        description: "Name of the output VCF file."
+        required: True
+        example: "-o SampleA.vcf"
     - INDEL:
         default: ""
         opts: "-i | --indel_candidates"
-        description: "The Strelka documentation recommends to provide indel candidates from the Manta SV and indel caller to improve sensitivity to call indels of size 20 or larger. You may specify the name of a VCF file with these candidates."
+        description: "The Strelka documentation recommends to provide indel candidates from the Manta SV and indel caller to improve sensitivity to call indels of size 20 or larger. You may specify the name of a VCF file with these candidates. This file can be created using the call_structural_variants_manta command."
         required: False
         example: "-i candidateSmallIndels.vcf.gz"
     - CALL_REGIONS:
         default: ""
         opts: "-c, --call_regions"
-        description: "The Strelka documentation recommends that for references with many short contigs, to provide callable regions to avoid possible runtime issues. You may specified the name of a BED file containing genomic regions to call."
+        description: "The Strelka documentation recommends that for references with many short contigs, to provide callable regions to avoid possible runtime issues. You may specify the name of a BED file containing genomic regions to call."
         required: False
         example: "-c regions.bed.gz"
     - EXOME:
@@ -42,7 +48,7 @@ args:
     - THREADS:
         default: 1
         opts: "-t | --nthreads"
-        description: "The number of threads that GATK should use."
+        description: "The number of threads that should be used."
         required: False
         example: "-t 4"
 volumes:

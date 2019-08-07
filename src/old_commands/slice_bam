@@ -97,4 +97,4 @@ Software used:
 
 fi
 
-sambamba slice -o /data/output_data/"${OUTPUT}" /data/bam_files/"${BAM_FILE}" "${REGION}"
+sambamba slice -t ${THREADS} -o /data/output_data/"${OUTPUT}" /data/bam_files/"${BAM_FILE}" "${REGION}"

@@ -1,21 +1,24 @@
 description: Index a BAM file.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - BAM_FILE:
+        default: "Null"
+        opts: "-b | --bam_file"
+        description: "Name of the input BAM file."
         required: True
-        example: ""
+        example: "-o SampleA.bam"
+    - THREADS:
+        default: 1
+        opts: "-t | --nthreads"
+        description: "The number of threads that should be used."
+        required: False
+        example: "-t 4"
 volumes:
     - bam_files:
         description: "Directory where the BAM file is stored."
-        permissions: Read
-    - output_data:
-        description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    sambamba index -t ${THREADS} /data/bam_files/"${BAM_FILE}" /data/bam_files/"${BAM_FILE}.bai"
 receipt_commands: |
     get_bash_version
     get_python_version
-    get_conda_version picard
+    get_conda_version sambamba

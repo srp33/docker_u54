@@ -1,21 +1,39 @@
 description: Create split read and discordant read SAM files from a BAM file.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - BAM_FILE:
+        default: "Null"
+        opts: "-b | --bam_file"
+        description: "Path to a BAM file."
         required: True
-        example: ""
+        example: "-b SampleA.bam"
+    - SPLIT:
+        default: "Null"
+        opts: "-s | --split_reads"
+        description: "Path to a BAM file with split reads."
+        required: True
+        example: "-s SampleA_Split.bam"
+    - DISCORDANT:
+        default: "Null"
+        opts: "-d | --discordant_reads"
+        description: "Path to a BAM file with discordant reads."
+        required: True
+        example: "-d SampleA_Discordant.bam"
 volumes:
     - bam_files:
-        description: "Directory where the BAM file is stored."
+        description: "Directory where the input BAM file is stored."
         permissions: Read
     - output_data:
-        description: "Directory where the output file will be stored."
+        description: "Directory where the output files will be stored."
         permissions: ReadWrite
 command_template: |
-    TEMP
+    samtools view -h /data/bam_files/"${BAM_FILE}" | samblaster --addMateTags | \
+    samblaster -a -e \
+      -d /tmp/"${DISCORDANT}.sam" -s /tmp/"${SPLIT}.sam" \
+      -o /dev/null
+
+    samtools view -S -b /tmp/"${DISCORDANT}.sam" > /data/output_data/"${DISCORDANT}"
+    samtools view -S -b /tmp/"${SPLIT}.sam" > /data/output_data/"${SPLIT}"
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    get_conda_version samtools
+    get_conda_version samblaster

@@ -1,21 +1,25 @@
 description: Detect adapter sequences from FASTQ files using the atropos software. Only paired-end reads are supported currently. The adapter-detection information will be displayed to standard output.
 args:
-    - TEMP:
-        default: ""
-        opts: ""
-        description: ""
+    - READS1:
+        default: "Null"
+        opts: "-s1 | --sample1"
+        description: "Name of the first FASTQ file."
         required: True
-        example: ""
+        example: "-s1 SampleA_1.fastq.gz"
+    - READS2:
+        default: "Null"
+        opts: "-s2 | --sample2"
+        description: "Name of the second FASTQ file."
+        required: True
+        example: "-s2 SampleA_2.fastq.gz"
 volumes:
-    - bam_files:
-        description: "Directory where the BAM file is stored."
+    - input_data:
+        description: "Directory where the FASTQ files are stored."
         permissions: Read
-    - output_data:
-        description: "Directory where the output file will be stored."
-        permissions: ReadWrite
 command_template: |
-    TEMP
+    atropos detect \
+        -pe1 /data/input_data/"$READS1" \
+        -pe2 /data/input_data/"$READS2"
 receipt_commands: |
     get_bash_version
-    get_python_version
-    get_conda_version picard
+    get_conda_version atropos
