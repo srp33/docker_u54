@@ -24,6 +24,12 @@ args:
         description: "Name of the output VCF file."
         required: True
         example: "-o SampleA.vcf"
+    - THREADS:
+        default: 1
+        opts: "-t | --nthreads"
+        description: "The number of threads that GATK should use."
+        required: False
+        example: "-t 4"
 volumes:
     - ref_genome:
         description: "Directory where the reference genome FASTA file is stored."
@@ -68,7 +74,8 @@ command_template: |
 
     gatk4 Mutect2 -I /data/bam_files/"${TUMOR}" -tumor "${TUMOR/\.bam/}" \
       -I /data/bam_files/"${NORMAL}" -normal "${NORMAL_SAMPLE/\.bam/}" \
-      -O /data/output_data/"${OUTPUT}" -R /tmp/"${REF_GENOME}"
+      -O /data/output_data/"${OUTPUT}" -R /tmp/"${REF_GENOME}" \
+      --nativePairHmmThreads $THREADS
 receipt_commands: |
     get_bash_version
     get_conda_version gatk4

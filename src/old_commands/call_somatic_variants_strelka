@@ -54,7 +54,7 @@ for (( i=1; i<=ARGNUM; i++ )); do
     -e | --exome )\
       EXOME="--exome"
       ;;
-    -O | --overwrite_runDir )
+    -o | --overwrite_runDir )
       OVERWRITE=1
       ;;
     --log )
