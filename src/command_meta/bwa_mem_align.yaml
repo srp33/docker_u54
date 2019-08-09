@@ -1,24 +1,24 @@
-description: Align FASTQ files to a reference genome using the Burrows-Wheeler Aligner software (bwa mem). Default options are used for bwa mem unless specified otherwise.
+description: Align FASTQ files to a reference genome using the Burrows-Wheeler Aligner software (bwa mem). Default options are used for bwa mem unless specified otherwise. This is designed for paired-end reads stored in two separate FASTQ files.
 args:
-    - REF_GENOME:
+    - FASTA_FILE:
         default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
         required: True
         example: "-r hg19.fa"
-    - READS1:
+    - FASTQ_FILE1:
         default: "Null"
-        opts: "-s1 | --sample1"
+        opts: "-f1 | --fastq1"
         description: "Name of the first FASTQ file."
         required: True
-        example: "-s1 SampleA_1.fastq.gz"
-    - READS2:
+        example: "-f1 SampleA_1.fastq.gz"
+    - FASTQ_FILE2:
         default: "Null"
-        opts: "-s2 | --sample2"
+        opts: "-f2 | --fastq2"
         description: "Name of the second FASTQ file."
         required: True
-        example: "-s2 SampleA_2.fastq.gz"
-    - OUTPUT:
+        example: "-f2 SampleA_2.fastq.gz"
+    - OUTPUT_FILE:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output BAM file."
@@ -35,35 +35,37 @@ args:
         opts: "-c | --nchunks"
         description: "This argument indicates how the FASTQ files should be \"chunked\" during the alignment process. When this feature is enabled, a subset (chunk) of the FASTQ data will be streamed into BWA. Accordingly, different chunks of the file can be aligned in parallel, potentially reducing execution times. This argument indicates the total number of chunks (default of 1 indicates no chunking). When performing chunking, you should also specify the --process_chunk argument, which indicates the chunk number that should be processed (this counting scheme is zero-based)."
         required: False
+        example: "-c 10"
     - PROCESS_CHUNK:
         default: 0
         opts: "-p | --process_chunk"
         description: "This argument indicates the chunk number to be processed. Please see the description for the --nchunks argument."
         required: False
+        example: "-p 2"
     - READ_GROUP_STRING:
         default: ""
-        opts: "-rg | --read-group"
+        opts: "-g | --read-group"
         description: "This argument allows you to specify read-group information during alignment. Please specify the whole read-group string, including the @RG prefix, surround in quotes. You can find a helpful tutorial here: https://software.broadinstitute.org/gatk/documentation/article.php?id=6472."
         required: False
-        example: "-rg \"@RG\\tID:SampleA_lane1\\tPL:ILLUMINA\\tPU:SampleA_lane1\\tLB:SampleA_lane1\\tSM:SampleA\""
+        example: "-g \"@RG\\tID:SampleA_lane1\\tPL:ILLUMINA\\tPU:SampleA_lane1\\tLB:SampleA_lane1\\tSM:SampleA\""
     - SORT:
         default: False
-        opts: "--sort"
+        opts: "-s | --sort"
         description: "Whether the output BAM file should be sorted after alignment. Acceptable values are True or False."
         required: False
         acceptable_values:
             - False
             - True
-        example: "--sort True"
+        example: "-s True"
     - INDEX:
         default: False
-        opts: "--index"
+        opts: "-i | --index"
         description: "Whether the output BAM file should be indexed after alignment. Acceptable values are True or False."
         required: False
         acceptable_values:
             - False
             - True
-        example: "--index True"
+        example: "-i True"
 volumes:
     - ref_genome:
         description: "Directory where the reference genome FASTA file is stored."
@@ -78,7 +80,7 @@ volumes:
         description: "Directory where the output files will be stored."
         permissions: ReadWrite
 command_template: |
-    NEEDED_FILES=("${REF_GENOME}".amb "${REF_GENOME}".ann "${REF_GENOME}".bwt "${REF_GENOME}".pac "${REF_GENOME}".sa)
+    NEEDED_FILES=("${FASTA_FILE}".amb "${FASTA_FILE}".ann "${FASTA_FILE}".bwt "${FASTA_FILE}".pac "${FASTA_FILE}".sa)
     REF_INDEX_FILES=()
     for filename in /data/ref_index/*; do
         REF_INDEX_FILES+=($(echo "${filename##*/}"))
@@ -101,34 +103,34 @@ command_template: |
       COMMAND_STRING+="-R \"$READ_GROUP_STRING\" "
     fi
 
-    COMMAND_STRING+="/tmp/\"${REF_GENOME}\" "
+    COMMAND_STRING+="/tmp/\"${FASTA_FILE}\" "
 
     if [[ ${CHUNKS} -gt 1 ]]
     then
-      COMMAND_STRING+="<(zcat /data/input_data/\"${READS1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
-      COMMAND_STRING+="<(zcat /data/input_data/\"${READS2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
+      COMMAND_STRING+="<(zcat /data/input_data/\"${FASTQ_FILE1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
+      COMMAND_STRING+="<(zcat /data/input_data/\"${FASTQ_FILE2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
     else
-      COMMAND_STRING+="/data/input_data/\"${READS1}\" /data/input_data/\"${READS2}\" "
+      COMMAND_STRING+="/data/input_data/\"${FASTQ_FILE1}\" /data/input_data/\"${FASTQ_FILE2}\" "
     fi
 
-    OUTPUT_PATH=/data/output_data/"${OUTPUT}"
+    OUTPUT_FILE=/data/output_data/"${OUTPUT_FILE}"
 
     if [[ ${CHUNKS} -gt 1 ]]; then
-      INDEX=$(echo ${OUTPUT} | grep -o '\.' | grep -c '\.')
-      OUT_NAME="$(echo ${OUTPUT} | cut -d '.' -f -${INDEX})"
-      OUTPUT_PATH=/data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
+      INDEX=$(echo ${OUTPUT_FILE} | grep -o '\.' | grep -c '\.')
+      OUT_NAME="$(echo ${OUTPUT_FILE} | cut -d '.' -f -${INDEX})"
+      OUTPUT_FILE=/data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
     fi
 
     if [[ "$SORT" == "True" ]]
     then
-      COMMAND_STRING+="| samtools sort -@ ${THREADS} -o \"${OUTPUT_PATH}\" - "
+      COMMAND_STRING+="| samtools sort -@ ${THREADS} -o \"${OUTPUT_FILE}\" - "
     else
-      COMMAND_STRING+="| samtools view -@ ${THREADS} -b > \"${OUTPUT_PATH}\" "
+      COMMAND_STRING+="| samtools view -@ ${THREADS} -b > \"${OUTPUT_FILE}\" "
     fi
 
     if [[ "$INDEX" == "True" ]]
     then
-      COMMAND_STRING+=" && sambamba index -t ${THREADS} \"${OUTPUT_PATH}\" \"${OUTPUT_PATH}\".bai"
+      COMMAND_STRING+=" && sambamba index -t ${THREADS} \"${OUTPUT_FILE}\" \"${OUTPUT_FILE}\".bai"
     fi
 
     eval "$COMMAND_STRING"

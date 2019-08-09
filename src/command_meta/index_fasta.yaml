@@ -1,6 +1,6 @@
 description: This command creates index files from a reference genome (FASTA file). It uses bwa, samtools, and Picard to create index files.
 args:
-    - REF_GENOME:
+    - FASTA_FILE:
         default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
@@ -8,34 +8,34 @@ args:
         example: "-r hg19.fa"
 volumes:
     - ref_genome:
-        description: "Directory where the BAM file is stored."
+        description: "Directory where the FASTA file is stored."
         permissions: Read
     - ref_index:
         description: "Directory where the output files will be stored."
         permissions: ReadWrite
 command_template: |
-    REF_GENOME_PATH=/tmp/ref.fa
+    FASTA_FILE_PATH=/tmp/ref.fa
 
-    if file --mime-type "/data/ref_genome/${REF_GENOME}" | grep -q gzip$
+    if file --mime-type "/data/ref_genome/${FASTA_FILE}" | grep -q gzip$
     then
-      gunzip -c "/data/ref_genome/${REF_GENOME}" >${REF_GENOME_PATH}
-      OUTPUT_PREFIX=$(get_file_without_extension ${REF_GENOME})
+      gunzip -c "/data/ref_genome/${FASTA_FILE}" >${FASTA_FILE_PATH}
+      OUTPUT_FILE_PREFIX=$(get_file_without_extension ${FASTA_FILE})
     else
-      ln -s "/data/ref_genome/${REF_GENOME}" ${REF_GENOME_PATH}
-      OUTPUT_PREFIX=${REF_GENOME}
+      ln -s "/data/ref_genome/${FASTA_FILE}" ${FASTA_FILE_PATH}
+      OUTPUT_FILE_PREFIX=${FASTA_FILE}
     fi
 
-    bwa index -a bwtsw ${REF_GENOME_PATH}
-    samtools faidx ${REF_GENOME_PATH}
-    picard CreateSequenceDictionary REFERENCE=${REF_GENOME_PATH} OUTPUT=${REF_GENOME_PATH}.dict
+    bwa index -a bwtsw ${FASTA_FILE_PATH}
+    samtools faidx ${FASTA_FILE_PATH}
+    picard CreateSequenceDictionary REFERENCE=${FASTA_FILE_PATH} OUTPUT_FILE=${FASTA_FILE_PATH}.dict
 
-    REF_INDEX_FILES=("${REF_GENOME_PATH}".amb "${REF_GENOME_PATH}".ann "${REF_GENOME_PATH}".bwt "${REF_GENOME_PATH}".pac "${REF_GENOME_PATH}".sa "${REF_GENOME_PATH}".fai)
+    REF_INDEX_FILES=("${FASTA_FILE_PATH}".amb "${FASTA_FILE_PATH}".ann "${FASTA_FILE_PATH}".bwt "${FASTA_FILE_PATH}".pac "${FASTA_FILE_PATH}".sa "${FASTA_FILE_PATH}".fai)
     for REF_INDEX_FILE in ${REF_INDEX_FILES[@]}; do
         REF_INDEX_FILE_EXTENSION="$(get_file_extension ${REF_INDEX_FILE})"
-        mv "${REF_INDEX_FILE}" /data/ref_index/${OUTPUT_PREFIX}.${REF_INDEX_FILE_EXTENSION}
+        mv "${REF_INDEX_FILE}" /data/ref_index/${OUTPUT_FILE_PREFIX}.${REF_INDEX_FILE_EXTENSION}
     done
 
-    mv ${REF_GENOME_PATH}.dict /data/ref_index/${OUTPUT_PREFIX/\.$(get_file_extension ${REF_GENOME_PATH})/}.dict
+    mv ${FASTA_FILE_PATH}.dict /data/ref_index/${OUTPUT_FILE_PREFIX/\.$(get_file_extension ${FASTA_FILE_PATH})/}.dict
 receipt_commands: |
     get_bash_version
     get_python_version

@@ -5,7 +5,7 @@ args:
         opts: "-b | --bam_file"
         description: "Name of the input BAM file."
         required: True
-        example: "-o SampleA.bam"
+        example: "-b SampleA.bam"
     - THREADS:
         default: 1
         opts: "-t | --nthreads"

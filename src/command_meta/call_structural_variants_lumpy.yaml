@@ -1,24 +1,24 @@
 description: Call structural variants using LUMPY. All BAM files must be coordinate-sorted. Also ensure that all BAM files have been sorted, indexed, and duplicate-marked.
 args:
-    - TUMOR:
+    - BAM_FILE:
         default: "Null"
-        opts: "-t | --tumor"
-        description: "Path to a BAM file with tumor data."
+        opts: "-b | --tumor"
+        description: "Path to a BAM file."
         required: True
-        example: "-t SampleA_Tumor.bam"
-    - SPLIT:
+        example: "-b SampleA_Tumor.bam"
+    - SPLIT_BAM_FILE:
         default: "Null"
         opts: "-s | --split_reads"
         description: "Path to a BAM file with split reads."
         required: True
         example: "-s SampleA_Tumor_Split.bam"
-    - DISCORDANT:
+    - DISCORDANT_BAM_FILE:
         default: "Null"
         opts: "-d | --discordant_reads"
         description: "Path to a BAM file with discordant reads."
         required: True
         example: "-d SampleA_Tumor_Discordant.bam"
-    - OUTPUT:
+    - OUTPUT_FILE:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output VCF file."
@@ -34,9 +34,9 @@ volumes:
 command_template: |
     source activate py2.7
 
-    lumpyexpress -B /data/bam_files/"${TUMOR}" -S /data/bam_files/"${SPLIT}" \
-        -D /data/bam_files/"${DISC}" -o /data/output_data/"${OUTPUT}" \
-        -T /tmp/"${OUTPUT%%.*}".XXXXXXXXXXXXXXX
+    lumpyexpress -B /data/bam_files/"${BAM_FILE}" -S /data/bam_files/"${SPLIT_BAM_FILE}" \
+        -D /data/bam_files/"${DISCORDANT_BAM_FILE}" -o /data/output_data/"${OUTPUT_FILE}" \
+        -T /tmp/"${OUTPUT_FILE%%.*}".XXXXXXXXXXXXXXX
 receipt_commands: |
     get_bash_version
     get_python2_version

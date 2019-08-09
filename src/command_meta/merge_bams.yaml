@@ -6,7 +6,7 @@ args:
         description: "Name of an input BAM file."
         required: True
         example: "-b SampleA_part1.bam -b SampleA_part2.bam"
-    - OUTPUT:
+    - OUTPUT_FILE:
         default: "Null"
         opts: "-o | --output_file"
         description: "Name of the output BAM file."
@@ -26,7 +26,7 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    sambamba merge -t ${THREADS} /data/output_data/"${OUTPUT}" ${BAM_FILES[@]}
+    sambamba merge -t ${THREADS} /data/output_data/"${OUTPUT_FILE}" ${BAM_FILES[@]}
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba

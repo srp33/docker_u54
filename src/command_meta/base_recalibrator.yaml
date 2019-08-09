@@ -1,24 +1,24 @@
 description: Detect systematic errors in base quality scores.
 args:
-    - REF_GENOME:
+    - FASTA_FILE:
         default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
         required: True
         example: "-r hg19.fa"
-    - KNOWN_SITES:
+    - KNOWN_SITES_FILE:
         default: "()"
-        opts: "-s | --known_sites"
+        opts: "-k | --known_sites_file"
         description: "Path to VCF file with known polymorphic sites> (may be listed more than once)."
         required: True
-        example: "-s dbsnp_146.hg19.vcf"
+        example: "-k dbsnp_146.hg19.vcf"
     - BAM_FILE:
         default: "Null"
         opts: "-b | --bam_file"
         description: "Name of the input BAM file."
         required: True
-        example: "-o SampleA.bam"
-    - OUTPUT:
+        example: "-b SampleA.bam"
+    - OUTPUT_FILE:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output BAM file."
@@ -47,18 +47,18 @@ volumes:
         description: "Directory where the output BAM file will be stored."
         permissions: ReadWrite
 command_template: |
-    ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+    ln -s /data/ref_genome/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
 
-    INDEX=$(echo "${REF_GENOME}" | grep -o '\.' | grep -c '\.')
-    if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
-        NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
-        gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
-        REF_GENOME="${NEW_REF}"
-        INDEX=$(echo "${REF_GENOME}" | grep -o '\.' | grep -c '\.')
+    INDEX=$(echo "${FASTA_FILE}" | grep -o '\.' | grep -c '\.')
+    if [[ ${FASTA_FILE: -${INDEX}} = ".gz" ]]; then
+        NEW_REF="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})"
+        gunzip -c /data/ref_genome/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
+        FASTA_FILE="${NEW_REF}"
+        INDEX=$(echo "${FASTA_FILE}" | grep -o '\.' | grep -c '\.')
     fi
 
-    NEEDED_INDEX=/data/ref_index/"${REF_GENOME}".fai
-    REF_DICT="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})".dict
+    NEEDED_INDEX=/data/ref_index/"${FASTA_FILE}".fai
+    REF_DICT="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})".dict
     NEEDED_DICT=/data/ref_index/"${REF_DICT}"
 
     if [[ ! -f "${NEEDED_INDEX}" ]]; then
@@ -66,7 +66,7 @@ command_template: |
         exit 1
     fi
 
-    ln -s /data/ref_index/"${REF_GENOME}.fai" /tmp/"${REF_GENOME}.fai"
+    ln -s /data/ref_index/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
 
     if [[ ! -f ${NEEDED_DICT} ]]; then
         echo "Fasta dict file (${NEEDED_DICT}) is missing."
@@ -76,7 +76,7 @@ command_template: |
     ln -s /data/ref_index/"${REF_DICT}" /tmp/"${REF_DICT}"
 
     KNOWN_SITE_COMMANDS=()
-    for KNOWN_SITE_FILE in ${KNOWN_SITES[@]}; do
+    for KNOWN_SITE_FILE in ${KNOWN_SITES_FILE[@]}; do
         if [[ ! -f /data/vcf_files/"${KNOWN_SITE_FILE}.idx" ]]; then
             gatk IndexFeatureFile -F /data/vcf_files/"${KNOWN_SITE_FILE}"
         fi
@@ -84,10 +84,10 @@ command_template: |
     done
 
     gatk3 -Xms512m -Xmx8g -T BaseRecalibrator \
-      -R /tmp/"${REF_GENOME}" \
+      -R /tmp/"${FASTA_FILE}" \
       -I /data/bam_files/"${BAM_FILE}" \
       ${KNOWN_SITE_COMMANDS[@]} \
-      -o /data/output_data/"${OUTPUT}" \
+      -o /data/output_data/"${OUTPUT_FILE}" \
       -nct ${THREADS}
 receipt_commands: |
     get_bash_version

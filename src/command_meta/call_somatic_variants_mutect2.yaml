@@ -1,24 +1,24 @@
 description: Calls somatic variants using Mutect2 for a tumor/normal pair.
 args:
-    - REF_GENOME:
+    - FASTA_FILE:
         default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
         required: True
         example: "-r hg19.fa"
-    - TUMOR:
+    - TUMOR_BAM_FILE:
         default: "Null"
-        opts: "-t | --tumor"
+        opts: "-m | --tumor_bam_file"
         description: "Path to a BAM file with tumor data."
         required: True
-        example: "-t SampleA_Tumor.bam"
-    - NORMAL:
+        example: "-m SampleA_Tumor.bam"
+    - NORMAL_BAM_FILE:
         default: "Null"
-        opts: "-n | --normal"
+        opts: "-n | --normal_bam_file"
         description: "Path to a BAM file with normal data."
         required: True
         example: "-n SampleA_Normal.bam"
-    - OUTPUT:
+    - OUTPUT_FILE:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output VCF file."
@@ -44,18 +44,18 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    ln -s /data/ref_genome/"${REF_GENOME}" /tmp/"${REF_GENOME}"
+    ln -s /data/ref_genome/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
 
-    INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
-    if [[ ${REF_GENOME: -${INDEX}} = ".gz" ]]; then
-        NEW_REF="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})"
-        gunzip -c /data/ref_genome/"${REF_GENOME}" > /tmp/"${NEW_REF}"
-        REF_GENOME="${NEW_REF}"
-        INDEX=$(echo ${REF_GENOME} | grep -o '\.' | grep -c '\.')
+    INDEX=$(echo ${FASTA_FILE} | grep -o '\.' | grep -c '\.')
+    if [[ ${FASTA_FILE: -${INDEX}} = ".gz" ]]; then
+        NEW_REF="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})"
+        gunzip -c /data/ref_genome/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
+        FASTA_FILE="${NEW_REF}"
+        INDEX=$(echo ${FASTA_FILE} | grep -o '\.' | grep -c '\.')
     fi
 
-    NEEDED_INDEX=/data/ref_index/"${REF_GENOME}".fai
-    REF_DICT="$(echo ${REF_GENOME} | cut -d '.' -f -${INDEX})".dict
+    NEEDED_INDEX=/data/ref_index/"${FASTA_FILE}".fai
+    REF_DICT="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})".dict
     NEEDED_DICT=/data/ref_index/"${REF_DICT}"
 
     if [[ ! -f "${NEEDED_INDEX}" ]]; then
@@ -63,7 +63,7 @@ command_template: |
         exit 1
     fi
 
-    ln -s /data/ref_index/"${REF_GENOME}.fai" /tmp/"${REF_GENOME}.fai"
+    ln -s /data/ref_index/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
 
     if [[ ! -f ${NEEDED_DICT} ]]; then
         echo "Fasta dict file (${NEEDED_DICT}) is missing."
@@ -72,9 +72,9 @@ command_template: |
 
     ln -s /data/ref_index/"${REF_DICT}" /tmp/"${REF_DICT}"
 
-    gatk4 Mutect2 -I /data/bam_files/"${TUMOR}" -tumor "${TUMOR/\.bam/}" \
-      -I /data/bam_files/"${NORMAL}" -normal "${NORMAL_SAMPLE/\.bam/}" \
-      -O /data/output_data/"${OUTPUT}" -R /tmp/"${REF_GENOME}" \
+    gatk4 Mutect2 -I /data/bam_files/"${TUMOR_BAM_FILE}" -tumor "${TUMOR_BAM_FILE/\.bam/}" \
+      -I /data/bam_files/"${NORMAL_BAM_FILE}" -normal "${NORMAL_BAM_FILE/\.bam/}" \
+      -O /data/output_data/"${OUTPUT_FILE}" -R /tmp/"${FASTA_FILE}" \
       --nativePairHmmThreads $THREADS
 receipt_commands: |
     get_bash_version

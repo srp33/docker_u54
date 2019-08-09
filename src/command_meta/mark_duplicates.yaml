@@ -6,7 +6,7 @@ args:
         description: "Name of the input BAM file."
         required: True
         example: "-b SampleA.bam"
-    - OUTPUT:
+    - OUTPUT_FILE:
         default: "Null"
         opts: "-o | --output_file"
         description: "Name of the output BAM file."
@@ -26,7 +26,7 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    sambamba markdup -t ${THREADS} /data/bam_files/"${BAM_FILE}" /data/output_data/"${OUTPUT}"
+    sambamba markdup -t ${THREADS} /data/bam_files/"${BAM_FILE}" /data/output_data/"${OUTPUT_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba

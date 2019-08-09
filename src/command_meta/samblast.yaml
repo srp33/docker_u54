@@ -1,4 +1,4 @@
-description: Create split read and discordant read SAM files from a BAM file.
+description: Create split read and discordant read BAM files from a source BAM file.
 args:
     - BAM_FILE:
         default: "Null"
@@ -6,13 +6,13 @@ args:
         description: "Path to a BAM file."
         required: True
         example: "-b SampleA.bam"
-    - SPLIT:
+    - SPLIT_BAM_FILE:
         default: "Null"
         opts: "-s | --split_reads"
         description: "Path to a BAM file with split reads."
         required: True
         example: "-s SampleA_Split.bam"
-    - DISCORDANT:
+    - DISCORDANT_BAM_FILE:
         default: "Null"
         opts: "-d | --discordant_reads"
         description: "Path to a BAM file with discordant reads."
@@ -28,11 +28,11 @@ volumes:
 command_template: |
     samtools view -h /data/bam_files/"${BAM_FILE}" | samblaster --addMateTags | \
     samblaster -a -e \
-      -d /tmp/"${DISCORDANT}.sam" -s /tmp/"${SPLIT}.sam" \
+      -d /tmp/"${DISCORDANT_BAM_FILE}.sam" -s /tmp/"${SPLIT_BAM_FILE}.sam" \
       -o /dev/null
 
-    samtools view -S -b /tmp/"${DISCORDANT}.sam" > /data/output_data/"${DISCORDANT}"
-    samtools view -S -b /tmp/"${SPLIT}.sam" > /data/output_data/"${SPLIT}"
+    samtools view -S -b /tmp/"${DISCORDANT_BAM_FILE}.sam" > /data/output_data/"${DISCORDANT_BAM_FILE}"
+    samtools view -S -b /tmp/"${SPLIT_BAM_FILE}.sam" > /data/output_data/"${SPLIT_BAM_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version samtools

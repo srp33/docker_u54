@@ -18,7 +18,7 @@ args:
         description: "Path to a JSON file with configuration settings."
         required: True
         example: "-j svtyper_settings.json"
-    - OUTPUT:
+    - OUTPUT_FILE:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output file."
@@ -44,7 +44,7 @@ command_template: |
         -i /data/input_data/"${VCF_FILE}" \
         -B /data/bam_files/"${BAM_FILE}" \
         -l /data/config/"${JSON_FILE}" \
-        > /data/output_data/"${OUTPUT}"
+        > /data/output_data/"${OUTPUT_FILE}"
 receipt_commands: |
     get_bash_version
     get_python_version
