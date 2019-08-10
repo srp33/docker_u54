@@ -10,7 +10,7 @@ args:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output BAM file."
-        required: True
+        required: False
         example: "-o SampleA.bam"
     - THREADS:
         default: 1
