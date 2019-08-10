@@ -1,4 +1,4 @@
-description: Slice a BAM file based on chromosomal coordinates.
+description: Slice a BAM file based on chromosome names and coordinates.
 args:
     - BAM_FILE:
         default: "Null"
@@ -25,14 +25,14 @@ args:
         required: False
         example: "-t 4"
 volumes:
-    - bam_files:
+    - input_bam_dir:
         description: "Directory where the BAM file is stored."
         permissions: Read
-    - output_data:
+    - output_bam_dir:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    sambamba slice -t ${THREADS} -o /data/output_data/"${OUTPUT_FILE}" /data/bam_files/"${BAM_FILE}" "${REGION}"
+    sambamba slice -t ${THREADS} -o /data/output_bam_dir/"${OUTPUT_FILE}" /data/input_bam_dir/"${BAM_FILE}" "${REGION}"
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba

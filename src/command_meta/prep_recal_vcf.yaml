@@ -1,4 +1,4 @@
-description: Downloads a recalibration VCF file from the GATK FTP server and performs some preprocessing so VCF file will work properly even if the reference genome was sorted differently than the VCF file.
+description: Download a recalibration VCF file from the GATK FTP server and perform some preprocessing so the VCF file will work properly, even if the reference genome was sorted differently than the VCF file.
 args:
     - VCF_URL:
         default: "Null"
@@ -19,21 +19,21 @@ args:
         required: True
         example: "-o dbsnp_146.hg38.vcf.gz"
 volumes:
-    - ref_index:
-        description: "Directory where the index files for the reference genome are stored."
+    - ref_dir:
+        description: "Directory where the reference genome FASTA file and indices are stored."
         permissions: Read
-    - output_data:
-        description: "Directory where the output file will be stored."
+    - output_vcf_dir:
+        description: "Directory where the output VCF file will be stored."
         permissions: ReadWrite
 command_template: |
     VCF_FILE=/tmp/"$(basename ${VCF_URL/\.gz/})" \
     TMP_FILE=/tmp/"$(basename ${VCF_FILE}).2" \
-    OUT_FILE=/data/output_data/"$(basename ${OUTPUT_FILE})"
+    OUT_FILE=/data/output_vcf_dir/"$(basename ${OUTPUT_FILE})"
 
     wget -O "${VCF_FILE}.gz" "${VCF_URL}"
     gunzip "${VCF_FILE}.gz"
 
-    DICT_FILE=/data/ref_index/${FASTA_FILE/\.$(get_file_extension ${FASTA_FILE})/}.dict
+    DICT_FILE=/data/ref_dir/${FASTA_FILE/\.$(get_file_extension ${FASTA_FILE})/}.dict
     python /starling/helper/reconcile_vcf_with_dict.py "${VCF_FILE}" "${DICT_FILE}" "${TMP_FILE}"
 
     picard -Xms512m -Xmx8g SortVcf \

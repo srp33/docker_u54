@@ -1,4 +1,4 @@
-description: Mark duplicates in a BAM file.
+description: Mark duplicate reads in a BAM file.
 args:
     - BAM_FILE:
         default: "Null"
@@ -19,14 +19,14 @@ args:
         required: False
         example: "-t 4"
 volumes:
-    - bam_files:
+    - input_bam_dir:
         description: "Directory where the BAM file is stored."
         permissions: Read
-    - output_data:
+    - output_bam_dir:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    sambamba markdup -t ${THREADS} /data/bam_files/"${BAM_FILE}" /data/output_data/"${OUTPUT_FILE}"
+    sambamba markdup -t ${THREADS} /data/input_bam_dir/"${BAM_FILE}" /data/output_bam_dir/"${OUTPUT_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba

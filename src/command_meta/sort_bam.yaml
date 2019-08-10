@@ -28,10 +28,10 @@ args:
         required: False
         example: "-t 4"
 volumes:
-    - bam_files:
+    - input_bam_dir:
         description: "Directory where the BAM file is stored."
         permissions: Read
-    - output_data:
+    - output_bam_dir:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
@@ -44,8 +44,8 @@ command_template: |
     sambamba sort \
       -t ${THREADS} \
       ${BY_NAME_PARAM} \
-      -o /data/output_data/"${OUTPUT_FILE}" \
-      /data/bam_files/"${BAM_FILE}"
+      -o /data/output_bam_dir/"${OUTPUT_FILE}" \
+      /data/input_bam_dir/"${BAM_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba

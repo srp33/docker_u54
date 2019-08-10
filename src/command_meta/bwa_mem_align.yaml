@@ -67,28 +67,25 @@ args:
             - True
         example: "-i True"
 volumes:
-    - ref_genome:
-        description: "Directory where the reference genome FASTA file is stored."
+    - ref_dir:
+        description: "Directory where the reference genome FASTA file and indices are stored."
         permissions: Read
-    - ref_index:
-        description: "Directory where the index files for the reference genome are stored."
-        permissions: Read
-    - input_data:
-        description: "Directory where the FASTQ files are stored."
+    - input_fastq_dir:
+        description: "Directory where the input FASTQ files are stored."
         permissions: ReadWrite
-    - output_data:
-        description: "Directory where the output files will be stored."
+    - output_fastq_dir:
+        description: "Directory where the output FASTQ files will be stored."
         permissions: ReadWrite
 command_template: |
     NEEDED_FILES=("${FASTA_FILE}".amb "${FASTA_FILE}".ann "${FASTA_FILE}".bwt "${FASTA_FILE}".pac "${FASTA_FILE}".sa)
     REF_INDEX_FILES=()
-    for filename in /data/ref_index/*; do
+    for filename in /data/ref_dir/*; do
         REF_INDEX_FILES+=($(echo "${filename##*/}"))
     done
 
     for NEEDED_FILE in ${NEEDED_FILES[@]}; do
         { [[ " ${REF_INDEX_FILES[@]} " =~ " ${NEEDED_FILE} " ]] \
-        && ln -s /data/ref_index/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
+        && ln -s /data/ref_dir/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
     done
 
     if [[ ${REF_INDEXED} == 1 ]]; then
@@ -107,18 +104,18 @@ command_template: |
 
     if [[ ${CHUNKS} -gt 1 ]]
     then
-      COMMAND_STRING+="<(zcat /data/input_data/\"${FASTQ_FILE1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
-      COMMAND_STRING+="<(zcat /data/input_data/\"${FASTQ_FILE2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
+      COMMAND_STRING+="<(zcat /data/input_fastq_dir/\"${FASTQ_FILE1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
+      COMMAND_STRING+="<(zcat /data/input_fastq_dir/\"${FASTQ_FILE2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
     else
-      COMMAND_STRING+="/data/input_data/\"${FASTQ_FILE1}\" /data/input_data/\"${FASTQ_FILE2}\" "
+      COMMAND_STRING+="/data/input_fastq_dir/\"${FASTQ_FILE1}\" /data/input_fastq_dir/\"${FASTQ_FILE2}\" "
     fi
 
-    OUTPUT_FILE=/data/output_data/"${OUTPUT_FILE}"
+    OUTPUT_FILE=/data/output_fastq_dir/"${OUTPUT_FILE}"
 
     if [[ ${CHUNKS} -gt 1 ]]; then
       INDEX=$(echo ${OUTPUT_FILE} | grep -o '\.' | grep -c '\.')
       OUT_NAME="$(echo ${OUTPUT_FILE} | cut -d '.' -f -${INDEX})"
-      OUTPUT_FILE=/data/output_data/"${OUT_NAME}".${PROCESS_CHUNK}.bam
+      OUTPUT_FILE=/data/output_fastq_dir/"${OUT_NAME}".${PROCESS_CHUNK}.bam
     fi
 
     if [[ "$SORT" == "True" ]]

@@ -7,11 +7,11 @@ args:
         required: True
         example: "-b SampleA.bam"
 volumes:
-    - bam_files:
+    - bam_dir:
         description: "Directory where the BAM file is stored."
         permissions: Read
 command_template: |
-    samtools view -H /data/bam_files/${BAM_FILE} | grep '@RG'
+    samtools view -H /data/bam_dir/${BAM_FILE} | grep '@RG'
 receipt_commands: |
     get_bash_version
     get_conda_version samtools

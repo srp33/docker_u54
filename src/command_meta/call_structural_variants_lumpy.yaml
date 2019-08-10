@@ -1,4 +1,4 @@
-description: Call structural variants using LUMPY. All BAM files must be coordinate-sorted. Also ensure that all BAM files have been sorted, indexed, and duplicate-marked.
+description: Call structural variants using LUMPY for a tumor/normal pair. All BAM files must be coordinate-sorted. Also, BAM files must have been sorted, indexed, and duplicate-marked.
 args:
     - BAM_FILE:
         default: "Null"
@@ -25,19 +25,18 @@ args:
         required: True
         example: "-o SampleA.vcf"
 volumes:
-    - bam_files:
+    - input_bam_dir:
         description: "Directory where the BAM files are stored."
         permissions: Read
-    - output_data:
+    - input_vcf_dir:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
     source activate py2.7
 
-    lumpyexpress -B /data/bam_files/"${BAM_FILE}" -S /data/bam_files/"${SPLIT_BAM_FILE}" \
-        -D /data/bam_files/"${DISCORDANT_BAM_FILE}" -o /data/output_data/"${OUTPUT_FILE}" \
+    lumpyexpress -B /data/input_bam_dir/"${BAM_FILE}" -S /data/input_bam_dir/"${SPLIT_BAM_FILE}" \
+        -D /data/input_bam_dir/"${DISCORDANT_BAM_FILE}" -o /data/input_vcf_dir/"${OUTPUT_FILE}" \
         -T /tmp/"${OUTPUT_FILE%%.*}".XXXXXXXXXXXXXXX
 receipt_commands: |
     get_bash_version
-    get_python2_version
     get_conda_version lumpy

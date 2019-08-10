@@ -1,4 +1,4 @@
-description: Create a pileup file using samtools. This file will show differences between a normal BAM file and a tumor BAM file.
+description: Create a pileup file using samtools. This file shows differences between a normal BAM file and a tumor BAM file.
 args:
     - FASTA_FILE:
         default: "Null"
@@ -25,41 +25,38 @@ args:
         required: True
         example: "-o SampleA.pileup"
 volumes:
-    - ref_genome:
-        description: "Directory where the reference genome FASTA file is stored."
+    - ref_dir:
+        description: "Directory where the reference genome FASTA file and indices are stored."
         permissions: Read
-    - ref_index:
-        description: "Directory where the index files for the reference genome are stored."
-        permissions: Read
-    - bam_files:
+    - input_bam_dir:
         description: "Directory where the BAM file is stored."
         permissions: Read
-    - output_data:
+    - output_pileup_dir:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    ln -s /data/ref_genome/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
+    ln -s /data/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
 
     # Check for necessary index files in ref_index directory
 
     INDEX=$(echo ${FASTA_FILE} | grep -o '\.' | grep -c '\.')
     if [[ ${FASTA_FILE: -${INDEX}} = ".gz" ]]; then
         NEW_REF="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})"
-        gunzip -c /data/ref_genome/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
+        gunzip -c /data/ref_dir/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
         FASTA_FILE="${NEW_REF}"
     fi
 
-    NEEDED_FILE=/data/ref_index/${FASTA_FILE}.fai
+    NEEDED_FILE=/data/ref_dir/${FASTA_FILE}.fai
 
     if [[ ! -f "${NEEDED_FILE}" ]]; then
         echo "Samtools reference index (${NEEDED_FILE}) is missing."
         exit 1
     fi
 
-    ln -s /data/ref_index/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
+    ln -s /data/ref_dir/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
 
     samtools mpileup -B -q 1 -f /tmp/"${FASTA_FILE}" \
-      /data/bam_files/"${NORMAL_BAM_FILE}" /data/bam_files/"${TUMOR_BAM_FILE}" > /data/output_data/"${OUTPUT_FILE}"
+      /data/input_bam_dir/"${NORMAL_BAM_FILE}" /data/input_bam_dir/"${TUMOR_BAM_FILE}" > /data/output_pileup_dir/"${OUTPUT_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version samtools

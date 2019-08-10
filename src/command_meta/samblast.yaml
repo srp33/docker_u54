@@ -1,38 +1,38 @@
-description: Create split read and discordant read BAM files from a source BAM file.
+description: Create split read and discordant read BAM files from a source BAM file using the samblast tool.
 args:
     - BAM_FILE:
         default: "Null"
         opts: "-b | --bam_file"
-        description: "Path to a BAM file."
+        description: "Name of the input BAM file."
         required: True
         example: "-b SampleA.bam"
     - SPLIT_BAM_FILE:
         default: "Null"
         opts: "-s | --split_reads"
-        description: "Path to a BAM file with split reads."
+        description: "Name of the output BAM file with split reads."
         required: True
         example: "-s SampleA_Split.bam"
     - DISCORDANT_BAM_FILE:
         default: "Null"
         opts: "-d | --discordant_reads"
-        description: "Path to a BAM file with discordant reads."
+        description: "Name of the output BAM file with discordant reads."
         required: True
         example: "-d SampleA_Discordant.bam"
 volumes:
-    - bam_files:
+    - input_bam_dir:
         description: "Directory where the input BAM file is stored."
         permissions: Read
-    - output_data:
-        description: "Directory where the output files will be stored."
+    - output_bam_dir:
+        description: "Directory where the output BAM files will be stored."
         permissions: ReadWrite
 command_template: |
-    samtools view -h /data/bam_files/"${BAM_FILE}" | samblaster --addMateTags | \
+    samtools view -h /data/input_bam_dir/"${BAM_FILE}" | samblaster --addMateTags | \
     samblaster -a -e \
       -d /tmp/"${DISCORDANT_BAM_FILE}.sam" -s /tmp/"${SPLIT_BAM_FILE}.sam" \
       -o /dev/null
 
-    samtools view -S -b /tmp/"${DISCORDANT_BAM_FILE}.sam" > /data/output_data/"${DISCORDANT_BAM_FILE}"
-    samtools view -S -b /tmp/"${SPLIT_BAM_FILE}.sam" > /data/output_data/"${SPLIT_BAM_FILE}"
+    samtools view -S -b /tmp/"${DISCORDANT_BAM_FILE}.sam" > /data/output_bam_dir/"${DISCORDANT_BAM_FILE}"
+    samtools view -S -b /tmp/"${SPLIT_BAM_FILE}.sam" > /data/output_bam_dir/"${SPLIT_BAM_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version samtools

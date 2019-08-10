@@ -1,4 +1,4 @@
-description: Detect adapter sequences from FASTQ files using the atropos software. Only paired-end reads are supported currently. The adapter-detection information will be displayed to standard output.
+description: Detect adapter sequences in FASTQ files using the atropos software. Only paired-end reads are supported currently. The adapter-detection information will be displayed to standard output.
 args:
     - FASTQ_FILE1:
         default: "Null"
@@ -13,13 +13,13 @@ args:
         required: True
         example: "-f2 SampleA_2.fastq.gz"
 volumes:
-    - input_data:
+    - fastq_dir:
         description: "Directory where the FASTQ files are stored."
         permissions: Read
 command_template: |
     atropos detect \
-        -pe1 /data/input_data/"$FASTQ_FILE1" \
-        -pe2 /data/input_data/"$FASTQ_FILE2"
+        -pe1 /data/fastq_dir/"$FASTQ_FILE1" \
+        -pe2 /data/fastq_dir/"$FASTQ_FILE2"
 receipt_commands: |
     get_bash_version
     get_conda_version atropos

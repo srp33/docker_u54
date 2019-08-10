@@ -1,4 +1,4 @@
-description: Call structural variants using Manta. This command currently requires tumor and normal BAM files. Both files must have been previously sorted. This can be done using the sort_bam command.
+description: Call structural variants using Manta for a tumor/normal pair. Both BAM files must have been sorted.
 args:
     - FASTA_FILE:
         default: "Null"
@@ -37,47 +37,44 @@ args:
         required: False
         example: "-t 4"
 volumes:
-    - ref_genome:
-        description: "Directory where the reference genome FASTA file is stored."
+    - ref_dir:
+        description: "Directory where the reference genome FASTA file and indices are stored."
         permissions: Read
-    - ref_index:
-        description: "Directory where the index files for the reference genome are stored."
-        permissions: Read
-    - bam_files:
+    - input_bam_dir:
         description: "Directory where the BAM file is stored."
         permissions: Read
-    - output_data:
+    - output_vcf_dir:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
-    if [ ! -f /data/bam_files/"${TUMOR_BAM_FILE}.bai" ] then
-      echo "ERROR: /data/bam_files/\"${TUMOR_BAM_FILE}.bai\" does not exist. Please run index_bam on /data/bam_files/\"${TUMOR_BAM_FILE}\"."
+    if [ ! -f /data/input_bam_dir/"${TUMOR_BAM_FILE}.bai" ] then
+      echo "ERROR: /data/input_bam_dir/\"${TUMOR_BAM_FILE}.bai\" does not exist. Please run index_bam on /data/input_bam_dir/\"${TUMOR_BAM_FILE}\"."
       exit 1;
     fi
-    if [ ! -f /data/bam_files/"${NORMAL_BAM_FILE}.bai" ] then
-      echo "ERROR: /data/bam_files/\"${NORMAL_BAM_FILE}.bai\" does not exist. Please run index_bam on /data/bam_files/\"${NORMAL_BAM_FILE}\"."
+    if [ ! -f /data/input_bam_dir/"${NORMAL_BAM_FILE}.bai" ] then
+      echo "ERROR: /data/input_bam_dir/\"${NORMAL_BAM_FILE}.bai\" does not exist. Please run index_bam on /data/input_bam_dir/\"${NORMAL_BAM_FILE}\"."
       exit 1;
     fi
 
-    ln -s /data/ref_genome/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
+    ln -s /data/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
 
     INDEX=$(echo "${FASTA_FILE}" | grep -o '\.' | grep -c '\.')
     if [[ "${FASTA_FILE: -${INDEX}}" = ".gz" ]]; then
         NEW_REF="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})"
-        gunzip -c /data/ref_genome/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
+        gunzip -c /data/ref_dir/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
         FASTA_FILE="${NEW_REF}"
     fi
 
-    NEEDED_FILE=/data/ref_index/"${FASTA_FILE}".fai
+    NEEDED_FILE=/data/ref_dir/"${FASTA_FILE}".fai
 
     if [[ ! -f "${NEEDED_FILE}" ]]; then
         echo "samtools reference index (${NEEDED_FILE}) is missing."
         exit 1
     fi
 
-    ln -s /data/ref_index/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
+    ln -s /data/ref_dir/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
 
-    RUN_DIR=/data/output_data/MantaSomaticWorkflow
+    RUN_DIR=/data/output_vcf_dir/MantaSomaticWorkflow
     RUN_DIR_ARG="--runDir=${RUN_DIR}"
     rm -f "${RUN_DIR_ARG##*=}/runWorkflow.py"
 
@@ -89,8 +86,8 @@ command_template: |
     source activate py2.7
 
     python2.7 /miniconda/share/manta-1.5.0-0/bin/configManta.py \
-      --referenceFasta=/tmp/"${FASTA_FILE}" --tumorBam="/data/bam_files/${TUMOR_BAM_FILE}" \
-      --normalBam="/data/bam_files/${NORMAL_BAM_FILE}" ${CALL_REGIONS_FILE} "${RUN_DIR_ARG}"
+      --referenceFasta=/tmp/"${FASTA_FILE}" --tumorBam="/data/input_bam_dir/${TUMOR_BAM_FILE}" \
+      --normalBam="/data/input_bam_dir/${NORMAL_BAM_FILE}" ${CALL_REGIONS_FILE} "${RUN_DIR_ARG}"
 
     python2.7 "${RUN_DIR}"/runWorkflow.py -m local -j $THREADS
 receipt_commands: |

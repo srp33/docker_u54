@@ -1,4 +1,4 @@
-description: Estimate the error rate for FASTQ files using the atropos software. This information will be printed to standard output. Only paired-end reads are supported currently. The error-rate information will be displayed to standard output. If you trim reads, the atropos authors recommend \"setting the -e option to ~10X the error rate. For example, if the estimated error is 0.9% (0.009), a good value for -e is 0.1.\"
+description: Estimate the error rate for FASTQ files using the atropos software. This information will be printed to standard output. Only paired-end reads are supported. If you trim reads, the atropos authors recommend \"setting the -e option to ~10X the error rate. For example, if the estimated error is 0.9% (0.009), a good value for -e is 0.1.\"
 args:
     - FASTQ_FILE1:
         default: "Null"
@@ -13,13 +13,13 @@ args:
         required: True
         example: "-f2 SampleA_2.fastq.gz"
 volumes:
-    - input_data:
+    - fastq_dir:
         description: "Directory where the input files are stored."
         permissions: Read
 command_template: |
     atropos error \
-        -pe1 /data/input_data/$FASTQ_FILE1 \
-        -pe2 /data/input_data/$FASTQ_FILE2
+        -pe1 /data/fastq_dir/$FASTQ_FILE1 \
+        -pe2 /data/fastq_dir/$FASTQ_FILE2
 receipt_commands: |
     get_bash_version
     get_conda_version atropos

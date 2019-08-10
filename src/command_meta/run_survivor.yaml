@@ -1,4 +1,4 @@
-description: Use the survivor tool merge VCF files so they can be used for identifying structural variants.
+description: Use the SURVIVOR tool to merge VCF files so they can be used for identifying consensus structural variants.
 args:
     - VCF_FILE_PATTERN:
         default: "Null"
@@ -49,16 +49,16 @@ args:
         required: False
         example: "-z 50"
 volumes:
-    - input_data:
+    - input_vcf_dir:
         description: "Directory where the input files are stored."
         permissions: Read
-    - output_data:
+    - output_vcf_dir:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
     source activate py2.7
 
-    ls /data/input_data/${VCF_FILE_PATTERN} > /tmp/sample_files
+    ls /data/input_vcf_dir/${VCF_FILE_PATTERN} > /tmp/sample_files
 
     SURVIVOR merge \
       /tmp/sample_files \
@@ -68,7 +68,7 @@ command_template: |
       ${AGREE_STRAND} \
       0 \
       ${MIN_SIZE} \
-      /data/output_data/"${OUTPUT_FILE}"
+      /data/output_vcf_dir/"${OUTPUT_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version survivor

@@ -1,28 +1,28 @@
-description: Trim adapter sequences and low-quality bases from FASTQ files using the atropos software.  Only paired-end reads are supported currently. Please consult the atropos documentation for information about arguments that can be specified.
+description: Trim adapter sequences and low-quality bases from FASTQ files using the atropos software.  Only paired-end reads are supported. Consult the atropos documentation for information about arguments that can be specified.
 args:
-    - FASTQ_FILE1:
+    - INPUT_FASTQ_FILE1:
         default: "Null"
         opts: "-f1 | --fastq1"
         description: "Name of the first FASTQ file."
         required: True
         example: "-f1 SampleA_1.fastq.gz"
-    - FASTQ_FILE2:
+    - INPUT_FASTQ_FILE2:
         default: "Null"
         opts: "-f2 | --fastq2"
         description: "Name of the second FASTQ file."
         required: True
         example: "-f2 SampleA_2.fastq.gz"
-    - OUTPUT_FILE1:
+    - OUTPUT_FASTQ_FILE1:
         default: "Null"
         opts: "-o1 | --output1"
         description: "Name of the first output (FASTQ) file."
-        required: True
+        required: False
         example: "-o1 SampleA_1.fastq.gz"
-    - OUTPUT_FILE2:
+    - OUTPUT_FASTQ_FILE2:
         default: "Null"
         opts: "-o2 | --output2"
         description: "Name of the second output (FASTQ) file."
-        required: True
+        required: False
         example: "-o2 SampleA_2.fastq.gz"
     - ARGS:
         default: "Null"
@@ -37,19 +37,28 @@ args:
         required: False
         example: "-t 4"
 volumes:
-    - input_data:
+    - input_fastq_dir:
         description: "Directory where the input (FASTQ) files are stored."
         permissions: Read
-    - output_data:
+    - output_fastq_dir:
         description: "Directory where the output (FASTQ) files will be stored."
         permissions: ReadWrite
 command_template: |
+    if [[ "$OUTPUT_FASTQ_FILE1" == "Null" ]]
+    then
+        OUTPUT_FASTQ_FILE1="$INPUT_FASTQ_FILE1"
+    fi
+    if [[ "$OUTPUT_FASTQ_FILE2" == "Null" ]]
+    then
+        OUTPUT_FASTQ_FILE2="$INPUT_FASTQ_FILE2"
+    fi
+
     atropos $ARGS \
       -T $THREADS \
-      -pe1 /data/input_data/$FASTQ_FILE1 \
-      -pe2 /data/input_data/$FASTQ_FILE2 \
-      -o /data/output_data/$OUTPUT_FILE1 \
-      -p /data/output_data/$OUTPUT_FILE2
+      -pe1 /data/input_fastq_dir/$INPUT_FASTQ_FILE1 \
+      -pe2 /data/input_fastq_dir/$INPUT_FASTQ_FILE2 \
+      -o /data/output_fastq_dir/$OUTPUT_FASTQ_FILE1 \
+      -p /data/output_fastq_dir/$OUTPUT_FASTQ_FILE2
 receipt_commands: |
     get_bash_version
     get_conda_version atropos

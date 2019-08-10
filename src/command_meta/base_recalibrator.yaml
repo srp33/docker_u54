@@ -1,4 +1,4 @@
-description: Detect systematic errors in base quality scores.
+description: Detect systematic errors in base quality scores for a BAM file.
 args:
     - FASTA_FILE:
         default: "Null"
@@ -31,63 +31,60 @@ args:
         required: False
         example: "-t 4"
 volumes:
-    - ref_genome:
-        description: "Directory where the reference genome FASTA file is stored."
+    - ref_dir:
+        description: "Directory where the reference genome FASTA file and indices are stored."
         permissions: Read
-    - ref_index:
-        description: "Directory where the index files for the reference genome are stored."
+    - input_bam_dir:
+        description: "Directory where the input BAM file is stored."
         permissions: Read
-    - bam_files:
-        description: "Directory where the BAM file is stored."
+    - vcf_dir:
+        description: "Directory where the recalibration VCF file(s) are stored."
         permissions: Read
-    - vcf_files:
-        description: "Directory where the VCF file is stored."
-        permissions: Read
-    - output_data:
+    - output_bam_dir:
         description: "Directory where the output BAM file will be stored."
         permissions: ReadWrite
 command_template: |
-    ln -s /data/ref_genome/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
+    ln -s /data/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
 
     INDEX=$(echo "${FASTA_FILE}" | grep -o '\.' | grep -c '\.')
     if [[ ${FASTA_FILE: -${INDEX}} = ".gz" ]]; then
         NEW_REF="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})"
-        gunzip -c /data/ref_genome/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
+        gunzip -c /data/ref_dir/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
         FASTA_FILE="${NEW_REF}"
         INDEX=$(echo "${FASTA_FILE}" | grep -o '\.' | grep -c '\.')
     fi
 
-    NEEDED_INDEX=/data/ref_index/"${FASTA_FILE}".fai
+    NEEDED_INDEX=/data/ref_dir/"${FASTA_FILE}".fai
     REF_DICT="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})".dict
-    NEEDED_DICT=/data/ref_index/"${REF_DICT}"
+    NEEDED_DICT=/data/ref_dir/"${REF_DICT}"
 
     if [[ ! -f "${NEEDED_INDEX}" ]]; then
         echo "Samtools reference index (${NEEDED_INDEX}) is missing."
         exit 1
     fi
 
-    ln -s /data/ref_index/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
+    ln -s /data/ref_dir/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
 
     if [[ ! -f ${NEEDED_DICT} ]]; then
         echo "Fasta dict file (${NEEDED_DICT}) is missing."
         exit 1
     fi
 
-    ln -s /data/ref_index/"${REF_DICT}" /tmp/"${REF_DICT}"
+    ln -s /data/ref_dir/"${REF_DICT}" /tmp/"${REF_DICT}"
 
     KNOWN_SITE_COMMANDS=()
     for KNOWN_SITE_FILE in ${KNOWN_SITES_FILE[@]}; do
-        if [[ ! -f /data/vcf_files/"${KNOWN_SITE_FILE}.idx" ]]; then
-            gatk IndexFeatureFile -F /data/vcf_files/"${KNOWN_SITE_FILE}"
+        if [[ ! -f /data/vcf_dir/"${KNOWN_SITE_FILE}.idx" ]]; then
+            gatk IndexFeatureFile -F /data/vcf_dir/"${KNOWN_SITE_FILE}"
         fi
-        KNOWN_SITE_COMMANDS+=("--knownSites /data/vcf_files/${KNOWN_SITE_FILE}")
+        KNOWN_SITE_COMMANDS+=("--knownSites /data/vcf_dir/${KNOWN_SITE_FILE}")
     done
 
     gatk3 -Xms512m -Xmx8g -T BaseRecalibrator \
       -R /tmp/"${FASTA_FILE}" \
-      -I /data/bam_files/"${BAM_FILE}" \
+      -I /data/input_bam_dir/"${BAM_FILE}" \
       ${KNOWN_SITE_COMMANDS[@]} \
-      -o /data/output_data/"${OUTPUT_FILE}" \
+      -o /data/output_bam_dir/"${OUTPUT_FILE}" \
       -nct ${THREADS}
 receipt_commands: |
     get_bash_version

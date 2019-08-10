@@ -13,11 +13,11 @@ args:
         required: False
         example: "-t 4"
 volumes:
-    - bam_files:
+    - bam_dir:
         description: "Directory where the BAM file is stored."
         permissions: ReadWrite
 command_template: |
-    sambamba index -t ${THREADS} /data/bam_files/"${BAM_FILE}" /data/bam_files/"${BAM_FILE}.bai"
+    sambamba index -t ${THREADS} /data/bam_dir/"${BAM_FILE}" /data/bam_dir/"${BAM_FILE}.bai"
 receipt_commands: |
     get_bash_version
     get_python_version
