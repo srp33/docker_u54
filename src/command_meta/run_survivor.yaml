@@ -2,13 +2,13 @@ description: Use the SURVIVOR tool to merge VCF files so they can be used for id
 args:
     - VCF_FILE_PATTERN:
         default: "Null"
-        opts: "-i | --input_vcf"
+        opts: "-i | --input"
         description: "Wildcard representation of VCF files to be merged."
         required: True
         example: "-i \"*.vcf\""
-    - OUTPUT_FILE:
+    - OUTPUT_VCF_FILE:
         default: "Null"
-        opts: "-o | --output_file"
+        opts: "-o | --output"
         description: "Name of the output VCF file."
         required: True
         example: "-o Survivor.vcf"
@@ -68,7 +68,7 @@ command_template: |
       ${AGREE_STRAND} \
       0 \
       ${MIN_SIZE} \
-      /data/output_vcf_dir/"${OUTPUT_FILE}"
+      /data/output_vcf_dir/"${OUTPUT_VCF_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version survivor

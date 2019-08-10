@@ -1,11 +1,11 @@
 description: Sort and index a BAM file.
 args:
-    - BAM_FILE:
+    - INPUT_BAM_FILE:
         default: "Null"
-        opts: "-b | --bam_file"
-        description: "Path to a BAM file."
+        opts: "-i | --input"
+        description: "Path to an input BAM file."
         required: True
-        example: "-b SampleA.bam"
+        example: "-i SampleA.bam"
     - BY_NAME:
         default: False
         opts: "-n, --sort_by_name"
@@ -15,10 +15,10 @@ args:
             - False
             - True
         example: "-n True"
-    - OUTPUT_FILE:
+    - OUTPUT_BAM_FILE:
         default: "Null"
         opts: "-o | --output"
-        description: "Name of the output file."
+        description: "Name of the output BAM file."
         required: True
         example: "-o SampleA_regionA.bam"
     - THREADS:
@@ -35,6 +35,11 @@ volumes:
         description: "Directory where the output file will be stored."
         permissions: ReadWrite
 command_template: |
+    if [[ "$OUTPUT_BAM_FILE" == "Null"]]
+    then
+        OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
+    fi
+
     BY_NAME_PARAM=
     if [[ "$BY_NAME" == "True" ]]
     then
@@ -44,8 +49,8 @@ command_template: |
     sambamba sort \
       -t ${THREADS} \
       ${BY_NAME_PARAM} \
-      -o /data/output_bam_dir/"${OUTPUT_FILE}" \
-      /data/input_bam_dir/"${BAM_FILE}"
+      -o /data/output_bam_dir/"${OUTPUT_BAM_FILE}" \
+      /data/input_bam_dir/"${INPUT_BAM_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba

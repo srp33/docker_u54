@@ -12,13 +12,13 @@ args:
         description: "Path to a file with BQSR_FILE data."
         required: True
         example: "-q myscores.bqsr"
-    - BAM_FILE:
+    - INPUT_BAM_FILE:
         default: "Null"
-        opts: "-b | --bam_file"
+        opts: "-i | --input"
         description: "Name of the input BAM file."
         required: True
         example: "-o SampleA.bam"
-    - OUTPUT_FILE:
+    - OUTPUT_BAM_FILE:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output BAM file."
@@ -44,15 +44,20 @@ volumes:
         description: "Directory where the output BAM file will be stored."
         permissions: ReadWrite
 command_template: |
-    ln -s /data/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
-    ln -s /data/ref_dir/"${FASTA_FILE}".fai /tmp/"${FASTA_FILE}".fai
-    ln -s /data/ref_dir/"${FASTA_FILE/\.fa/.dict}" /tmp/"${FASTA_FILE/\.fa/.dict}"
+    if [[ "$OUTPUT_BAM_FILE" == "Null"]]
+    then
+        OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
+    fi
+
+    #ln -s /data/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
+    #ln -s /data/ref_dir/"${FASTA_FILE}".fai /tmp/"${FASTA_FILE}".fai
+    #ln -s /data/ref_dir/"${FASTA_FILE/\.fa/.dict}" /tmp/"${FASTA_FILE/\.fa/.dict}"
 
     gatk3 -Xms512m -Xmx8g -T PrintReads 
-        -R /tmp/"${FASTA_FILE}" \
-        -I /data/input_bam_dir/"${BAM_FILE}" \
+        -R /data/ref_dir/"${FASTA_FILE}" \
+        -I /data/input_bam_dir/"${INPUT_BAM_FILE}" \
         -BQSR /data/bqsr_dir/"${BQSR_FILE}" \
-        -o /data/output_bam_dir/"${OUTPUT_FILE}" \
+        -o /data/output_bam_dir/"${OUTPUT_BAM_FILE}" \
         -nct "${THREADS}"
 receipt_commands: |
     get_bash_version

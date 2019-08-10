@@ -1,24 +1,24 @@
 description: Apply the SVType tool to a VCF file.
 args:
-    - VCF_FILE:
+    - INPUT_VCF_FILE:
         default: "Null"
         opts: "-c | --vcf_file"
         description: "Path to a VCF file."
         required: True
         example: "-c SampleA.vcf"
-    - BAM_FILE:
+    - INPUT_BAM_FILE:
         default: "Null"
         opts: "-b | --bam_file"
         description: "Path to a BAM file."
         required: True
         example: "-b SampleA.bam"
-    - JSON_FILE:
+    - INPUT_JSON_FILE:
         default: "Null"
         opts: "-j | --json_file"
         description: "Path to a JSON file with configuration settings."
         required: True
         example: "-j svtyper_settings.json"
-    - OUTPUT_FILE:
+    - OUTPUT_VCF_FILE:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output file."
@@ -29,7 +29,7 @@ volumes:
         description: "Directory where the BAM file is stored."
         permissions: Read
     - input_vcf_dir:
-        description: "Directory where the VCF file is stored."
+        description: "Directory where the VCF file(s) are stored."
         permissions: Read
     - input_config_dir:
         description: "Directory where the JSON file is stored."
@@ -41,11 +41,10 @@ command_template: |
     source activate py2.7
 
     svtyper \
-        -i /data/input_vcf_dir/"${VCF_FILE}" \
-        -B /data/input_bam_dir/"${BAM_FILE}" \
-        -l /data/input_config_dir/"${JSON_FILE}" \
-        > /data/output_vcf_dir/"${OUTPUT_FILE}"
+        -i /data/input_vcf_dir/"${INPUT_VCF_FILE}" \
+        -B /data/input_bam_dir/"${INPUT_BAM_FILE}" \
+        -l /data/input_config_dir/"${INPUT_JSON_FILE}" \
+        > /data/output_vcf_dir/"${OUTPUT_VCF_FILE}"
 receipt_commands: |
     get_bash_version
-    get_python_version
     get_conda_version svtyper

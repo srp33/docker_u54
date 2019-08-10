@@ -12,9 +12,9 @@ args:
         description: "Name of the reference genome FASTA file."
         required: True
         example: "-r hg19.fa"
-    - OUTPUT_FILE:
+    - OUTPUT_VCF_FILE:
         default: "Null"
-        opts: "-o | --output_file"
+        opts: "-o | --output"
         description: "Name of the output VCF file."
         required: True
         example: "-o dbsnp_146.hg38.vcf.gz"
@@ -28,7 +28,7 @@ volumes:
 command_template: |
     VCF_FILE=/tmp/"$(basename ${VCF_URL/\.gz/})" \
     TMP_FILE=/tmp/"$(basename ${VCF_FILE}).2" \
-    OUT_FILE=/data/output_vcf_dir/"$(basename ${OUTPUT_FILE})"
+    OUT_FILE=/data/output_vcf_dir/"$(basename ${OUTPUT_VCF_FILE})"
 
     wget -O "${VCF_FILE}.gz" "${VCF_URL}"
     gunzip "${VCF_FILE}.gz"

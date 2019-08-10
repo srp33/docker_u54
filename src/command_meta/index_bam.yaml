@@ -1,11 +1,11 @@
 description: Index a BAM file.
 args:
-    - BAM_FILE:
+    - INPUT_BAM_FILE:
         default: "Null"
-        opts: "-b | --bam_file"
+        opts: "-i | --input"
         description: "Name of the input BAM file."
         required: True
-        example: "-b SampleA.bam"
+        example: "-i SampleA.bam"
     - THREADS:
         default: 1
         opts: "-t | --nthreads"
@@ -17,8 +17,7 @@ volumes:
         description: "Directory where the BAM file is stored."
         permissions: ReadWrite
 command_template: |
-    sambamba index -t ${THREADS} /data/bam_dir/"${BAM_FILE}" /data/bam_dir/"${BAM_FILE}.bai"
+    sambamba index -t ${THREADS} /data/bam_dir/"${INPUT_BAM_FILE}" /data/bam_dir/"${INPUT_BAM_FILE}.bai"
 receipt_commands: |
     get_bash_version
-    get_python_version
     get_conda_version sambamba

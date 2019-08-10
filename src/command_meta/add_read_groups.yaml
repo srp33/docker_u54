@@ -2,7 +2,7 @@ description: Add or replace read group information in BAM file.
 args:
     - INPUT_BAM_FILE:
         default: "Null"
-        opts: "-b | --bam_file"
+        opts: "-i | --input"
         description: "Name of the input BAM file."
         required: True
         example: "-b SampleA.bam"
@@ -28,7 +28,7 @@ args:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output BAM file."
-        required: True
+        required: False
         example: "-o SampleA.bam"
 volumes:
     - input_bam_dir:
@@ -38,6 +38,11 @@ volumes:
         description: "Directory where the output BAM file will be stored."
         permissions: ReadWrite
 command_template: |
+    if [[ "$OUTPUT_BAM_FILE" == "Null"]]
+    then
+        OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
+    fi
+
     picard AddOrReplaceReadGroups I=/data/input_bam_dir/"${INPUT_BAM_FILE}" O=/data/output_bam_dir/"${OUTPUT_BAM_FILE}" ID="${GROUP_ID}" LB="${GROUP_LB}" SM="${SAMPLE}" PL=ILLUMINA PU=platform
 receipt_commands: |
     get_bash_version

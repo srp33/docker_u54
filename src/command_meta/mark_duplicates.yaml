@@ -1,14 +1,14 @@
 description: Mark duplicate reads in a BAM file.
 args:
-    - BAM_FILE:
+    - INPUT_BAM_FILE:
         default: "Null"
-        opts: "-b | --bam_file"
+        opts: "-i | --input"
         description: "Name of the input BAM file."
         required: True
-        example: "-b SampleA.bam"
-    - OUTPUT_FILE:
+        example: "-i SampleA.bam"
+    - OUTPUT_BAM_FILE:
         default: "Null"
-        opts: "-o | --output_file"
+        opts: "-o | --output"
         description: "Name of the output BAM file."
         required: True
         example: "-o SampleA.bam"
@@ -20,13 +20,18 @@ args:
         example: "-t 4"
 volumes:
     - input_bam_dir:
-        description: "Directory where the BAM file is stored."
+        description: "Directory where the input BAM file is stored."
         permissions: Read
     - output_bam_dir:
-        description: "Directory where the output file will be stored."
+        description: "Directory where the output BAM file will be stored."
         permissions: ReadWrite
 command_template: |
-    sambamba markdup -t ${THREADS} /data/input_bam_dir/"${BAM_FILE}" /data/output_bam_dir/"${OUTPUT_FILE}"
+    if [[ "$OUTPUT_BAM_FILE" == "Null"]]
+    then
+        OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
+    fi
+
+    sambamba markdup -t ${THREADS} /data/input_bam_dir/"${INPUT_BAM_FILE}" /data/output_bam_dir/"${OUTPUT_BAM_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba
