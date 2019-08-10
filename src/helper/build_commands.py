@@ -112,7 +112,7 @@ output += "done\n\n"
 
 # Check whether required arguments are present.
 for arg, meta in get_yaml_values(yaml_dict, "args"):
-    if meta["required"]:
+    if "required" not in meta or meta["required"] == True:
         output += "if [[ \"${" + arg + "}\" == \"" + meta["default"] + "\" ]]\n"
         output += "then\n"
         output += "  echo \"ERROR: The " + meta["opts"] + " argument must be provided.\"\n"
