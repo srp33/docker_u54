@@ -4,25 +4,21 @@ args:
         default: "Null"
         opts: "-i | --input"
         description: "Name of the input BAM file."
-        required: True
         example: "-b SampleA.bam"
     - SAMPLE:
         default: "Null"
         opts: "-s | --sample"
         description: "Name of the sample."
-        required: True
         example: "-s SampleA"
     - GROUP_ID:
         default: "Null"
         opts: "-id | --group_id"
         description: "Group identifier."
-        required: True
         example: "-id SampleA_lane1"
     - GROUP_LB:
         default: "Null"
         opts: "-lb | --library_identifier"
         description: "Library name (often the same as the group identifier)."
-        required: True
         example: "-lb SampleA_lane1"
     - OUTPUT_BAM_FILE:
         default: "Null"

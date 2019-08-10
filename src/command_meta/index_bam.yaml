@@ -4,7 +4,6 @@ args:
         default: "Null"
         opts: "-i | --input"
         description: "Name of the input BAM file."
-        required: True
         example: "-i SampleA.bam"
     - THREADS:
         default: 1

@@ -4,19 +4,16 @@ args:
         default: "Null"
         opts: "-i | --input"
         description: "Path to an input BAM file."
-        required: True
         example: "-i SampleA.bam"
     - REGION:
         default: "Null"
         opts: "-r | --region"
         description: "Genomic region to slice (e.g. \"chr2\" or \"chr2:1000-2000\")"
-        required: True
         example: "-r chr2:1000-2000"
     - OUTPUT_BAM_FILE:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output file."
-        required: True
         example: "-o SampleA_regionA.bam"
     - THREADS:
         default: 1

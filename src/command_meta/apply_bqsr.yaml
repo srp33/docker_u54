@@ -4,25 +4,21 @@ args:
         default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
-        required: True
         example: "-r hg19.fa"
     - BQSR_FILE:
         default: "Null"
         opts: "-q | --bqsr_recal_file | -BQSR"
         description: "Path to a file with BQSR_FILE data."
-        required: True
         example: "-q myscores.bqsr"
     - INPUT_BAM_FILE:
         default: "Null"
         opts: "-i | --input"
         description: "Name of the input BAM file."
-        required: True
         example: "-o SampleA.bam"
     - OUTPUT_BAM_FILE:
         default: "Null"
         opts: "-o | --output"
         description: "Name of the output BAM file."
-        required: True
         example: "-o SampleA.bam"
     - THREADS:
         default: 1

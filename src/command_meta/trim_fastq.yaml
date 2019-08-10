@@ -4,13 +4,11 @@ args:
         default: "Null"
         opts: "-f1 | --fastq1"
         description: "Name of the first FASTQ file."
-        required: True
         example: "-f1 SampleA_1.fastq.gz"
     - INPUT_FASTQ_FILE2:
         default: "Null"
         opts: "-f2 | --fastq2"
         description: "Name of the second FASTQ file."
-        required: True
         example: "-f2 SampleA_2.fastq.gz"
     - OUTPUT_FASTQ_FILE1:
         default: "Null"
@@ -28,7 +26,7 @@ args:
         default: "Null"
         opts: "-a | --args"
         description: "Arguments that will be passed through to the atropos software."
-        required: True
+        required: False
         example: "-a \"-q 20 -Q 20 --minimum-length 40\""
     - THREADS:
         default: 1

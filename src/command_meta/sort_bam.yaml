@@ -4,7 +4,6 @@ args:
         default: "Null"
         opts: "-i | --input"
         description: "Path to an input BAM file."
-        required: True
         example: "-i SampleA.bam"
     - BY_NAME:
         default: False

@@ -4,19 +4,16 @@ args:
         default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
-        required: True
         example: "-r hg19.fa"
     - KNOWN_SITES_FILE:
         default: "()"
         opts: "-k | --known_sites_file"
         description: "Path to VCF file with known polymorphic sites> (may be listed more than once)."
-        required: True
         example: "-k dbsnp_146.hg19.vcf"
     - INPUT_BAM_FILE:
         default: "Null"
         opts: "-i | --input"
         description: "Name of the input BAM file."
-        required: True
         example: "-i SampleA.bam"
     - OUTPUT_BAM_FILE:
         default: "Null"

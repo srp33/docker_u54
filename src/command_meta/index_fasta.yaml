@@ -4,7 +4,6 @@ args:
         default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
-        required: True
         example: "-r hg19.fa"
 volumes:
     - ref_dir:

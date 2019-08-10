@@ -4,8 +4,7 @@ args:
         default: "Null"
         opts: "-i | --input"
         description: "Path to a BAM file."
-        required: True
-        example: "-b SampleA.bam"
+        example: "-i SampleA.bam"
 volumes:
     - bam_dir:
         description: "Directory where the BAM file is stored."
