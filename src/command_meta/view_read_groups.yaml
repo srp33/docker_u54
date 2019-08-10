@@ -1,7 +1,6 @@
 description: Display read-group information for a BAM file. This information will be printed to standard output.
 args:
     - INPUT_BAM_FILE:
-        default: "Null"
         opts: "-i | --input"
         description: "Path to a BAM file."
         example: "-i SampleA.bam"

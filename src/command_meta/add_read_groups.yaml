@@ -1,30 +1,25 @@
 description: Add or replace read group information in BAM file.
 args:
     - INPUT_BAM_FILE:
-        default: "Null"
         opts: "-i | --input"
         description: "Name of the input BAM file."
         example: "-b SampleA.bam"
     - SAMPLE:
-        default: "Null"
         opts: "-s | --sample"
         description: "Name of the sample."
         example: "-s SampleA"
     - GROUP_ID:
-        default: "Null"
         opts: "-id | --group_id"
         description: "Group identifier."
         example: "-id SampleA_lane1"
     - GROUP_LB:
-        default: "Null"
         opts: "-lb | --library_identifier"
         description: "Library name (often the same as the group identifier)."
         example: "-lb SampleA_lane1"
     - OUTPUT_BAM_FILE:
-        default: "Null"
         opts: "-o | --output"
         description: "Name of the output BAM file."
-        required: False
+        default: "Null"
         example: "-o SampleA.bam"
 volumes:
     - input_bam_dir:

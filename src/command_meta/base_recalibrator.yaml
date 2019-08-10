@@ -1,31 +1,26 @@
 description: Detect systematic errors in base quality scores for a BAM file.
 args:
     - FASTA_FILE:
-        default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
         example: "-r hg19.fa"
     - KNOWN_SITES_FILE:
-        default: "()"
         opts: "-k | --known_sites_file"
         description: "Path to VCF file with known polymorphic sites> (may be listed more than once)."
         example: "-k dbsnp_146.hg19.vcf"
     - INPUT_BAM_FILE:
-        default: "Null"
         opts: "-i | --input"
         description: "Name of the input BAM file."
         example: "-i SampleA.bam"
     - OUTPUT_BAM_FILE:
-        default: "Null"
         opts: "-o | --output"
         description: "Name of the output BAM file."
-        required: False
+        default: "Null"
         example: "-o SampleA.bam"
     - THREADS:
-        default: 1
         opts: "-t | --nthreads"
         description: "The number of threads that GATK should use."
-        required: False
+        default: 1
         example: "-t 4"
 volumes:
     - ref_dir:

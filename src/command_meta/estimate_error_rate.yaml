@@ -1,12 +1,10 @@
 description: Estimate the error rate for FASTQ files using the atropos software. This information will be printed to standard output. Only paired-end reads are supported. If you trim reads, the atropos authors recommend \"setting the -e option to ~10X the error rate. For example, if the estimated error is 0.9% (0.009), a good value for -e is 0.1.\"
 args:
     - FASTQ_FILE1:
-        default: "Null"
         opts: "-f1 | --fastq1"
         description: "Name of the first FASTQ file."
         example: "-f1 SampleA_1.fastq.gz"
     - FASTQ_FILE2:
-        default: "Null"
         opts: "-f2 | --fastq2"
         description: "Name of the second FASTQ file."
         example: "-f2 SampleA_2.fastq.gz"

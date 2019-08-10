@@ -1,15 +1,13 @@
 description: Index a BAM file.
 args:
     - INPUT_BAM_FILE:
-        default: "Null"
         opts: "-i | --input"
         description: "Name of the input BAM file."
         example: "-i SampleA.bam"
     - THREADS:
-        default: 1
         opts: "-t | --nthreads"
         description: "The number of threads that should be used."
-        required: False
+        default: 1
         example: "-t 4"
 volumes:
     - bam_dir:

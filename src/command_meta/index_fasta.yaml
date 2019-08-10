@@ -1,7 +1,6 @@
 description: Create index files from a reference genome (FASTA file). It uses bwa, samtools, and Picard to create index files.
 args:
     - FASTA_FILE:
-        default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
         example: "-r hg19.fa"

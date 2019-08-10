@@ -1,30 +1,25 @@
 description: Calls somatic variants using Mutect2 (GATK) for a tumor/normal pair.
 args:
     - FASTA_FILE:
-        default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
         example: "-r hg19.fa"
     - TUMOR_BAM_FILE:
-        default: "Null"
         opts: "-m | --tumor_bam_file"
         description: "Path to a BAM file with tumor data."
         example: "-m SampleA_Tumor.bam"
     - NORMAL_BAM_FILE:
-        default: "Null"
         opts: "-n | --normal_bam_file"
         description: "Path to a BAM file with normal data."
         example: "-n SampleA_Normal.bam"
     - OUTPUT_FILE:
-        default: "Null"
         opts: "-o | --output"
         description: "Name of the output VCF file."
         example: "-o SampleA.vcf"
     - THREADS:
-        default: 1
         opts: "-t | --nthreads"
         description: "The number of threads that GATK should use."
-        required: False
+        default: 1
         example: "-t 4"
 volumes:
     - ref_dir:

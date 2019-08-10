@@ -1,20 +1,17 @@
 description: Merge multiple BAM files into one and index it.
 args:
     - INPUT_BAM_FILES:
-        default: "()"
         opts: "-i | --input"
-        description: "Name of an input BAM file."
+        description: "Name of an input BAM file. This argument should be specified at least twice."
         example: "-i SampleA_part1.bam -i SampleA_part2.bam"
     - OUTPUT_BAM_FILE:
-        default: "Null"
         opts: "-o | --output"
         description: "Name of the output BAM file."
         example: "-o SampleA.bam"
     - THREADS:
-        default: 1
         opts: "-t | --nthreads"
         description: "The number of threads that should be used."
-        required: False
+        default: 1
         example: "-t 4"
 volumes:
     - input_bam_dir:

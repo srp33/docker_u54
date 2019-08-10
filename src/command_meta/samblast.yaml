@@ -1,17 +1,14 @@
 description: Create split read and discordant read BAM files from a source BAM file using the samblast tool.
 args:
     - INPUT_BAM_FILE:
-        default: "Null"
         opts: "-i | --input"
         description: "Name of the input BAM file."
         example: "-i SampleA.bam"
     - SPLIT_BAM_FILE:
-        default: "Null"
         opts: "-s | --split_reads"
         description: "Name of the output BAM file with split reads."
         example: "-s SampleA_Split.bam"
     - DISCORDANT_BAM_FILE:
-        default: "Null"
         opts: "-d | --discordant_reads"
         description: "Name of the output BAM file with discordant reads."
         example: "-d SampleA_Discordant.bam"

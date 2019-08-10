@@ -1,66 +1,56 @@
 description: Align FASTQ files to a reference genome using the Burrows-Wheeler Aligner software (bwa mem). Default options are used for bwa mem unless specified otherwise. This is designed for paired-end reads stored in two separate FASTQ files.
 args:
     - FASTA_FILE:
-        default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
         example: "-r hg19.fa"
     - FASTQ_FILE1:
-        default: "Null"
         opts: "-f1 | --fastq1"
         description: "Name of the first FASTQ file."
         example: "-f1 SampleA_1.fastq.gz"
     - FASTQ_FILE2:
-        default: "Null"
         opts: "-f2 | --fastq2"
         description: "Name of the second FASTQ file."
         example: "-f2 SampleA_2.fastq.gz"
-    - OUTPUT_FILE:
-        default: "Null"
+    - OUTPUT_BAM_FILE:
         opts: "-o | --output"
         description: "Name of the output BAM file."
         example: "-o SampleA.bam"
     - THREADS:
-        default: 1
         opts: "-t | --nthreads"
         description: "The number of threads that BWA should use during alignment."
-        required: False
+        default: 1
         example: "-t 4"
     - CHUNKS:
-        default: 1
         opts: "-c | --nchunks"
         description: "This argument indicates how the FASTQ files should be \"chunked\" during the alignment process. When this feature is enabled, a subset (chunk) of the FASTQ data will be streamed into BWA. Accordingly, different chunks of the file can be aligned in parallel, potentially reducing execution times. This argument indicates the total number of chunks (default of 1 indicates no chunking). When performing chunking, you should also specify the --process_chunk argument, which indicates the chunk number that should be processed (this counting scheme is zero-based)."
-        required: False
+        default: 1
         example: "-c 10"
     - PROCESS_CHUNK:
-        default: 0
         opts: "-p | --process_chunk"
         description: "This argument indicates the chunk number to be processed. Please see the description for the --nchunks argument."
-        required: False
+        default: 0
         example: "-p 2"
     - READ_GROUP_STRING:
-        default: ""
         opts: "-g | --read-group"
         description: "This argument allows you to specify read-group information during alignment. Please specify the whole read-group string, including the @RG prefix, surround in quotes. You can find a helpful tutorial here: https://software.broadinstitute.org/gatk/documentation/article.php?id=6472."
-        required: False
+        default: ""
         example: "-g \"@RG\\tID:SampleA_lane1\\tPL:ILLUMINA\\tPU:SampleA_lane1\\tLB:SampleA_lane1\\tSM:SampleA\""
     - SORT:
-        default: False
         opts: "-s | --sort"
         description: "Whether the output BAM file should be sorted after alignment. Acceptable values are True or False."
-        required: False
         acceptable_values:
             - False
             - True
+        default: False
         example: "-s True"
     - INDEX:
-        default: False
         opts: "-i | --index"
         description: "Whether the output BAM file should be indexed after alignment. Acceptable values are True or False."
-        required: False
         acceptable_values:
             - False
             - True
+        default: False
         example: "-i True"
 volumes:
     - ref_dir:
@@ -104,30 +94,29 @@ command_template: |
       COMMAND_STRING+="/data/input_fastq_dir/\"${FASTQ_FILE1}\" /data/input_fastq_dir/\"${FASTQ_FILE2}\" "
     fi
 
-    OUTPUT_FILE=/data/output_fastq_dir/"${OUTPUT_FILE}"
+    OUTPUT_BAM_FILE=/data/output_fastq_dir/"${OUTPUT_BAM_FILE}"
 
     if [[ ${CHUNKS} -gt 1 ]]; then
-      INDEX=$(echo ${OUTPUT_FILE} | grep -o '\.' | grep -c '\.')
-      OUT_NAME="$(echo ${OUTPUT_FILE} | cut -d '.' -f -${INDEX})"
-      OUTPUT_FILE=/data/output_fastq_dir/"${OUT_NAME}".${PROCESS_CHUNK}.bam
+      INDEX=$(echo ${OUTPUT_BAM_FILE} | grep -o '\.' | grep -c '\.')
+      OUT_NAME="$(echo ${OUTPUT_BAM_FILE} | cut -d '.' -f -${INDEX})"
+      OUTPUT_BAM_FILE=/data/output_fastq_dir/"${OUT_NAME}".${PROCESS_CHUNK}.bam
     fi
 
     if [[ "$SORT" == "True" ]]
     then
-      COMMAND_STRING+="| samtools sort -@ ${THREADS} -o \"${OUTPUT_FILE}\" - "
+      COMMAND_STRING+="| samtools sort -@ ${THREADS} -o \"${OUTPUT_BAM_FILE}\" - "
     else
-      COMMAND_STRING+="| samtools view -@ ${THREADS} -b > \"${OUTPUT_FILE}\" "
+      COMMAND_STRING+="| samtools view -@ ${THREADS} -b > \"${OUTPUT_BAM_FILE}\" "
     fi
 
     if [[ "$INDEX" == "True" ]]
     then
-      COMMAND_STRING+=" && sambamba index -t ${THREADS} \"${OUTPUT_FILE}\" \"${OUTPUT_FILE}\".bai"
+      COMMAND_STRING+=" && sambamba index -t ${THREADS} \"${OUTPUT_BAM_FILE}\" \"${OUTPUT_BAM_FILE}\".bai"
     fi
 
     eval "$COMMAND_STRING"
 receipt_commands: |
     get_bash_version
-    get_python_version
     get_conda_version bwa
     get_conda_version samtools
     get_conda_version sambamba

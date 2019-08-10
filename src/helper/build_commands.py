@@ -81,7 +81,11 @@ output += "}\n\n"
 
 # Declare a variable for each argument with its default value.
 for arg, meta in get_yaml_values(yaml_dict, "args"):
-    output += "{}=\"{}\"\n".format(arg, meta["default"])
+    default = "Null"
+    if "default" in meta:
+        default = str(meta["default"])
+
+    output += "{}=\"{}\"\n".format(arg, default)
 
 output += "\n"
 
@@ -98,7 +102,7 @@ for arg, meta in get_yaml_values(yaml_dict, "args"):
     output += "      i=$((i+1))\n"
     output += "      ;;\n"
 
-# Print help and default behavior.
+# Print help behavior.
 output += "    -h | --help )\n"
 output += "      show_help\n"
 output += "      exit 0\n"
@@ -111,9 +115,10 @@ output += "  esac\n"
 output += "done\n\n"
 
 # Check whether required arguments are present.
+# An argument is required if there is no default value.
 for arg, meta in get_yaml_values(yaml_dict, "args"):
-    if "required" not in meta or meta["required"] == True:
-        output += "if [[ \"${" + arg + "}\" == \"" + meta["default"] + "\" ]]\n"
+    if "default" not in meta:
+        output += "if [[ \"${" + arg + "}\" == \"Null\" ]]\n"
         output += "then\n"
         output += "  echo \"ERROR: The " + meta["opts"] + " argument must be provided.\"\n"
         output += "  echo \n"

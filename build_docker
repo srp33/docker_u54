@@ -6,7 +6,7 @@ tag=version$(cat VERSION)
 
 src/helper/build_commands $tag
 
-docker build -t srp33/somatic_wgs:$tag .
+#docker build -t srp33/somatic_wgs:$tag .
 
 ##docker login -u=srp33
 #docker push srp33/somatic_wgs

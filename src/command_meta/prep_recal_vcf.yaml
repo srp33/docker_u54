@@ -1,19 +1,17 @@
 description: Download a recalibration VCF file from the GATK FTP server and perform some preprocessing so the VCF file will work properly, even if the reference genome was sorted differently than the VCF file.
 args:
     - VCF_URL:
-        default: "Null"
         opts: "-u | --vcf_url"
         description: "URL for a recalibration VCF file from the GATK VCF file."
         example: "-u ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/hg38/dbsnp_146.hg38.vcf.gz"
     - FASTA_FILE:
-        default: "Null"
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
         example: "-r hg19.fa"
     - OUTPUT_VCF_FILE:
-        default: "Null"
         opts: "-o | --output"
         description: "Name of the output VCF file."
+        default: "Null"
         example: "-o dbsnp_146.hg38.vcf.gz"
 volumes:
     - ref_dir:
@@ -22,19 +20,26 @@ volumes:
         description: "Directory where the output VCF file will be stored."
         write_access: True
 command_template: |
-    VCF_FILE=/tmp/"$(basename ${VCF_URL/\.gz/})" \
-    TMP_FILE=/tmp/"$(basename ${VCF_FILE}).2" \
-    OUT_FILE=/data/output_vcf_dir/"$(basename ${OUTPUT_VCF_FILE})"
+    if [[ "$OUTPUT_VCF_FILE" == "Null"]]
+    then
+        OUTPUT_VCF_FILE=/data/output_vcf_dir/"$(basename ${VCF_URL})"
+    else
+        OUTPUT_VCF_FILE=/data/output_vcf_dir/"${OUTPUT_VCF_FILE}"
+    fi
 
-    wget -O "${VCF_FILE}.gz" "${VCF_URL}"
-    gunzip "${VCF_FILE}.gz"
+    TMP_FILE1=/tmp/"$(basename ${VCF_URL/\.gz/})" \
+    TMP_FILE2=/tmp/"$(basename ${VCF_FILE}).2" \
+
+    wget -O "${TMP_FILE1}.gz" "${VCF_URL}"
+    gunzip "${TMP_FILE1}.gz"
 
     DICT_FILE=/data/ref_dir/${FASTA_FILE/\.$(get_file_extension ${FASTA_FILE})/}.dict
-    python /starling/helper/reconcile_vcf_with_dict.py "${VCF_FILE}" "${DICT_FILE}" "${TMP_FILE}"
+
+    python /starling/helper/reconcile_vcf_with_dict.py "${TMP_FILE1}" "${DICT_FILE}" "${TMP_FILE2}"
 
     picard -Xms512m -Xmx8g SortVcf \
-        I="${TMP_FILE}" \
-        O="${OUT_FILE}" \
+        I="${TMP_FILE2}" \
+        O="${OUTPUT_VCF_FILE}" \
         SEQUENCE_DICTIONARY="${DICT_FILE}" \
         CREATE_INDEX=true
 receipt_commands: |

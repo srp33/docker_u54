@@ -1,22 +1,18 @@
 description: Call structural variants using LUMPY for a tumor/normal pair. All BAM files must be coordinate-sorted. Also, BAM files must have been sorted, indexed, and duplicate-marked.
 args:
     - BAM_FILE:
-        default: "Null"
         opts: "-b | --tumor"
         description: "Path to a BAM file."
         example: "-b SampleA_Tumor.bam"
     - SPLIT_BAM_FILE:
-        default: "Null"
         opts: "-s | --split_reads"
         description: "Path to a BAM file with split reads."
         example: "-s SampleA_Tumor_Split.bam"
     - DISCORDANT_BAM_FILE:
-        default: "Null"
         opts: "-d | --discordant_reads"
         description: "Path to a BAM file with discordant reads."
         example: "-d SampleA_Tumor_Discordant.bam"
     - OUTPUT_FILE:
-        default: "Null"
         opts: "-o | --output"
         description: "Name of the output VCF file."
         example: "-o SampleA.vcf"

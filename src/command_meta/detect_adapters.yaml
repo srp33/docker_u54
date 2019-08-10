@@ -1,12 +1,10 @@
 description: Detect adapter sequences in FASTQ files using the atropos software. Only paired-end reads are supported currently. The adapter-detection information will be displayed to standard output.
 args:
     - FASTQ_FILE1:
-        default: "Null"
         opts: "-f1 | --fastq1"
         description: "Name of the first FASTQ file."
         example: "-f1 SampleA_1.fastq.gz"
     - FASTQ_FILE2:
-        default: "Null"
         opts: "-f2 | --fastq2"
         description: "Name of the second FASTQ file."
         example: "-f2 SampleA_2.fastq.gz"

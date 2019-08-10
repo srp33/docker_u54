@@ -1,38 +1,32 @@
 description: Trim adapter sequences and low-quality bases from FASTQ files using the atropos software.  Only paired-end reads are supported. Consult the atropos documentation for information about arguments that can be specified.
 args:
     - INPUT_FASTQ_FILE1:
-        default: "Null"
         opts: "-f1 | --fastq1"
         description: "Name of the first FASTQ file."
         example: "-f1 SampleA_1.fastq.gz"
     - INPUT_FASTQ_FILE2:
-        default: "Null"
         opts: "-f2 | --fastq2"
         description: "Name of the second FASTQ file."
         example: "-f2 SampleA_2.fastq.gz"
     - OUTPUT_FASTQ_FILE1:
-        default: "Null"
         opts: "-o1 | --output1"
         description: "Name of the first output (FASTQ) file."
-        required: False
+        default: "Null"
         example: "-o1 SampleA_1.fastq.gz"
     - OUTPUT_FASTQ_FILE2:
-        default: "Null"
         opts: "-o2 | --output2"
         description: "Name of the second output (FASTQ) file."
-        required: False
+        default: "Null"
         example: "-o2 SampleA_2.fastq.gz"
     - ARGS:
-        default: "Null"
         opts: "-a | --args"
         description: "Arguments that will be passed through to the atropos software."
-        required: False
+        default: ""
         example: "-a \"-q 20 -Q 20 --minimum-length 40\""
     - THREADS:
-        default: 1
         opts: "-t | --nthreads"
         description: "The number of threads that should be used."
-        required: False
+        default: 1
         example: "-t 4"
 volumes:
     - input_fastq_dir:

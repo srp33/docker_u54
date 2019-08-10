@@ -1,50 +1,43 @@
 description: Use the SURVIVOR tool to merge VCF files so they can be used for identifying consensus structural variants.
 args:
     - VCF_FILE_PATTERN:
-        default: "Null"
         opts: "-i | --input"
         description: "Wildcard representation of VCF files to be merged."
         example: "-i \"*.vcf\""
     - OUTPUT_VCF_FILE:
-        default: "Null"
         opts: "-o | --output"
         description: "Name of the output VCF file."
         example: "-o Survivor.vcf"
     - AGREE_TYPE:
-        default: True
         opts: "-g | --agree_type"
         description: "Whether the variants must agree on their type to be merged."
-        required: False
         acceptable_values:
             - False
             - True
+        default: True
         example: "-t False"
     - AGREE_STRAND:
-        default: True
         opts: "-s | --agree_strand"
         description: "Whether the variants must agree on their strand to be merged."
-        required: False
         acceptable_values:
             - False
             - True
+        default: True
         example: "-s False"
     - MAX_DISTANCE:
-        default: "1000"
         opts: "-d | --max_distance"
         description: "Maximum distance between breakpoints."
-        required: False
+        default: "1000"
         example: "-d 500"
     - MIN_AGREEMENT:
-        default: "2"
         opts: "-a | --min_agreement"
         description: "Minimum number of callers that must agree to keep SV."
-        required: False
+        default: "2"
         example: "-a 3"
     - MIN_SIZE:
-        default: "30"
         opts: "-z | --min_size"
         description: "Minimum size of SV in base pairs."
-        required: False
+        default: "30"
         example: "-z 50"
 volumes:
     - input_vcf_dir:
