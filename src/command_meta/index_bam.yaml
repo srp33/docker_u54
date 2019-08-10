@@ -14,7 +14,7 @@ args:
 volumes:
     - bam_dir:
         description: "Directory where the BAM file is stored."
-        permissions: ReadWrite
+        write_access: True
 command_template: |
     sambamba index -t ${THREADS} /data/bam_dir/"${INPUT_BAM_FILE}" /data/bam_dir/"${INPUT_BAM_FILE}.bai"
 receipt_commands: |

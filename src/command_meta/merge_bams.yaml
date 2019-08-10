@@ -19,10 +19,9 @@ args:
 volumes:
     - input_bam_dir:
         description: "Directory where the BAM file is stored."
-        permissions: Read
     - output_bam_dir:
         description: "Directory where the output file will be stored."
-        permissions: ReadWrite
+        write_access: True
 command_template: |
     sambamba merge -t ${THREADS} /data/output_bam_dir/"${OUTPUT_BAM_FILE}" /data/input_bam_dir/${INPUT_BAM_FILES[@]}
 receipt_commands: |

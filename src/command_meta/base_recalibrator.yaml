@@ -30,16 +30,13 @@ args:
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
-        permissions: Read
     - input_bam_dir:
         description: "Directory where the input BAM file is stored."
-        permissions: Read
     - vcf_dir:
         description: "Directory where the recalibration VCF file(s) are stored."
-        permissions: Read
     - output_bam_dir:
         description: "Directory where the output BAM file will be stored."
-        permissions: ReadWrite
+        write_access: True
 command_template: |
     if [[ "$OUTPUT_BAM_FILE" == "Null"]]
     then

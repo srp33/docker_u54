@@ -8,7 +8,7 @@ args:
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
-        permissions: Read
+        write_access: True
 command_template: |
     FASTA_FILE_PATH=/tmp/ref.fa
 

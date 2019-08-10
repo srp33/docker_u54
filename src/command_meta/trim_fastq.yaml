@@ -37,10 +37,9 @@ args:
 volumes:
     - input_fastq_dir:
         description: "Directory where the input (FASTQ) files are stored."
-        permissions: Read
     - output_fastq_dir:
         description: "Directory where the output (FASTQ) files will be stored."
-        permissions: ReadWrite
+        write_access: True
 command_template: |
     if [[ "$OUTPUT_FASTQ_FILE1" == "Null" ]]
     then

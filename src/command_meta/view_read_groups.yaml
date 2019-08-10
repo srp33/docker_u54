@@ -8,7 +8,6 @@ args:
 volumes:
     - bam_dir:
         description: "Directory where the BAM file is stored."
-        permissions: Read
 command_template: |
     samtools view -H /data/bam_dir/${BAM_FILE} | grep '@RG'
 receipt_commands: |

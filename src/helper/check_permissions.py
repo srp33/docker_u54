@@ -4,24 +4,18 @@ import os
 import errno
 
 test_dir = sys.argv[1]
-needed_permissions = sys.argv[2]
-#test_file = ""
+write_access_required = sys.argv[2] == "True"
 
-if needed_permissions == "Read":
-    try:
-#        test_file = sys.argv[3]
-#        reading_file = open('/'.join([test_dir, test_file]), 'r')
-#        reading_file.close()
-        for file_path in glob.glob(test_dir + "/*"):
-            reading_file = open(file_path)
-            reading_file.close()
-    except IOError as err:
-        if err.errno == errno.EACCES:
-            print(''.join(["ERROR: ", test_dir, " does not have read permissions"]))
-#        elif err.errno == errno.ENOENT:
-#            print(''.join([test_file, " does not exist"]))
-        sys.exit(1)
-else:
+try:
+    for file_path in glob.glob(test_dir + "/*"):
+        reading_file = open(file_path)
+        reading_file.close()
+except IOError as err:
+    if err.errno == errno.EACCES:
+        print(''.join(["ERROR: ", test_dir, " does not have read permissions"]))
+    sys.exit(1)
+
+if write_access_required:
     try:
         writing_file = open('/'.join([test_dir, "temp.txt"]), 'w')
         writing_file.write("TEST TEXT")

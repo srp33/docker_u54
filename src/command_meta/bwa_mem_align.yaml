@@ -65,13 +65,11 @@ args:
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
-        permissions: Read
     - input_fastq_dir:
         description: "Directory where the input FASTQ files are stored."
-        permissions: ReadWrite
     - output_fastq_dir:
         description: "Directory where the output FASTQ files will be stored."
-        permissions: ReadWrite
+        write_access: True
 command_template: |
     NEEDED_FILES=("${FASTA_FILE}".amb "${FASTA_FILE}".ann "${FASTA_FILE}".bwt "${FASTA_FILE}".pac "${FASTA_FILE}".sa)
     REF_INDEX_FILES=()

@@ -23,16 +23,13 @@ args:
 volumes:
     - input_bam_dir:
         description: "Directory where the BAM file is stored."
-        permissions: Read
     - input_vcf_dir:
         description: "Directory where the VCF file(s) are stored."
-        permissions: Read
     - input_config_dir:
         description: "Directory where the JSON file is stored."
-        permissions: Read
     - output_vcf_dir:
         description: "Directory where the output file will be stored."
-        permissions: ReadWrite
+        write_access: True
 command_template: |
     source activate py2.7
 

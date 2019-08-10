@@ -23,10 +23,9 @@ args:
 volumes:
     - input_bam_dir:
         description: "Directory where the BAM files are stored."
-        permissions: Read
     - input_vcf_dir:
         description: "Directory where the output file will be stored."
-        permissions: ReadWrite
+        write_access: True
 command_template: |
     source activate py2.7
 

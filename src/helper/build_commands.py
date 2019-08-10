@@ -50,10 +50,10 @@ for volume, meta in get_yaml_values(yaml_dict, "volumes"):
     help_volumes += "\t<absolute path on local computer>:/data/{}\n".format(volume)
     help_volumes += "\t\t" + "\n\t\t".join(textwrap.wrap(meta["description"])) + "\n"
 
-    if meta["permissions"] == "Read":
-        help_volumes += "\t\tThe current user must have read permission on this directory.\n\n"
-    else:
+    if "write_access" in meta and meta["write_access"] == True:
         help_volumes += "\t\tThe current user must have read/write permission on this directory.\n\n"
+    else:
+        help_volumes += "\t\tThe current user must have read permission on this directory.\n\n"
 help_output += help_header_template.format("VOLUMES", "", help_volumes.rstrip())
 
 help_example = "\tdocker run \\\n"
@@ -153,8 +153,8 @@ output += "fi\n\n"
 
 # Check permissions of each directory
 for volume, meta in get_yaml_values(yaml_dict, "volumes"):
-    output += "python /starling/helper/check_permissions.py " + volume + " "
-    output += meta["permissions"] + " || exit 1\n"
+    write_access = meta.get("write_access", False)
+    output += "python /starling/helper/check_permissions.py " + volume + " " + str(write_access) + " || exit 1\n"
 
 output += "\n"
 

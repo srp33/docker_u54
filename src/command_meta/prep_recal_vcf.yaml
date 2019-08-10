@@ -18,10 +18,9 @@ args:
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
-        permissions: Read
     - output_vcf_dir:
         description: "Directory where the output VCF file will be stored."
-        permissions: ReadWrite
+        write_access: True
 command_template: |
     VCF_FILE=/tmp/"$(basename ${VCF_URL/\.gz/})" \
     TMP_FILE=/tmp/"$(basename ${VCF_FILE}).2" \

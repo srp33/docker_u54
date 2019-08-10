@@ -13,7 +13,6 @@ args:
 volumes:
     - fastq_dir:
         description: "Directory where the FASTQ files are stored."
-        permissions: Read
 command_template: |
     atropos detect \
         -pe1 /data/fastq_dir/"$FASTQ_FILE1" \
