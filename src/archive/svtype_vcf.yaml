@@ -4,6 +4,8 @@ args:
         opts: "-c | --vcf_file"
         description: "Path to a VCF file."
         example: "-c SampleA.vcf"
+        allow_multiple: True
+        min_required: 2
     - INPUT_BAM_FILE:
         opts: "-b | --bam_file"
         description: "Path to a BAM file."
@@ -14,7 +16,7 @@ args:
         example: "-j svtyper_settings.json"
     - OUTPUT_VCF_FILE:
         opts: "-o | --output"
-        description: "Name of the output file."
+        description: "Name of the output VCF file. By default, the name of the output file will be the same as the input file."
         default: "Null"
         example: "-o SampleA_SVgenotypes.vcf"
 volumes:

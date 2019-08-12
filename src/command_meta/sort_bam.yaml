@@ -6,7 +6,7 @@ args:
         example: "-i SampleA.bam"
     - BY_NAME:
         opts: "-n, --sort_by_name"
-        description: "Sort by read name (rather than by coordinates)."
+        description: "Sort by read name (rather than by coordinates). Default is False."
         acceptable_values:
             - False
             - True
@@ -14,12 +14,12 @@ args:
         example: "-n True"
     - OUTPUT_BAM_FILE:
         opts: "-o | --output"
-        description: "Name of the output BAM file."
+        description: "Name of the output BAM file. By default, the name of the output file will be the same as the input file."
         default: "Null"
         example: "-o SampleA_regionA.bam"
     - THREADS:
         opts: "-t | --nthreads"
-        description: "The number of threads that should be used."
+        description: "The number of threads that should be used. Default is 1."
         default: 1
         example: "-t 4"
 volumes:

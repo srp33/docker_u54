@@ -10,7 +10,7 @@ args:
         example: "-o Survivor.vcf"
     - AGREE_TYPE:
         opts: "-g | --agree_type"
-        description: "Whether the variants must agree on their type to be merged."
+        description: "Whether the variants must agree on their type to be merged. Default is True."
         acceptable_values:
             - False
             - True
@@ -18,7 +18,7 @@ args:
         example: "-t False"
     - AGREE_STRAND:
         opts: "-s | --agree_strand"
-        description: "Whether the variants must agree on their strand to be merged."
+        description: "Whether the variants must agree on their strand to be merged. Default is True."
         acceptable_values:
             - False
             - True
@@ -26,17 +26,17 @@ args:
         example: "-s False"
     - MAX_DISTANCE:
         opts: "-d | --max_distance"
-        description: "Maximum distance between breakpoints."
+        description: "Maximum distance between breakpoints. Default is 1000."
         default: "1000"
         example: "-d 500"
     - MIN_AGREEMENT:
         opts: "-a | --min_agreement"
-        description: "Minimum number of callers that must agree to keep SV."
+        description: "Minimum number of callers that must agree to keep SV. Default is 2."
         default: "2"
         example: "-a 3"
     - MIN_SIZE:
         opts: "-z | --min_size"
-        description: "Minimum size of SV in base pairs."
+        description: "Minimum size of SV in base pairs. Default is 30."
         default: "30"
         example: "-z 50"
 volumes:

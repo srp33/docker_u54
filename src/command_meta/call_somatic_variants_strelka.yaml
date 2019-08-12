@@ -19,17 +19,16 @@ args:
     - INDEL_CANDIDATES_FILE:
         opts: "-i | --indel_candidates_file"
         description: "The Strelka documentation recommends to provide indel candidates from the Manta SV and indel caller to improve sensitivity to call indels of size 20 or larger. You may specify the name of a VCF file with these candidates. This file can be created using the call_structural_variants_manta command."
-        default: ""
+        default: "Null"
         example: "-i candidateSmallIndels.vcf.gz"
     - CALL_REGIONS_FILE:
-        default: ""
         opts: "-c, --call_regions_file"
         description: "The Strelka documentation recommends that for references with many short contigs, to provide callable regions to avoid possible runtime issues. You may specify the name of a BED file containing genomic regions to call."
-        default: ""
+        default: "Null"
         example: "-c regions.bed.gz"
     - EXOME:
         opts: "-e | --exome"
-        description: "For exome and amplicon sequencing, enable this setting. Acceptable values are True or False."
+        description: "For exome and amplicon sequencing, enable this setting. Acceptable values are True or False. Default is False."
         acceptable_values:
             - False
             - True
@@ -37,7 +36,7 @@ args:
         example: "--exome True"
     - THREADS:
         opts: "-t | --nthreads"
-        description: "The number of threads that should be used."
+        description: "The number of threads that should be used. Default is 1."
         default: 1
         example: "-t 4"
 volumes:
@@ -80,12 +79,12 @@ command_template: |
     RUN_DIR_ARG="--runDir=${RUN_DIR}"
     rm -f "${RUN_DIR_ARG##*=}/runWorkflow.py"
 
-    if [[ "$INDEL_CANDIDATES_FILE" != "" ]]
+    if [[ "$INDEL_CANDIDATES_FILE" != "Null" ]]
     then
       INDEL_CANDIDATES_FILE="--INDEL_CANDIDATES_FILECandidates /volumes/input_data/$INDEL"
     fi
 
-    if [[ "$CALL_REGIONS_FILE" != "" ]]
+    if [[ "$CALL_REGIONS_FILE" != "Null" ]]
     then
       CALL_REGIONS_FILE="--callRegions /volumes/input_data/$CALL_REGIONS_FILE"
     fi

@@ -13,10 +13,9 @@ args:
         description: "Name of the output file."
         example: "-o SampleA_regionA.bam"
     - THREADS:
-        default: 1
         opts: "-t | --nthreads"
-        description: "The number of threads that should be used."
-        required: False
+        description: "The number of threads that should be used. Default is 1."
+        default: 1
         example: "-t 4"
 volumes:
     - input_bam_dir:

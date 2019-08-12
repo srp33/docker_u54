@@ -42,7 +42,23 @@ help_output += help_header_template.format("DESCRIPTION", "\t", "\n\t".join(text
 
 help_options = ""
 for arg, meta in get_yaml_values(yaml_dict, "args"):
-    help_options += "\t{}\n\t\t{}\n\n".format(meta["opts"].replace(" | ", ", "), "\n\t\t".join(textwrap.wrap(meta["description"])))
+    opts = meta["opts"].replace(" | ", ", ")
+    description = "\n\t\t".join(textwrap.wrap(meta["description"]))
+
+    parenthetical_statements = []
+    if "default" in meta:
+        parenthetical_statements.append("optional")
+    if "allow_multiple" in meta and meta["allow_multiple"] == True:
+        statement = "may be specified multiple times"
+        if "min_required" in meta:
+            statement += " [minimum: {}]".format(meta["min_required"])
+        parenthetical_statements.append(statement)
+
+    parenthetical_statement = ""
+    if len(parenthetical_statements) > 0:
+        parenthetical_statement = " (" + ", ".join(parenthetical_statements) + ")"
+
+    help_options += "\t{}{}\n\t\t{}\n\n".format(opts, parenthetical_statement, description)
 help_output += help_header_template.format("OPTIONS", "", help_options.rstrip())
 
 help_volumes = "\t" + "\n\t".join(textwrap.wrap("When executing software within a Docker container, you can use volumes to map directories outside the container to directories inside the container. The -v argument is used for this. Multiple -v arguments can be specified when a container is executed. The value for each -v argument has two parts, separated by a colon. The first part should be an absolute path to a directory on the local (host) computer. The second part should be an absolute path to a directory within the container. To avoid problems with permissions, you should ensure that the directories on the host computer have been created before executing the container. This command requires the following volumes:")) + "\n\n"
@@ -81,11 +97,15 @@ output += "}\n\n"
 
 # Declare a variable for each argument with its default value.
 for arg, meta in get_yaml_values(yaml_dict, "args"):
-    default = "Null"
     if "default" in meta:
-        default = str(meta["default"])
+        default = "\"" + str(meta["default"]) + "\""
+    else:
+        if "allow_multiple" in meta and meta["allow_multiple"] == True:
+            default = "()"
+        else:
+            default = "\"Null\""
 
-    output += "{}=\"{}\"\n".format(arg, default)
+    output += "{}={}\n".format(arg, default)
 
 output += "\n"
 
@@ -98,7 +118,12 @@ output += "  case ${!i} in\n"
 for arg, meta in get_yaml_values(yaml_dict, "args"):
     output += "    " + meta["opts"] + " )\n"
     output += "      check_args \"${!OPTARG}\" \"${!i}\" || exit 1\n"
-    output += "      " + arg + "=${!OPTARG}\n"
+
+    if "allow_multiple" in meta and meta["allow_multiple"] == True:
+        output += "      " + arg + "+=(\"${!OPTARG}\")\n"
+    else:
+        output += "      " + arg + "=\"${!OPTARG}\"\n"
+
     output += "      i=$((i+1))\n"
     output += "      ;;\n"
 
@@ -118,7 +143,15 @@ output += "done\n\n"
 # An argument is required if there is no default value.
 for arg, meta in get_yaml_values(yaml_dict, "args"):
     if "default" not in meta:
-        output += "if [[ \"${" + arg + "}\" == \"Null\" ]]\n"
+        if "allow_multiple" in meta and meta["allow_multiple"] == True:
+            min_required = "1"
+            if "min_required" in meta:
+                min_required = str(meta["min_required"])
+
+            output += "if [[ ${#" + arg + "[@]} -lt " + min_required + " ]]\n"
+        else:
+            output += "if [[ \"${" + arg + "}\" == \"Null\" ]]\n"
+
         output += "then\n"
         output += "  echo \"ERROR: The " + meta["opts"] + " argument must be provided.\"\n"
         output += "  echo \n"

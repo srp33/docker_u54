@@ -19,11 +19,11 @@ args:
     - CALL_REGIONS_FILE:
         opts: "-c, --call_regions"
         description: "The Manta documentation recommends that for references with many short contigs, to provide callable regions to avoid possible runtime issues. You may specify the name of a BED file containing genomic regions to call."
-        default: ""
+        default: "Null"
         example: "-c regions.bed.gz"
     - THREADS:
         opts: "-t | --nthreads"
-        description: "The number of threads that should be used."
+        description: "The number of threads that should be used. Default is 1."
         default: 1
         example: "-t 4"
 volumes:
@@ -66,7 +66,7 @@ command_template: |
     RUN_DIR_ARG="--runDir=${RUN_DIR}"
     rm -f "${RUN_DIR_ARG##*=}/runWorkflow.py"
 
-    if [[ "$CALL_REGIONS_FILE" != "" ]]
+    if [[ "$CALL_REGIONS_FILE" != "Null" ]]
     then
       CALL_REGIONS_FILE="--callRegions /volumes/input_data/$CALL_REGIONS_FILE"
     fi

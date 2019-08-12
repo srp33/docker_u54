@@ -6,7 +6,7 @@ args:
         example: "-i SampleA.bam"
     - THREADS:
         opts: "-t | --nthreads"
-        description: "The number of threads that should be used."
+        description: "The number of threads that should be used. Default is 1."
         default: 1
         example: "-t 4"
 volumes:

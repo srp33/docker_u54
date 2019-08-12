@@ -14,12 +14,12 @@ args:
         example: "-o SampleA.bam"
     - OUTPUT_BAM_FILE:
         opts: "-o | --output"
-        description: "Name of the output BAM file."
+        description: "Name of the output BAM file. If no value is specified, the output file will have the same name as the input file."
         default: "Null"
         example: "-o SampleA.bam"
     - THREADS:
         opts: "-t | --nthreads"
-        description: "The number of threads that GATK should use."
+        description: "The number of threads that GATK should use. Default is 1."
         default: 1
         example: "-t 4"
 volumes:

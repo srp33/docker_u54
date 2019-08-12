@@ -18,7 +18,7 @@ args:
         example: "-o SampleA.bam"
     - THREADS:
         opts: "-t | --nthreads"
-        description: "The number of threads that BWA should use during alignment."
+        description: "The number of threads that BWA should use during alignment. Default is 1."
         default: 1
         example: "-t 4"
     - CHUNKS:
@@ -33,12 +33,12 @@ args:
         example: "-p 2"
     - READ_GROUP_STRING:
         opts: "-g | --read-group"
-        description: "This argument allows you to specify read-group information during alignment. Please specify the whole read-group string, including the @RG prefix, surround in quotes. You can find a helpful tutorial here: https://software.broadinstitute.org/gatk/documentation/article.php?id=6472."
-        default: ""
+        description: "This argument allows you to specify read-group information during alignment. Please specify the whole read-group string, including the @RG prefix, surround in quotes. You can find a helpful tutorial here: https://software.broadinstitute.org/gatk/documentation/article.php?id=6472. Bu default, no read group information is added."
+        default: "Null"
         example: "-g \"@RG\\tID:SampleA_lane1\\tPL:ILLUMINA\\tPU:SampleA_lane1\\tLB:SampleA_lane1\\tSM:SampleA\""
     - SORT:
         opts: "-s | --sort"
-        description: "Whether the output BAM file should be sorted after alignment. Acceptable values are True or False."
+        description: "Whether the output BAM file should be sorted after alignment. Acceptable values are True or False. Default is False."
         acceptable_values:
             - False
             - True
@@ -46,7 +46,7 @@ args:
         example: "-s True"
     - INDEX:
         opts: "-i | --index"
-        description: "Whether the output BAM file should be indexed after alignment. Acceptable values are True or False."
+        description: "Whether the output BAM file should be indexed after alignment. Acceptable values are True or False. Default is False."
         acceptable_values:
             - False
             - True
@@ -79,7 +79,7 @@ command_template: |
 
     COMMAND_STRING="bwa mem -t ${THREADS} "
 
-    if [[ "$READ_GROUP_STRING" != "" ]]
+    if [[ "$READ_GROUP_STRING" != "Null" ]]
     then
       COMMAND_STRING+="-R \"$READ_GROUP_STRING\" "
     fi

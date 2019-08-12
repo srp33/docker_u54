@@ -10,7 +10,7 @@ args:
         example: "-r hg19.fa"
     - OUTPUT_VCF_FILE:
         opts: "-o | --output"
-        description: "Name of the output VCF file."
+        description: "Name of the output VCF file. If no value is specified, the name of the output file will be derived from the URL."
         default: "Null"
         example: "-o dbsnp_146.hg38.vcf.gz"
 volumes:

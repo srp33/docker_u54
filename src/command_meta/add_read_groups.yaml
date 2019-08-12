@@ -18,7 +18,7 @@ args:
         example: "-lb SampleA_lane1"
     - OUTPUT_BAM_FILE:
         opts: "-o | --output"
-        description: "Name of the output BAM file."
+        description: "Name of the output BAM file. If no value is specified, the output file will have the same name as the input file."
         default: "Null"
         example: "-o SampleA.bam"
 volumes:

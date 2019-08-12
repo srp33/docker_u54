@@ -6,20 +6,22 @@ args:
         example: "-r hg19.fa"
     - KNOWN_SITES_FILE:
         opts: "-k | --known_sites_file"
-        description: "Path to VCF file with known polymorphic sites> (may be listed more than once)."
+        description: "Path to VCF file with known polymorphic sites."
         example: "-k dbsnp_146.hg19.vcf"
+        allow_multiple: True
+        min_required: 1
     - INPUT_BAM_FILE:
         opts: "-i | --input"
         description: "Name of the input BAM file."
         example: "-i SampleA.bam"
     - OUTPUT_BAM_FILE:
         opts: "-o | --output"
-        description: "Name of the output BAM file."
+        description: "Name of the output BAM file. If no value is specified, the output file will have the same name as the input file."
         default: "Null"
         example: "-o SampleA.bam"
     - THREADS:
         opts: "-t | --nthreads"
-        description: "The number of threads that GATK should use."
+        description: "The number of threads that GATK should use. Default is 1."
         default: 1
         example: "-t 4"
 volumes:
@@ -66,18 +68,18 @@ command_template: |
 
     ln -s /volumes/ref_dir/"${REF_DICT}" /tmp/"${REF_DICT}"
 
-    KNOWN_SITE_COMMANDS=()
-    for KNOWN_SITE_FILE in ${KNOWN_SITES_FILE[@]}; do
-        if [[ ! -f /volumes/vcf_dir/"${KNOWN_SITE_FILE}.idx" ]]; then
-            gatk IndexFeatureFile -F /volumes/vcf_dir/"${KNOWN_SITE_FILE}"
+    KNOWN_SITES_COMMANDS=()
+    for KS_FILE in ${KNOWN_SITES_FILE[@]}; do
+        if [[ ! -f /volumes/vcf_dir/"${KS_FILE}.idx" ]]; then
+            gatk IndexFeatureFile -F /volumes/vcf_dir/"${KS_FILE}"
         fi
-        KNOWN_SITE_COMMANDS+=("--knownSites /volumes/vcf_dir/${KNOWN_SITE_FILE}")
+        KNOWN_SITES_COMMANDS+=("--knownSites /volumes/vcf_dir/${KS_FILE}")
     done
 
     gatk3 -Xms512m -Xmx8g -T BaseRecalibrator \
       -R /tmp/"${FASTA_FILE}" \
       -I /volumes/input_bam_dir/"${INPUT_BAM_FILE}" \
-      ${KNOWN_SITE_COMMANDS[@]} \
+      ${KNOWN_SITES_COMMANDS[@]} \
       -o /volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" \
       -nct ${THREADS}
 receipt_commands: |
