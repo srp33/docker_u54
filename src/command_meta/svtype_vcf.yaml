@@ -31,10 +31,10 @@ command_template: |
     source activate py2.7
 
     svtyper \
-        -i /data/input_vcf_dir/"${INPUT_VCF_FILE}" \
-        -B /data/input_bam_dir/"${INPUT_BAM_FILE}" \
-        -l /data/input_config_dir/"${INPUT_JSON_FILE}" \
-        > /data/output_vcf_dir/"${OUTPUT_VCF_FILE}"
+        -i /volumes/input_vcf_dir/"${INPUT_VCF_FILE}" \
+        -B /volumes/input_bam_dir/"${INPUT_BAM_FILE}" \
+        -l /volumes/input_config_dir/"${INPUT_JSON_FILE}" \
+        > /volumes/output_vcf_dir/"${OUTPUT_VCF_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version svtyper

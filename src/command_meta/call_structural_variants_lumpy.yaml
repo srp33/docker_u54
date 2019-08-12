@@ -25,8 +25,8 @@ volumes:
 command_template: |
     source activate py2.7
 
-    lumpyexpress -B /data/input_bam_dir/"${BAM_FILE}" -S /data/input_bam_dir/"${SPLIT_BAM_FILE}" \
-        -D /data/input_bam_dir/"${DISCORDANT_BAM_FILE}" -o /data/input_vcf_dir/"${OUTPUT_FILE}" \
+    lumpyexpress -B /volumes/input_bam_dir/"${BAM_FILE}" -S /volumes/input_bam_dir/"${SPLIT_BAM_FILE}" \
+        -D /volumes/input_bam_dir/"${DISCORDANT_BAM_FILE}" -o /volumes/input_vcf_dir/"${OUTPUT_FILE}" \
         -T /tmp/"${OUTPUT_FILE%%.*}".XXXXXXXXXXXXXXX
 receipt_commands: |
     get_bash_version

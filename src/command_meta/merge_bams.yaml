@@ -20,7 +20,7 @@ volumes:
         description: "Directory where the output file will be stored."
         write_access: True
 command_template: |
-    sambamba merge -t ${THREADS} /data/output_bam_dir/"${OUTPUT_BAM_FILE}" /data/input_bam_dir/${INPUT_BAM_FILES[@]}
+    sambamba merge -t ${THREADS} /volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" /volumes/input_bam_dir/${INPUT_BAM_FILES[@]}
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba

@@ -30,37 +30,37 @@ volumes:
         description: "Directory where the output BAM file will be stored."
         write_access: True
 command_template: |
-    ln -s /data/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
+    ln -s /volumes/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
 
     INDEX=$(echo ${FASTA_FILE} | grep -o '\.' | grep -c '\.')
     if [[ ${FASTA_FILE: -${INDEX}} = ".gz" ]]; then
         NEW_REF="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})"
-        gunzip -c /data/ref_dir/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
+        gunzip -c /volumes/ref_dir/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
         FASTA_FILE="${NEW_REF}"
         INDEX=$(echo ${FASTA_FILE} | grep -o '\.' | grep -c '\.')
     fi
 
-    NEEDED_INDEX=/data/ref_dir/"${FASTA_FILE}".fai
+    NEEDED_INDEX=/volumes/ref_dir/"${FASTA_FILE}".fai
     REF_DICT="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})".dict
-    NEEDED_DICT=/data/ref_dir/"${REF_DICT}"
+    NEEDED_DICT=/volumes/ref_dir/"${REF_DICT}"
 
     if [[ ! -f "${NEEDED_INDEX}" ]]; then
         echo "Samtools reference index (${NEEDED_INDEX}) is missing."
         exit 1
     fi
 
-    ln -s /data/ref_dir/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
+    ln -s /volumes/ref_dir/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
 
     if [[ ! -f ${NEEDED_DICT} ]]; then
         echo "Fasta dict file (${NEEDED_DICT}) is missing."
         exit 1
     fi
 
-    ln -s /data/ref_dir/"${REF_DICT}" /tmp/"${REF_DICT}"
+    ln -s /volumes/ref_dir/"${REF_DICT}" /tmp/"${REF_DICT}"
 
-    gatk4 Mutect2 -I /data/input_bam_dir/"${TUMOR_BAM_FILE}" -tumor "${TUMOR_BAM_FILE/\.bam/}" \
-      -I /data/input_bam_dir/"${NORMAL_BAM_FILE}" -normal "${NORMAL_BAM_FILE/\.bam/}" \
-      -O /data/output_vcf_dir/"${OUTPUT_FILE}" -R /tmp/"${FASTA_FILE}" \
+    gatk4 Mutect2 -I /volumes/input_bam_dir/"${TUMOR_BAM_FILE}" -tumor "${TUMOR_BAM_FILE/\.bam/}" \
+      -I /volumes/input_bam_dir/"${NORMAL_BAM_FILE}" -normal "${NORMAL_BAM_FILE/\.bam/}" \
+      -O /volumes/output_vcf_dir/"${OUTPUT_FILE}" -R /tmp/"${FASTA_FILE}" \
       --nativePairHmmThreads $THREADS
 receipt_commands: |
     get_bash_version

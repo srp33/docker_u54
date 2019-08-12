@@ -38,15 +38,15 @@ command_template: |
         OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
     fi
 
-    #ln -s /data/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
-    #ln -s /data/ref_dir/"${FASTA_FILE}".fai /tmp/"${FASTA_FILE}".fai
-    #ln -s /data/ref_dir/"${FASTA_FILE/\.fa/.dict}" /tmp/"${FASTA_FILE/\.fa/.dict}"
+    #ln -s /volumes/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
+    #ln -s /volumes/ref_dir/"${FASTA_FILE}".fai /tmp/"${FASTA_FILE}".fai
+    #ln -s /volumes/ref_dir/"${FASTA_FILE/\.fa/.dict}" /tmp/"${FASTA_FILE/\.fa/.dict}"
 
     gatk3 -Xms512m -Xmx8g -T PrintReads 
-        -R /data/ref_dir/"${FASTA_FILE}" \
-        -I /data/input_bam_dir/"${INPUT_BAM_FILE}" \
-        -BQSR /data/bqsr_dir/"${BQSR_FILE}" \
-        -o /data/output_bam_dir/"${OUTPUT_BAM_FILE}" \
+        -R /volumes/ref_dir/"${FASTA_FILE}" \
+        -I /volumes/input_bam_dir/"${INPUT_BAM_FILE}" \
+        -BQSR /volumes/bqsr_dir/"${BQSR_FILE}" \
+        -o /volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" \
         -nct "${THREADS}"
 receipt_commands: |
     get_bash_version

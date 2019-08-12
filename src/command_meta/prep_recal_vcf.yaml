@@ -22,9 +22,9 @@ volumes:
 command_template: |
     if [[ "$OUTPUT_VCF_FILE" == "Null"]]
     then
-        OUTPUT_VCF_FILE=/data/output_vcf_dir/"$(basename ${VCF_URL})"
+        OUTPUT_VCF_FILE=/volumes/output_vcf_dir/"$(basename ${VCF_URL})"
     else
-        OUTPUT_VCF_FILE=/data/output_vcf_dir/"${OUTPUT_VCF_FILE}"
+        OUTPUT_VCF_FILE=/volumes/output_vcf_dir/"${OUTPUT_VCF_FILE}"
     fi
 
     TMP_FILE1=/tmp/"$(basename ${VCF_URL/\.gz/})" \
@@ -33,7 +33,7 @@ command_template: |
     wget -O "${TMP_FILE1}.gz" "${VCF_URL}"
     gunzip "${TMP_FILE1}.gz"
 
-    DICT_FILE=/data/ref_dir/${FASTA_FILE/\.$(get_file_extension ${FASTA_FILE})/}.dict
+    DICT_FILE=/volumes/ref_dir/${FASTA_FILE/\.$(get_file_extension ${FASTA_FILE})/}.dict
 
     python /starling/helper/reconcile_vcf_with_dict.py "${TMP_FILE1}" "${DICT_FILE}" "${TMP_FILE2}"
 

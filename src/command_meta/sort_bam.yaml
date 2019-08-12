@@ -43,8 +43,8 @@ command_template: |
     sambamba sort \
       -t ${THREADS} \
       ${BY_NAME_PARAM} \
-      -o /data/output_bam_dir/"${OUTPUT_BAM_FILE}" \
-      /data/input_bam_dir/"${INPUT_BAM_FILE}"
+      -o /volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" \
+      /volumes/input_bam_dir/"${INPUT_BAM_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba

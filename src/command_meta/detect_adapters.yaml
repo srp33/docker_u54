@@ -13,8 +13,8 @@ volumes:
         description: "Directory where the FASTQ files are stored."
 command_template: |
     atropos detect \
-        -pe1 /data/fastq_dir/"$FASTQ_FILE1" \
-        -pe2 /data/fastq_dir/"$FASTQ_FILE2"
+        -pe1 /volumes/fastq_dir/"$FASTQ_FILE1" \
+        -pe2 /volumes/fastq_dir/"$FASTQ_FILE2"
 receipt_commands: |
     get_bash_version
     get_conda_version atropos

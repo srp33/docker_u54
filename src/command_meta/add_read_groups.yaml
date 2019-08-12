@@ -33,7 +33,7 @@ command_template: |
         OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
     fi
 
-    picard AddOrReplaceReadGroups I=/data/input_bam_dir/"${INPUT_BAM_FILE}" O=/data/output_bam_dir/"${OUTPUT_BAM_FILE}" ID="${GROUP_ID}" LB="${GROUP_LB}" SM="${SAMPLE}" PL=ILLUMINA PU=platform
+    picard AddOrReplaceReadGroups I=/volumes/input_bam_dir/"${INPUT_BAM_FILE}" O=/volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" ID="${GROUP_ID}" LB="${GROUP_LB}" SM="${SAMPLE}" PL=ILLUMINA PU=platform
 receipt_commands: |
     get_bash_version
     get_conda_version picard

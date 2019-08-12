@@ -14,7 +14,7 @@ volumes:
         description: "Directory where the BAM file is stored."
         write_access: True
 command_template: |
-    sambamba index -t ${THREADS} /data/bam_dir/"${INPUT_BAM_FILE}" /data/bam_dir/"${INPUT_BAM_FILE}.bai"
+    sambamba index -t ${THREADS} /volumes/bam_dir/"${INPUT_BAM_FILE}" /volumes/bam_dir/"${INPUT_BAM_FILE}.bai"
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba

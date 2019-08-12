@@ -47,7 +47,7 @@ help_output += help_header_template.format("OPTIONS", "", help_options.rstrip())
 
 help_volumes = "\t" + "\n\t".join(textwrap.wrap("When executing software within a Docker container, you can use volumes to map directories outside the container to directories inside the container. The -v argument is used for this. Multiple -v arguments can be specified when a container is executed. The value for each -v argument has two parts, separated by a colon. The first part should be an absolute path to a directory on the local (host) computer. The second part should be an absolute path to a directory within the container. To avoid problems with permissions, you should ensure that the directories on the host computer have been created before executing the container. This command requires the following volumes:")) + "\n\n"
 for volume, meta in get_yaml_values(yaml_dict, "volumes"):
-    help_volumes += "\t<absolute path on local computer>:/data/{}\n".format(volume)
+    help_volumes += "\t<absolute path on local computer>:/volumes/{}\n".format(volume)
     help_volumes += "\t\t" + "\n\t\t".join(textwrap.wrap(meta["description"])) + "\n"
 
     if "write_access" in meta and meta["write_access"] == True:
@@ -60,7 +60,7 @@ help_example = "\tdocker run \\\n"
 count = 0
 for volume, meta in get_yaml_values(yaml_dict, "volumes"):
     count += 1
-    help_example += "\t  -v /my/local/path{}:/data/{} \\\n".format(count, volume)
+    help_example += "\t  -v /my/local/path{}:/volumes/{} \\\n".format(count, volume)
 help_example += "\t  --user \$(id -u):\$(id -g) \\\n"
 help_example += "\t  --rm \\\n"
 help_example += "\t  srp33/somatic_wgs:{} \\\n".format(tag)

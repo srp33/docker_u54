@@ -26,7 +26,7 @@ command_template: |
         OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
     fi
 
-    sambamba markdup -t ${THREADS} /data/input_bam_dir/"${INPUT_BAM_FILE}" /data/output_bam_dir/"${OUTPUT_BAM_FILE}"
+    sambamba markdup -t ${THREADS} /volumes/input_bam_dir/"${INPUT_BAM_FILE}" /volumes/output_bam_dir/"${OUTPUT_BAM_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version sambamba

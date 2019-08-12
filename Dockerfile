@@ -37,6 +37,6 @@ ADD docs/* /starling/docs/
 ADD src/helper/* /starling/helper/
 
 ################## SETUP WORKDIR #######################
-WORKDIR /data
+WORKDIR /
 
 CMD echo_usage

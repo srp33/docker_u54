@@ -11,12 +11,12 @@ volumes:
 command_template: |
     FASTA_FILE_PATH=/tmp/ref.fa
 
-    if file --mime-type "/data/ref_dir/${FASTA_FILE}" | grep -q gzip$
+    if file --mime-type "/volumes/ref_dir/${FASTA_FILE}" | grep -q gzip$
     then
-      gunzip -c "/data/ref_dir/${FASTA_FILE}" >${FASTA_FILE_PATH}
+      gunzip -c "/volumes/ref_dir/${FASTA_FILE}" >${FASTA_FILE_PATH}
       OUTPUT_FILE_PREFIX=$(get_file_without_extension ${FASTA_FILE})
     else
-      ln -s "/data/ref_dir/${FASTA_FILE}" ${FASTA_FILE_PATH}
+      ln -s "/volumes/ref_dir/${FASTA_FILE}" ${FASTA_FILE_PATH}
       OUTPUT_FILE_PREFIX=${FASTA_FILE}
     fi
 
@@ -27,10 +27,10 @@ command_template: |
     REF_INDEX_FILES=("${FASTA_FILE_PATH}".amb "${FASTA_FILE_PATH}".ann "${FASTA_FILE_PATH}".bwt "${FASTA_FILE_PATH}".pac "${FASTA_FILE_PATH}".sa "${FASTA_FILE_PATH}".fai)
     for REF_INDEX_FILE in ${REF_INDEX_FILES[@]}; do
         REF_INDEX_FILE_EXTENSION="$(get_file_extension ${REF_INDEX_FILE})"
-        mv "${REF_INDEX_FILE}" /data/ref_dir/${OUTPUT_FILE_PREFIX}.${REF_INDEX_FILE_EXTENSION}
+        mv "${REF_INDEX_FILE}" /volumes/ref_dir/${OUTPUT_FILE_PREFIX}.${REF_INDEX_FILE_EXTENSION}
     done
 
-    mv ${FASTA_FILE_PATH}.dict /data/ref_dir/${OUTPUT_FILE_PREFIX/\.$(get_file_extension ${FASTA_FILE_PATH})/}.dict
+    mv ${FASTA_FILE_PATH}.dict /volumes/ref_dir/${OUTPUT_FILE_PREFIX/\.$(get_file_extension ${FASTA_FILE_PATH})/}.dict
 receipt_commands: |
     get_bash_version
     get_python_version

@@ -46,10 +46,10 @@ command_template: |
 
     atropos $ARGS \
       -T $THREADS \
-      -pe1 /data/input_fastq_dir/$INPUT_FASTQ_FILE1 \
-      -pe2 /data/input_fastq_dir/$INPUT_FASTQ_FILE2 \
-      -o /data/output_fastq_dir/$OUTPUT_FASTQ_FILE1 \
-      -p /data/output_fastq_dir/$OUTPUT_FASTQ_FILE2
+      -pe1 /volumes/input_fastq_dir/$INPUT_FASTQ_FILE1 \
+      -pe2 /volumes/input_fastq_dir/$INPUT_FASTQ_FILE2 \
+      -o /volumes/output_fastq_dir/$OUTPUT_FASTQ_FILE1 \
+      -p /volumes/output_fastq_dir/$OUTPUT_FASTQ_FILE2
 receipt_commands: |
     get_bash_version
     get_conda_version atropos

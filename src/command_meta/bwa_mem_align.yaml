@@ -63,13 +63,13 @@ volumes:
 command_template: |
     NEEDED_FILES=("${FASTA_FILE}".amb "${FASTA_FILE}".ann "${FASTA_FILE}".bwt "${FASTA_FILE}".pac "${FASTA_FILE}".sa)
     REF_INDEX_FILES=()
-    for filename in /data/ref_dir/*; do
+    for filename in /volumes/ref_dir/*; do
         REF_INDEX_FILES+=($(echo "${filename##*/}"))
     done
 
     for NEEDED_FILE in ${NEEDED_FILES[@]}; do
         { [[ " ${REF_INDEX_FILES[@]} " =~ " ${NEEDED_FILE} " ]] \
-        && ln -s /data/ref_dir/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
+        && ln -s /volumes/ref_dir/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
     done
 
     if [[ ${REF_INDEXED} == 1 ]]; then
@@ -88,18 +88,18 @@ command_template: |
 
     if [[ ${CHUNKS} -gt 1 ]]
     then
-      COMMAND_STRING+="<(zcat /data/input_fastq_dir/\"${FASTQ_FILE1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
-      COMMAND_STRING+="<(zcat /data/input_fastq_dir/\"${FASTQ_FILE2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
+      COMMAND_STRING+="<(zcat /volumes/input_fastq_dir/\"${FASTQ_FILE1}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
+      COMMAND_STRING+="<(zcat /volumes/input_fastq_dir/\"${FASTQ_FILE2}\" | awk -v chunks=${CHUNKS} -v process_chunk=${PROCESS_CHUNK} 'int((NR-1)/4)%chunks==process_chunk') "
     else
-      COMMAND_STRING+="/data/input_fastq_dir/\"${FASTQ_FILE1}\" /data/input_fastq_dir/\"${FASTQ_FILE2}\" "
+      COMMAND_STRING+="/volumes/input_fastq_dir/\"${FASTQ_FILE1}\" /volumes/input_fastq_dir/\"${FASTQ_FILE2}\" "
     fi
 
-    OUTPUT_BAM_FILE=/data/output_fastq_dir/"${OUTPUT_BAM_FILE}"
+    OUTPUT_BAM_FILE=/volumes/output_fastq_dir/"${OUTPUT_BAM_FILE}"
 
     if [[ ${CHUNKS} -gt 1 ]]; then
       INDEX=$(echo ${OUTPUT_BAM_FILE} | grep -o '\.' | grep -c '\.')
       OUT_NAME="$(echo ${OUTPUT_BAM_FILE} | cut -d '.' -f -${INDEX})"
-      OUTPUT_BAM_FILE=/data/output_fastq_dir/"${OUT_NAME}".${PROCESS_CHUNK}.bam
+      OUTPUT_BAM_FILE=/volumes/output_fastq_dir/"${OUT_NAME}".${PROCESS_CHUNK}.bam
     fi
 
     if [[ "$SORT" == "True" ]]

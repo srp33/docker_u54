@@ -35,47 +35,47 @@ volumes:
         description: "Directory where the output file will be stored."
         write_access: True
 command_template: |
-    if [ ! -f /data/input_bam_dir/"${TUMOR_BAM_FILE}.bai" ] then
-      echo "ERROR: /data/input_bam_dir/\"${TUMOR_BAM_FILE}.bai\" does not exist. Please run index_bam on /data/input_bam_dir/\"${TUMOR_BAM_FILE}\"."
+    if [ ! -f /volumes/input_bam_dir/"${TUMOR_BAM_FILE}.bai" ] then
+      echo "ERROR: /volumes/input_bam_dir/\"${TUMOR_BAM_FILE}.bai\" does not exist. Please run index_bam on /volumes/input_bam_dir/\"${TUMOR_BAM_FILE}\"."
       exit 1;
     fi
-    if [ ! -f /data/input_bam_dir/"${NORMAL_BAM_FILE}.bai" ] then
-      echo "ERROR: /data/input_bam_dir/\"${NORMAL_BAM_FILE}.bai\" does not exist. Please run index_bam on /data/input_bam_dir/\"${NORMAL_BAM_FILE}\"."
+    if [ ! -f /volumes/input_bam_dir/"${NORMAL_BAM_FILE}.bai" ] then
+      echo "ERROR: /volumes/input_bam_dir/\"${NORMAL_BAM_FILE}.bai\" does not exist. Please run index_bam on /volumes/input_bam_dir/\"${NORMAL_BAM_FILE}\"."
       exit 1;
     fi
 
-    ln -s /data/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
+    ln -s /volumes/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
 
     INDEX=$(echo "${FASTA_FILE}" | grep -o '\.' | grep -c '\.')
     if [[ "${FASTA_FILE: -${INDEX}}" = ".gz" ]]; then
         NEW_REF="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})"
-        gunzip -c /data/ref_dir/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
+        gunzip -c /volumes/ref_dir/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
         FASTA_FILE="${NEW_REF}"
     fi
 
-    NEEDED_FILE=/data/ref_dir/"${FASTA_FILE}".fai
+    NEEDED_FILE=/volumes/ref_dir/"${FASTA_FILE}".fai
 
     if [[ ! -f "${NEEDED_FILE}" ]]; then
         echo "samtools reference index (${NEEDED_FILE}) is missing."
         exit 1
     fi
 
-    ln -s /data/ref_dir/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
+    ln -s /volumes/ref_dir/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
 
-    RUN_DIR=/data/output_vcf_dir/MantaSomaticWorkflow
+    RUN_DIR=/volumes/output_vcf_dir/MantaSomaticWorkflow
     RUN_DIR_ARG="--runDir=${RUN_DIR}"
     rm -f "${RUN_DIR_ARG##*=}/runWorkflow.py"
 
     if [[ "$CALL_REGIONS_FILE" != "" ]]
     then
-      CALL_REGIONS_FILE="--callRegions /data/input_data/$CALL_REGIONS_FILE"
+      CALL_REGIONS_FILE="--callRegions /volumes/input_data/$CALL_REGIONS_FILE"
     fi
 
     source activate py2.7
 
     python2.7 /miniconda/share/manta-1.5.0-0/bin/configManta.py \
-      --referenceFasta=/tmp/"${FASTA_FILE}" --tumorBam="/data/input_bam_dir/${TUMOR_BAM_FILE}" \
-      --normalBam="/data/input_bam_dir/${NORMAL_BAM_FILE}" ${CALL_REGIONS_FILE} "${RUN_DIR_ARG}"
+      --referenceFasta=/tmp/"${FASTA_FILE}" --tumorBam="/volumes/input_bam_dir/${TUMOR_BAM_FILE}" \
+      --normalBam="/volumes/input_bam_dir/${NORMAL_BAM_FILE}" ${CALL_REGIONS_FILE} "${RUN_DIR_ARG}"
 
     python2.7 "${RUN_DIR}"/runWorkflow.py -m local -j $THREADS
 receipt_commands: |
