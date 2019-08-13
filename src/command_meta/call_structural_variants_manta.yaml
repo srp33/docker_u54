@@ -26,6 +26,11 @@ args:
         description: "The number of threads that should be used. Default is 1."
         default: 1
         example: "4"
+    - ARGS:
+        opts: "-a | --args"
+        description: "Additional arguments that will be passed through to the Strelka tool. When specified, make sure to surround the full set of arguments in double quotes. By default, no additional arguments are specified."
+        default: ""
+        example: "\"--exome\""
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
@@ -50,6 +55,7 @@ command_template: |
     source activate py2.7
 
     python2.7 /miniconda/envs/py2.7/share/manta-1.5.0-0/bin/configManta.py \
+      $ARGS \
       --referenceFasta=/volumes/ref_dir/"${FASTA_FILE}" \
       --tumorBam="/volumes/input_bam_dir/${TUMOR_BAM_FILE}" \
       --bam="/volumes/input_bam_dir/${NORMAL_BAM_FILE}" \

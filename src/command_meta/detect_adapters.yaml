@@ -8,11 +8,17 @@ args:
         opts: "-f2 | --fastq2"
         description: "Name of the second FASTQ file."
         example: "SampleA_2.fastq.gz"
+    - ARGS:
+        opts: "-a | --args"
+        description: "Additional arguments that will be passed through to the atropos tool. When specified, make sure to surround the full set of arguments in double quotes. By default, no additional arguments are specified."
+        default: ""
+        example: "\"-d khmer\""
 volumes:
     - fastq_dir:
         description: "Directory where the FASTQ files are stored."
 command_template: |
     atropos detect \
+        $ARGS \
         -pe1 /volumes/fastq_dir/"$FASTQ_FILE1" \
         -pe2 /volumes/fastq_dir/"$FASTQ_FILE2"
 receipt_commands: |

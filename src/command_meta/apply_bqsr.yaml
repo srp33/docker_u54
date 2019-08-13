@@ -22,8 +22,13 @@ args:
         description: "The number of threads that GATK should use. Default is 1."
         default: 1
         example: "4"
+    - ARGS:
+        opts: "-a | --args"
+        description: "Additional arguments that will be passed through to the GATK (PrintReads) tool. When specified, make sure to surround the full set of arguments in double quotes. By default, no additional arguments are specified."
+        default: ""
+        example: "\"--number 100000\""
     - MAX_MEMORY:
-        opts: "-m | max_mem"
+        opts: "-mm | --max_mem"
         description: "Tools that use the Java programming language, such as GATK and Picard, require the user to indicate the maximum computer memory that Java can use. If the program attempts to exceed this level of memory, an error will occur. When specifying these values, use \"g\" after the number to indicate gigabytes."
         default: "8g"
         example: "8g"
@@ -45,6 +50,7 @@ command_template: |
 
     gatk3 -Xms128m -Xmx${MAX_MEMORY} \
         -T PrintReads \
+        $ARGS \
         -R /volumes/ref_dir/"${FASTA_FILE}" \
         -I /volumes/input_bam_dir/"${INPUT_BAM_FILE}" \
         -BQSR /volumes/bqsr_dir/"${BQSR_FILE}" \

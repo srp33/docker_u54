@@ -26,19 +26,16 @@ args:
         description: "The Strelka documentation recommends that for references with many short contigs, to provide callable regions to avoid possible runtime issues. You may specify the name of a BED file containing genomic regions to call."
         default: "Null"
         example: "regions.bed.gz"
-    - EXOME:
-        opts: "-e | --exome"
-        description: "For exome and amplicon sequencing, enable this setting. Acceptable values are True or False. Default is False."
-        acceptable_values:
-            - False
-            - True
-        default: False
-        example: "True"
     - THREADS:
         opts: "-t | --nthreads"
         description: "The number of threads that should be used. Default is 1."
         default: 1
         example: "4"
+    - ARGS:
+        opts: "-a | --args"
+        description: "Additional arguments that will be passed through to the Strelka tool. When specified, make sure to surround the full set of arguments in double quotes. By default, no additional arguments are specified."
+        default: ""
+        example: "\"--exome\""
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
@@ -68,6 +65,7 @@ command_template: |
     source activate py2.7
 
     python2.7 /miniconda/envs/py2.7/share/strelka-2.9.10-0/bin/configureStrelkaSomaticWorkflow.py \
+        $ARGS \
         --referenceFasta=/volumes/ref_dir/"${FASTA_FILE}" \
         --tumorBam="/volumes/input_bam_dir/${TUMOR_BAM_FILE}" \
         --normalBam="/volumes/input_bam_dir/${NORMAL_BAM_FILE}" \

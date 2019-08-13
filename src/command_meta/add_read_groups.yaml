@@ -25,8 +25,13 @@ args:
         description: "Name of the output BAM file. If no value is specified, the output file will have the same name as the input file."
         default: "Null"
         example: "SampleA.bam"
+    - ARGS:
+        opts: "-a | --args"
+        description: "Additional arguments that will be passed through to the Picard (AddOrReplaceReadGroups) tool. When specified, make sure to surround the full set of arguments in double quotes. By default, no additional arguments are specified."
+        default: ""
+        example: "\"--QUIET=true\""
     - MAX_MEMORY:
-        opts: "-m | max_mem"
+        opts: "-mm | --max_mem"
         description: "Tools that use the Java programming language, such as GATK and Picard, require the user to indicate the maximum computer memory that Java can use. If the program attempts to exceed this level of memory, an error will occur. When specifying these values, use \"g\" after the number to indicate gigabytes."
         default: "8g"
         example: "8g"
@@ -44,6 +49,7 @@ command_template: |
 
     picard -Xms128m -Xmx${MAX_MEMORY} \
       AddOrReplaceReadGroups \
+      $ARGS \
       I=/volumes/input_bam_dir/"${INPUT_BAM_FILE}" \
       O=/volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" \
       ID="${GROUP}" \

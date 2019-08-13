@@ -43,7 +43,6 @@ help_output += help_header_template.format("DESCRIPTION", "\t", "\n\t".join(text
 help_options = ""
 for arg, meta in get_yaml_values(yaml_dict, "args"):
     opts = meta["opts"].replace(" | ", ", ")
-    description = "\n\t\t".join(textwrap.wrap(meta["description"]))
 
     parenthetical_statements = []
     if "default" in meta:
@@ -57,6 +56,11 @@ for arg, meta in get_yaml_values(yaml_dict, "args"):
     parenthetical_statement = ""
     if len(parenthetical_statements) > 0:
         parenthetical_statement = " (" + ", ".join(parenthetical_statements) + ")"
+
+    description = meta["description"]
+    if "example" in meta:
+        description += " Example value: {}.".format(meta["example"])
+    description = "\n\t\t".join(textwrap.wrap(description))
 
     help_options += "\t{}{}\n\t\t{}\n\n".format(opts, parenthetical_statement, description)
 help_output += help_header_template.format("OPTIONS", "", help_options.rstrip())
@@ -85,9 +89,15 @@ help_example += "\t  --rm \\\n"
 help_example += "\t  srp33/somatic_wgs:{} \\\n".format(tag)
 help_example += "\t  {} \\\n".format(command)
 for arg, meta in get_yaml_values(yaml_dict, "args"):
-    if "example" in meta:
+    if "example" in meta and "default" not in meta:
         example_opt = meta["opts"].split(" | ")[0]
-        example_output = example_opt + " " + " \\\n        {} ".format(example_opt).join(meta["example"].split(" "))
+
+        if meta["example"].startswith("\""):
+            example_values = [meta["example"]]
+        else:
+            example_values = meta["example"].split(" ")
+
+        example_output = example_opt + " " + " \\\n        {} ".format(example_opt).join(example_values)
         help_example += "\t    {} \\\n".format(example_output)
 help_output += help_header_template.format("EXAMPLE", "", help_example.rstrip().rstrip("\\"))
 

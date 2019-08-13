@@ -21,11 +21,17 @@ volumes:
 command_template: |
     samtools view -h /volumes/input_bam_dir/"${INPUT_BAM_FILE}" | samblaster --addMateTags | \
     samblaster -a -e \
-      -d /tmp/"${DISCORDANT_BAM_FILE}.sam" -s /tmp/"${SPLIT_BAM_FILE}.sam" \
+      -d /tmp/"${DISCORDANT_BAM_FILE}.sam" \
+      -s /tmp/"${SPLIT_BAM_FILE}.sam" \
       -o /dev/null
 
-    samtools view -S -b /tmp/"${DISCORDANT_BAM_FILE}.sam" > /volumes/output_bam_dir/"${DISCORDANT_BAM_FILE}"
-    samtools view -S -b /tmp/"${SPLIT_BAM_FILE}.sam" > /volumes/output_bam_dir/"${SPLIT_BAM_FILE}"
+    samtools view -S -b \
+        /tmp/"${DISCORDANT_BAM_FILE}.sam" \
+        > /volumes/output_bam_dir/"${DISCORDANT_BAM_FILE}"
+
+    samtools view -S -b \
+        /tmp/"${SPLIT_BAM_FILE}.sam" \
+        > /volumes/output_bam_dir/"${SPLIT_BAM_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version samtools

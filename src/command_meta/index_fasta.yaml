@@ -5,7 +5,7 @@ args:
         description: "Name of the reference genome FASTA file. This file must not be compressed and must be indexed (see index_fasta)."
         example: "hg19.fa"
     - MAX_MEMORY:
-        opts: "-m | max_mem"
+        opts: "-mm | --max_mem"
         description: "Tools that use the Java programming language, such as GATK and Picard, require the user to indicate the maximum computer memory that Java can use. If the program attempts to exceed this level of memory, an error will occur. When specifying these values, use \"g\" after the number to indicate gigabytes."
         default: "8g"
         example: "8g"

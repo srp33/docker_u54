@@ -16,6 +16,11 @@ args:
         opts: "-o | --output"
         description: "Name of the output VCF file."
         example: "SampleA.vcf"
+    - ARGS:
+        opts: "-a | --args"
+        description: "Additional arguments that will be passed through to the LUMPY tool. When specified, make sure to surround the full set of arguments in double quotes. By default, no additional arguments are specified."
+        default: ""
+        example: "\"-P\""
 volumes:
     - input_bam_dir:
         description: "Directory where the BAM files are stored."
@@ -25,8 +30,12 @@ volumes:
 command_template: |
     source activate py2.7
 
-    lumpyexpress -B /volumes/input_bam_dir/"${BAM_FILE}" -S /volumes/input_bam_dir/"${SPLIT_BAM_FILE}" \
-        -D /volumes/input_bam_dir/"${DISCORDANT_BAM_FILE}" -o /volumes/input_vcf_dir/"${OUTPUT_FILE}" \
+    lumpyexpress \
+        $ARGS \
+        -B /volumes/input_bam_dir/"${BAM_FILE}" \
+        -S /volumes/input_bam_dir/"${SPLIT_BAM_FILE}" \
+        -D /volumes/input_bam_dir/"${DISCORDANT_BAM_FILE}" \
+        -o /volumes/input_vcf_dir/"${OUTPUT_FILE}" \
         -T /tmp/"${OUTPUT_FILE%%.*}".XXXXXXXXXXXXXXX
 receipt_commands: |
     get_bash_version

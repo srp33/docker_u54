@@ -52,6 +52,11 @@ args:
             - True
         default: False
         example: "True"
+    - ARGS:
+        opts: "-a | --args"
+        description: "Additional arguments that will be passed through to the bwa mem tool. When specified, make sure to surround the full set of arguments in double quotes. By default, no additional arguments are specified."
+        default: ""
+        example: "\"-k 15\""
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
@@ -61,7 +66,7 @@ volumes:
         description: "Directory where the output FASTQ files will be stored."
         write_access: True
 command_template: |
-    COMMAND_STRING="bwa mem -t ${THREADS} "
+    COMMAND_STRING="bwa mem -t ${THREADS} ${ARGS} "
 
     if [[ "$READ_GROUP_STRING" != "Null" ]]
     then

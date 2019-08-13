@@ -20,7 +20,7 @@ args:
         example: "SampleA_2.fastq.gz"
     - ARGS:
         opts: "-a | --args"
-        description: "Arguments that will be passed through to the atropos software. By default, no additional arguments are specified."
+        description: "Arguments that will be passed through to the atropos software. When specified, make sure to surround the full set of arguments in double quotes. By default, no additional arguments are specified."
         default: ""
         example: "\"-q 20 -Q 20 --minimum-length 40\""
     - THREADS:

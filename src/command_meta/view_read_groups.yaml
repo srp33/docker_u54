@@ -8,7 +8,8 @@ volumes:
     - bam_dir:
         description: "Directory where the BAM file is stored."
 command_template: |
-    samtools view -H /volumes/bam_dir/${BAM_FILE} | grep '@RG'
+    samtools view \
+        -H /volumes/bam_dir/${BAM_FILE} | grep '@RG'
 receipt_commands: |
     get_bash_version
     get_conda_version samtools

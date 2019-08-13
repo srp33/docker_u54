@@ -16,6 +16,11 @@ args:
         opts: "-o | --output"
         description: "Name of the output file."
         example: "SampleA.pileup"
+    - ARGS:
+        opts: "-a | --args"
+        description: "Additional arguments that will be passed through to samtools. When specified, make sure to surround the full set of arguments in double quotes. The default is \"-B -q 1\"."
+        default: "-B -q 1"
+        example: "\"-B -q 1\""
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
@@ -25,7 +30,8 @@ volumes:
         description: "Directory where the output file will be stored."
         write_access: True
 command_template: |
-    samtools mpileup -B -q 1 \
+    samtools mpileup \
+      $ARGS \
       -f /volumes/ref_dir/"${FASTA_FILE}" \
       /volumes/input_bam_dir/"${NORMAL_BAM_FILE}" \
       /volumes/input_bam_dir/"${TUMOR_BAM_FILE}" \

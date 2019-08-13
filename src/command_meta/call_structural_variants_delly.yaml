@@ -17,6 +17,11 @@ bam file for every input sample.\""
         opts: "-x | --exclude_template"
         description: "Name of a file with regions to exclude (which speeds up execution times). These files can be found for many reference genomes on the Delly GitHub site (https://github.com/dellytools/delly/tree/master/excludeTemplates)."
         example: "human.hg19.excl.tsv"
+    - ARGS:
+        opts: "-a | --args"
+        description: "Additional arguments that will be passed through to the Delly tool. When specified, make sure to surround the full set of arguments in double quotes. By default, no additional arguments are specified."
+        default: ""
+        example: "\"-u 20\""
     - OUTPUT_FILE:
         opts: "-o | --output"
         description: "Name of the output VCF file."
@@ -33,6 +38,7 @@ volumes:
         write_access: True
 command_template: |
     delly call \
+      $ARGS \
       -x /volumes/exclude_template_dir/"${EXCLUDE_TEMPLATE_FILE}" \
       -o /tmp/"${OUTPUT_FILE}" \
       -g /volumes/ref_dir/"${FASTA_FILE}" \
