@@ -35,7 +35,7 @@ args:
         opts: "-g | --read-group"
         description: "This argument allows you to specify read-group information during alignment. Please specify the whole read-group string, including the @RG prefix, surround in quotes. You can find a helpful tutorial here: https://software.broadinstitute.org/gatk/documentation/article.php?id=6472. Bu default, no read group information is added."
         default: "Null"
-        example: "\"@RG\\tID:SampleA_lane1\\tPL:ILLUMINA\\tPU:SampleA_lane1\\tLB:SampleA_lane1\\tSM:SampleA\""
+        example: "\"@RG\\tID:H0164.2\\tPL:ILLUMINA\\tPU:H0164ALXX140820.2\\tLB:Solexa-272222\\tSM:NA12878\""
     - SORT:
         opts: "-s | --sort"
         description: "Whether the output BAM file should be sorted after alignment. Acceptable values are True or False. Default is False."

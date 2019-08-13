@@ -1,4 +1,4 @@
-description: Add or replace read group information in BAM file.
+description: "Add or replace read group information in BAM file. You can read more about how read groups are defined here: https://software.broadinstitute.org/gatk/documentation/article.php?id=6472."
 args:
     - INPUT_BAM_FILE:
         opts: "-i | --input"
@@ -6,16 +6,20 @@ args:
         example: "SampleA.bam"
     - SAMPLE:
         opts: "-s | --sample"
-        description: "Name of the sample."
-        example: "SampleA"
-    - GROUP_ID:
-        opts: "-id | --group_id"
-        description: "Group identifier."
-        example: "SampleA_lane1"
-    - GROUP_LB:
-        opts: "-lb | --library_identifier"
-        description: "Library name (often the same as the group identifier)."
-        example: "SampleA_lane1"
+        description: "Name of the sample. This value refers to the biological sample that was sequenced. Even if the sample was sequenced across multiple flow cells or lanes, this value should be the same for that biological sample across all the FASTQ files."
+        example: "NA12878"
+    - GROUP:
+        opts: "-g | --group"
+        description: "Read-group identifier. This identifier is intended to be globally unique across all sequencing experiments performed around the world. It is derived from the flowcell, lane name, and number. If a sample was processed on a single lane on a single flow cell, this value should be the same as the library identifier."
+        example: "H0164.2_lane1"
+    - LIBRARY:
+        opts: "-l | --library"
+        description: "Library identifier. When a sample was sequenced on multiple lanes (multiplexed), this value should be different for each set of reads that was processed on a given lane. If a sample was processed on a single lane on a single flow cell, this value should be the same as the group identifier."
+        example: "Solexa-272222"
+    - PLATFORM_UNIT:
+        opts: "-p | --platform"
+        description: "Platform unit. This identifier is a barcode that represents the flowcell, lane, and sample."
+        example: "H0164ALXX140820.2"
     - OUTPUT_BAM_FILE:
         opts: "-o | --output"
         description: "Name of the output BAM file. If no value is specified, the output file will have the same name as the input file."
@@ -33,7 +37,7 @@ command_template: |
         OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
     fi
 
-    picard AddOrReplaceReadGroups I=/volumes/input_bam_dir/"${INPUT_BAM_FILE}" O=/volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" ID="${GROUP_ID}" LB="${GROUP_LB}" SM="${SAMPLE}" PL=ILLUMINA PU=platform
+    picard AddOrReplaceReadGroups I=/volumes/input_bam_dir/"${INPUT_BAM_FILE}" O=/volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" ID="${GROUP}" LB="${LIBRARY}" SM="${SAMPLE}" PL=ILLUMINA PU="${PLATFORM_UNIT}"
 receipt_commands: |
     get_bash_version
     get_conda_version picard
