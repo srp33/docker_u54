@@ -2,7 +2,7 @@ description: Call structural variants using Manta for a tumor/normal pair. Both 
 args:
     - FASTA_FILE:
         opts: "-r | --reference"
-        description: "Name of the reference genome FASTA file."
+        description: "Name of the reference genome FASTA file. This file must not be compressed and must be indexed (see index_fasta)."
         example: "hg19.fa"
     - TUMOR_BAM_FILE:
         opts: "-m | --tumor_bam_file"

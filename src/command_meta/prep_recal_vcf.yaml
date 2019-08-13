@@ -13,6 +13,11 @@ args:
         description: "Name of the output VCF file. If no value is specified, the name of the output file will be derived from the URL."
         default: "Null"
         example: "dbsnp_146.hg38.vcf.gz"
+    - MAX_MEMORY:
+        opts: "-m | max_mem"
+        description: "Tools that use the Java programming language, such as GATK and Picard, require the user to indicate the maximum computer memory that Java can use. If the program attempts to exceed this level of memory, an error will occur. When specifying these values, use \"g\" after the number to indicate gigabytes."
+        default: "8g"
+        example: "8g"
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
@@ -37,7 +42,7 @@ command_template: |
 
     python /starling/helper/reconcile_vcf_with_dict.py "${TMP_FILE1}" "${DICT_FILE}" "${TMP_FILE2}"
 
-    picard -Xms512m -Xmx8g SortVcf \
+    picard -Xms128m -Xmx${MAX_MEMORY} SortVcf \
         I="${TMP_FILE2}" \
         O="${OUTPUT_VCF_FILE}" \
         SEQUENCE_DICTIONARY="${DICT_FILE}" \

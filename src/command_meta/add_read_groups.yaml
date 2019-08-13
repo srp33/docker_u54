@@ -25,6 +25,11 @@ args:
         description: "Name of the output BAM file. If no value is specified, the output file will have the same name as the input file."
         default: "Null"
         example: "SampleA.bam"
+    - MAX_MEMORY:
+        opts: "-m | max_mem"
+        description: "Tools that use the Java programming language, such as GATK and Picard, require the user to indicate the maximum computer memory that Java can use. If the program attempts to exceed this level of memory, an error will occur. When specifying these values, use \"g\" after the number to indicate gigabytes."
+        default: "8g"
+        example: "8g"
 volumes:
     - input_bam_dir:
         description: "Directory where the BAM file is stored."
@@ -37,7 +42,15 @@ command_template: |
         OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
     fi
 
-    picard AddOrReplaceReadGroups I=/volumes/input_bam_dir/"${INPUT_BAM_FILE}" O=/volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" ID="${GROUP}" LB="${LIBRARY}" SM="${SAMPLE}" PL=ILLUMINA PU="${PLATFORM_UNIT}"
+    picard -Xms128m -Xmx${MAX_MEMORY} \
+      AddOrReplaceReadGroups \
+      I=/volumes/input_bam_dir/"${INPUT_BAM_FILE}" \
+      O=/volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" \
+      ID="${GROUP}" \
+      LB="${LIBRARY}" \
+      PL=ILLUMINA \
+      PU="${PLATFORM_UNIT}" \
+      SM="${SAMPLE}"
 receipt_commands: |
     get_bash_version
     get_conda_version picard

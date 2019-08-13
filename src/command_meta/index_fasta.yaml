@@ -2,8 +2,13 @@ description: Create index files from a reference genome (FASTA file). It uses bw
 args:
     - FASTA_FILE:
         opts: "-r | --reference"
-        description: "Name of the reference genome FASTA file."
+        description: "Name of the reference genome FASTA file. This file must not be compressed and must be indexed (see index_fasta)."
         example: "hg19.fa"
+    - MAX_MEMORY:
+        opts: "-m | max_mem"
+        description: "Tools that use the Java programming language, such as GATK and Picard, require the user to indicate the maximum computer memory that Java can use. If the program attempts to exceed this level of memory, an error will occur. When specifying these values, use \"g\" after the number to indicate gigabytes."
+        default: "8g"
+        example: "8g"
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
@@ -13,7 +18,7 @@ command_template: |
     
     samtools faidx /volumes/ref_dir/${FASTA_FILE}
     
-    picard CreateSequenceDictionary REFERENCE=/volumes/ref_dir/${FASTA_FILE} OUTPUT_FILE=/volumes/ref_dir/${FASTA_FILE}.dict
+    picard -Xms128m -Xmx${MAX_MEMORY} CreateSequenceDictionary REFERENCE=/volumes/ref_dir/${FASTA_FILE} OUTPUT_FILE=/volumes/ref_dir/${FASTA_FILE}.dict
 
     REF_INDEX_FILES=(/volumes/ref_dir/"${FASTA_FILE}".amb "/volumes/ref_dir/${FASTA_FILE}".ann "/volumes/ref_dir/${FASTA_FILE}".bwt "/volumes/ref_dir/${FASTA_FILE}".pac "/volumes/ref_dir/${FASTA_FILE}".sa "/volumes/ref_dir/${FASTA_FILE}".fai)
     

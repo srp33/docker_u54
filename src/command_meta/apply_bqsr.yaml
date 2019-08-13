@@ -2,7 +2,7 @@ description: Apply base quality score recalibration to a BAM file.
 args:
     - FASTA_FILE:
         opts: "-r | --reference"
-        description: "Name of the reference genome FASTA file."
+        description: "Name of the reference genome FASTA file. This file must not be compressed and must be indexed (see index_fasta)."
         example: "hg19.fa"
     - BQSR_FILE:
         opts: "-q | --bqsr_recal_file | -BQSR"
@@ -22,6 +22,11 @@ args:
         description: "The number of threads that GATK should use. Default is 1."
         default: 1
         example: "4"
+    - MAX_MEMORY:
+        opts: "-m | max_mem"
+        description: "Tools that use the Java programming language, such as GATK and Picard, require the user to indicate the maximum computer memory that Java can use. If the program attempts to exceed this level of memory, an error will occur. When specifying these values, use \"g\" after the number to indicate gigabytes."
+        default: "8g"
+        example: "8g"
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
@@ -38,7 +43,8 @@ command_template: |
         OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
     fi
 
-    gatk3 -Xms512m -Xmx8g -T PrintReads 
+    gatk3 -Xms128m -Xmx${MAX_MEMORY} \
+        -T PrintReads \
         -R /volumes/ref_dir/"${FASTA_FILE}" \
         -I /volumes/input_bam_dir/"${INPUT_BAM_FILE}" \
         -BQSR /volumes/bqsr_dir/"${BQSR_FILE}" \

@@ -2,7 +2,7 @@ description: Align FASTQ files to a reference genome using the Burrows-Wheeler A
 args:
     - FASTA_FILE:
         opts: "-r | --reference"
-        description: "Name of the reference genome FASTA file."
+        description: "Name of the reference genome FASTA file. This file must not be compressed and must be indexed (see index_fasta)."
         example: "hg19.fa"
     - FASTQ_FILE1:
         opts: "-f1 | --fastq1"

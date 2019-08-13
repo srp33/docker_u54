@@ -2,7 +2,7 @@ description: Calls somatic variants using Mutect2 (GATK) for a tumor/normal pair
 args:
     - FASTA_FILE:
         opts: "-r | --reference"
-        description: "Name of the reference genome FASTA file."
+        description: "Name of the reference genome FASTA file. This file must not be compressed and must be indexed (see index_fasta)."
         example: "hg19.fa"
     - TUMOR_BAM_FILE:
         opts: "-m | --tumor_bam_file"
@@ -21,6 +21,11 @@ args:
         description: "The number of threads that GATK should use. Default is 1."
         default: 1
         example: "4"
+    - MAX_MEMORY:
+        opts: "-m | max_mem"
+        description: "Tools that use the Java programming language, such as GATK and Picard, require the user to indicate the maximum computer memory that Java can use. If the program attempts to exceed this level of memory, an error will occur. When specifying these values, use \"g\" after the number to indicate gigabytes."
+        default: "8g"
+        example: "8g"
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
@@ -30,7 +35,9 @@ volumes:
         description: "Directory where the output BAM file will be stored."
         write_access: True
 command_template: |
-    gatk4 Mutect2 -I /volumes/input_bam_dir/"${TUMOR_BAM_FILE}" -tumor "${TUMOR_BAM_FILE/\.bam/}" \
+    gatk4 -Xms128m -Xmx${MAX_MEMORY} Mutect2 \
+      -I /volumes/input_bam_dir/"${TUMOR_BAM_FILE}" \
+      -tumor "${TUMOR_BAM_FILE/\.bam/}" \
       -I /volumes/input_bam_dir/"${NORMAL_BAM_FILE}" \
       -normal "${NORMAL_BAM_FILE/\.bam/}" \
       -O /volumes/output_vcf_dir/"${OUTPUT_FILE}" \
