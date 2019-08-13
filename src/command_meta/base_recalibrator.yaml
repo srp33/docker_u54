@@ -40,34 +40,6 @@ command_template: |
         OUTPUT_BAM_FILE="$INPUT_BAM_FILE"
     fi
 
-    ln -s /volumes/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
-
-    INDEX=$(echo "${FASTA_FILE}" | grep -o '\.' | grep -c '\.')
-    if [[ ${FASTA_FILE: -${INDEX}} = ".gz" ]]; then
-        NEW_REF="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})"
-        gunzip -c /volumes/ref_dir/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
-        FASTA_FILE="${NEW_REF}"
-        INDEX=$(echo "${FASTA_FILE}" | grep -o '\.' | grep -c '\.')
-    fi
-
-    NEEDED_INDEX=/volumes/ref_dir/"${FASTA_FILE}".fai
-    REF_DICT="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})".dict
-    NEEDED_DICT=/volumes/ref_dir/"${REF_DICT}"
-
-    if [[ ! -f "${NEEDED_INDEX}" ]]; then
-        echo "Samtools reference index (${NEEDED_INDEX}) is missing."
-        exit 1
-    fi
-
-    ln -s /volumes/ref_dir/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
-
-    if [[ ! -f ${NEEDED_DICT} ]]; then
-        echo "Fasta dict file (${NEEDED_DICT}) is missing."
-        exit 1
-    fi
-
-    ln -s /volumes/ref_dir/"${REF_DICT}" /tmp/"${REF_DICT}"
-
     KNOWN_SITES_COMMANDS=()
     for KS_FILE in ${KNOWN_SITES_FILE[@]}; do
         if [[ ! -f /volumes/vcf_dir/"${KS_FILE}.idx" ]]; then
@@ -77,7 +49,7 @@ command_template: |
     done
 
     gatk3 -Xms512m -Xmx8g -T BaseRecalibrator \
-      -R /tmp/"${FASTA_FILE}" \
+      -R /volumes/ref_dir/"${FASTA_FILE}" \
       -I /volumes/input_bam_dir/"${INPUT_BAM_FILE}" \
       ${KNOWN_SITES_COMMANDS[@]} \
       -o /volumes/output_bam_dir/"${OUTPUT_BAM_FILE}" \

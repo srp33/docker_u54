@@ -13,6 +13,10 @@ bam file for every input sample.\""
         opts: "-n | --normal_bam_file"
         description: "Path to a BAM file with normal data. This file must have been sorted, indexed, and duplicate marked."
         example: "SampleA_Normal.bam"
+    - EXCLUDE_TEMPLATE_FILE:
+        opts: "-x | --exclude_template"
+        description: "Name of a file with regions to exclude (which speeds up execution times). These files can be found for many reference genomes on the Delly GitHub site (https://github.com/dellytools/delly/tree/master/excludeTemplates)."
+        example: "human.hg19.excl.tsv"
     - OUTPUT_FILE:
         opts: "-o | --output"
         description: "Name of the output VCF file."
@@ -22,40 +26,20 @@ volumes:
         description: "Directory where the reference genome FASTA file and indices are stored."
     - input_bam_dir:
         description: "Directory where the input BAM file is stored."
+    - exclude_template_dir:
+        description: "Directory that contains the exclude-template file."
     - output_vcf_dir:
         description: "Directory where the output VCF file will be stored."
         write_access: True
 command_template: |
-    if [ ! -f /volumes/input_bam_dir/"${TUMOR_BAM_FILE}.bai" ] then
-      echo "ERROR: /volumes/input_bam_dir/\"${TUMOR_BAM_FILE}.bai\" does not exist. Please run index_bam on /volumes/input_bam_dir/\"${TUMOR_BAM_FILE}\"."
-      exit 1;
-    fi
-    if [ ! -f /volumes/input_bam_dir/"${NORMAL_BAM_FILE}.bai" ] then
-      echo "ERROR: /volumes/input_bam_dir/\"${NORMAL_BAM_FILE}.bai\" does not exist. Please run index_bam on /volumes/input_bam_dir/\"${NORMAL_BAM_FILE}\"."
-      exit 1;
-    fi
+    delly call \
+      -x /volumes/exclude_template_dir/"${EXCLUDE_TEMPLATE_FILE}" \
+      -o /tmp/"${OUTPUT_FILE}" \
+      -g /volumes/ref_dir/"${FASTA_FILE}" \
+      /volumes/input_bam_dir/"$TUMOR_BAM_FILE" \
+      /volumes/input_bam_dir/"$NORMAL_BAM_FILE"
 
-    ln -s /volumes/ref_dir/"${FASTA_FILE}" /tmp/"${FASTA_FILE}"
-
-    INDEX=$(echo "${FASTA_FILE}" | grep -o '\.' | grep -c '\.')
-    if [[ "${FASTA_FILE: -${INDEX}}" = ".gz" ]]; then
-        NEW_REF="$(echo ${FASTA_FILE} | cut -d '.' -f -${INDEX})"
-        gunzip -c /volumes/ref_dir/"${FASTA_FILE}" > /tmp/"${NEW_REF}"
-        FASTA_FILE="${NEW_REF}"
-    fi
-
-    NEEDED_FILE=/volumes/ref_dir/"${FASTA_FILE}".fai
-
-    if [[ ! -f "${NEEDED_FILE}" ]]; then
-        echo "samtools reference index (${NEEDED_FILE}) is missing."
-        exit 1
-    fi
-
-    ln -s /volumes/ref_dir/"${FASTA_FILE}.fai" /tmp/"${FASTA_FILE}.fai"
-
-    delly call -x hg19.excl -o /tmp/output.bcf -g /tmp/"${FASTA_FILE}" /volumes/input_bam_dir/"$TUMOR_BAM_FILE" /volumes/input_bam_dir/"$NORMAL_BAM_FILE"
-
-    bcftools view /tmp/output.bcf > /volumes/output_vcf_dir/"${OUTPUT_FILE}"
+    bcftools view /tmp/"${OUTPUT_FILE} > /volumes/output_vcf_dir/"${OUTPUT_FILE}"
 receipt_commands: |
     get_bash_version
     get_conda_version delly

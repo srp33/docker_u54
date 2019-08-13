@@ -61,22 +61,6 @@ volumes:
         description: "Directory where the output FASTQ files will be stored."
         write_access: True
 command_template: |
-    NEEDED_FILES=("${FASTA_FILE}".amb "${FASTA_FILE}".ann "${FASTA_FILE}".bwt "${FASTA_FILE}".pac "${FASTA_FILE}".sa)
-    REF_INDEX_FILES=()
-    for filename in /volumes/ref_dir/*; do
-        REF_INDEX_FILES+=($(echo "${filename##*/}"))
-    done
-
-    for NEEDED_FILE in ${NEEDED_FILES[@]}; do
-        { [[ " ${REF_INDEX_FILES[@]} " =~ " ${NEEDED_FILE} " ]] \
-        && ln -s /volumes/ref_dir/"${NEEDED_FILE}" /tmp/"${NEEDED_FILE}"; } || REF_INDEXED=1
-    done
-
-    if [[ ${REF_INDEXED} == 1 ]]; then
-        echo "The reference genome does not contain the proper index files."
-        exit 1
-    fi
-
     COMMAND_STRING="bwa mem -t ${THREADS} "
 
     if [[ "$READ_GROUP_STRING" != "Null" ]]
@@ -84,7 +68,7 @@ command_template: |
       COMMAND_STRING+="-R \"$READ_GROUP_STRING\" "
     fi
 
-    COMMAND_STRING+="/tmp/\"${FASTA_FILE}\" "
+    COMMAND_STRING+="/volumes/ref_dir/\"${FASTA_FILE}\" "
 
     if [[ ${CHUNKS} -gt 1 ]]
     then
