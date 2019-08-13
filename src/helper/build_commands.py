@@ -70,6 +70,9 @@ for volume, meta in get_yaml_values(yaml_dict, "volumes"):
         help_volumes += "\t\tThe current user must have read/write permission on this directory.\n\n"
     else:
         help_volumes += "\t\tThe current user must have read permission on this directory.\n\n"
+
+    if "required" in meta and meta["required"] == False:
+        help_volumes += "\t\tThis volume is optional.\n\n"
 help_output += help_header_template.format("VOLUMES", "", help_volumes.rstrip())
 
 help_example = "\tdocker run \\\n"
@@ -181,7 +184,8 @@ output += "EXIT_CODE=()\n\n"
 
 # Check for volumes
 for volume, meta in get_yaml_values(yaml_dict, "volumes"):
-    output += "[[ -d " + volume + " ]] || { MISSING_VOLUMES+=(" + volume + ") && EXIT_CODE=1; }\n"
+    if "required" not in meta or meta["required"] == True:
+        output += "[[ -d " + volume + " ]] || { MISSING_VOLUMES+=(" + volume + ") && EXIT_CODE=1; }\n"
 output += "\n"
 
 output += "if [[ ${EXIT_CODE} = 1 ]]\n"
@@ -194,7 +198,9 @@ output += "fi\n\n"
 # Check permissions of each directory
 for volume, meta in get_yaml_values(yaml_dict, "volumes"):
     write_access = meta.get("write_access", False)
-    output += "python /starling/helper/check_permissions.py " + volume + " " + str(write_access) + " || exit 1\n"
+    required = meta.get("required", True)
+
+    output += "python /starling/helper/check_permissions.py " + volume + " " + str(write_access) + " " + str(required) + " || exit 1\n"
 
 output += "\n"
 

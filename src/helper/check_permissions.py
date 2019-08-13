@@ -5,6 +5,10 @@ import errno
 
 test_dir = sys.argv[1]
 write_access_required = sys.argv[2] == "True"
+is_required = sys.argv[3] == "True"
+
+if not is_required and not os.path.exists(test_dir):
+    sys.exit(0)
 
 try:
     for file_path in glob.glob(test_dir + "/*"):
