@@ -3,18 +3,18 @@ args:
     - INPUT_BAM_FILES:
         opts: "-i | --input"
         description: "Name of an input BAM file."
-        example: "-i SampleA_part1.bam -i SampleA_part2.bam"
+        example: "SampleA_part1.bam SampleA_part2.bam"
         allow_multiple: True
         min_required: 2
     - OUTPUT_BAM_FILE:
         opts: "-o | --output"
         description: "Name of the output BAM file."
-        example: "-o SampleA.bam"
+        example: "SampleA.bam"
     - THREADS:
         opts: "-t | --nthreads"
         description: "The number of threads that should be used. Default is 1."
         default: 1
-        example: "-t 4"
+        example: "4"
 volumes:
     - input_bam_dir:
         description: "Directory where the BAM file is stored."

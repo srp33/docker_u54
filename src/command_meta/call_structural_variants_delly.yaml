@@ -3,20 +3,20 @@ args:
     - FASTA_FILE:
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
-        example: "-r hg19.fa"
+        example: "hg19.fa"
     - TUMOR_BAM_FILE:
         opts: "-m | --tumor_bam_file"
         description: "Path to a BAM file with tumor data. This file must have been sorted, indexed, and duplicate marked. \
 bam file for every input sample.\""
-        example: "-m SampleA_Tumor.bam"
+        example: "SampleA_Tumor.bam"
     - NORMAL_BAM_FILE:
         opts: "-n | --normal_bam_file"
         description: "Path to a BAM file with normal data. This file must have been sorted, indexed, and duplicate marked."
-        example: "-n SampleA_Normal.bam"
+        example: "SampleA_Normal.bam"
     - OUTPUT_FILE:
         opts: "-o | --output"
         description: "Name of the output VCF file."
-        example: "-o SampleA.vcf"
+        example: "SampleA.vcf"
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."

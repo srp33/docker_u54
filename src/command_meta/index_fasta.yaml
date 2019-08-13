@@ -3,7 +3,7 @@ args:
     - FASTA_FILE:
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
-        example: "-r hg19.fa"
+        example: "hg19.fa"
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."

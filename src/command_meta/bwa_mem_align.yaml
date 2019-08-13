@@ -3,39 +3,39 @@ args:
     - FASTA_FILE:
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
-        example: "-r hg19.fa"
+        example: "hg19.fa"
     - FASTQ_FILE1:
         opts: "-f1 | --fastq1"
         description: "Name of the first FASTQ file."
-        example: "-f1 SampleA_1.fastq.gz"
+        example: "SampleA_1.fastq.gz"
     - FASTQ_FILE2:
         opts: "-f2 | --fastq2"
         description: "Name of the second FASTQ file."
-        example: "-f2 SampleA_2.fastq.gz"
+        example: "SampleA_2.fastq.gz"
     - OUTPUT_BAM_FILE:
         opts: "-o | --output"
         description: "Name of the output BAM file."
-        example: "-o SampleA.bam"
+        example: "SampleA.bam"
     - THREADS:
         opts: "-t | --nthreads"
         description: "The number of threads that BWA should use during alignment. Default is 1."
         default: 1
-        example: "-t 4"
+        example: "4"
     - CHUNKS:
         opts: "-c | --nchunks"
         description: "This argument indicates how the FASTQ files should be \"chunked\" during the alignment process. When this feature is enabled, a subset (chunk) of the FASTQ data will be streamed into BWA. Accordingly, different chunks of the file can be aligned in parallel, potentially reducing execution times. This argument indicates the total number of chunks (default of 1 indicates no chunking). When performing chunking, you should also specify the --process_chunk argument, which indicates the chunk number that should be processed (this counting scheme is zero-based)."
         default: 1
-        example: "-c 10"
+        example: "10"
     - PROCESS_CHUNK:
         opts: "-p | --process_chunk"
         description: "This argument indicates the chunk number to be processed. Please see the description for the --nchunks argument."
         default: 0
-        example: "-p 2"
+        example: "2"
     - READ_GROUP_STRING:
         opts: "-g | --read-group"
         description: "This argument allows you to specify read-group information during alignment. Please specify the whole read-group string, including the @RG prefix, surround in quotes. You can find a helpful tutorial here: https://software.broadinstitute.org/gatk/documentation/article.php?id=6472. Bu default, no read group information is added."
         default: "Null"
-        example: "-g \"@RG\\tID:SampleA_lane1\\tPL:ILLUMINA\\tPU:SampleA_lane1\\tLB:SampleA_lane1\\tSM:SampleA\""
+        example: "\"@RG\\tID:SampleA_lane1\\tPL:ILLUMINA\\tPU:SampleA_lane1\\tLB:SampleA_lane1\\tSM:SampleA\""
     - SORT:
         opts: "-s | --sort"
         description: "Whether the output BAM file should be sorted after alignment. Acceptable values are True or False. Default is False."
@@ -43,7 +43,7 @@ args:
             - False
             - True
         default: False
-        example: "-s True"
+        example: "True"
     - INDEX:
         opts: "-i | --index"
         description: "Whether the output BAM file should be indexed after alignment. Acceptable values are True or False. Default is False."
@@ -51,7 +51,7 @@ args:
             - False
             - True
         default: False
-        example: "-i True"
+        example: "True"
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."

@@ -3,29 +3,29 @@ args:
     - FASTA_FILE:
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
-        example: "-r hg19.fa"
+        example: "hg19.fa"
     - TUMOR_BAM_FILE:
         opts: "-m | --tumor_bam_file"
         description: "Path to a BAM file with tumor data."
-        example: "-m SampleA_Tumor.bam"
+        example: "SampleA_Tumor.bam"
     - NORMAL_BAM_FILE:
         opts: "-n | --normal_bam_file"
         description: "Path to a BAM file with normal data."
-        example: "-n SampleA_Normal.bam"
+        example: "SampleA_Normal.bam"
     - OUTPUT_FILE:
         opts: "-o | --output"
         description: "Name of the output VCF file."
-        example: "-o SampleA.vcf"
+        example: "SampleA.vcf"
     - INDEL_CANDIDATES_FILE:
         opts: "-i | --indel_candidates_file"
         description: "The Strelka documentation recommends to provide indel candidates from the Manta SV and indel caller to improve sensitivity to call indels of size 20 or larger. You may specify the name of a VCF file with these candidates. This file can be created using the call_structural_variants_manta command."
         default: "Null"
-        example: "-i candidateSmallIndels.vcf.gz"
+        example: "candidateSmallIndels.vcf.gz"
     - CALL_REGIONS_FILE:
         opts: "-c, --call_regions_file"
         description: "The Strelka documentation recommends that for references with many short contigs, to provide callable regions to avoid possible runtime issues. You may specify the name of a BED file containing genomic regions to call."
         default: "Null"
-        example: "-c regions.bed.gz"
+        example: "regions.bed.gz"
     - EXOME:
         opts: "-e | --exome"
         description: "For exome and amplicon sequencing, enable this setting. Acceptable values are True or False. Default is False."
@@ -33,12 +33,12 @@ args:
             - False
             - True
         default: False
-        example: "--exome True"
+        example: "True"
     - THREADS:
         opts: "-t | --nthreads"
         description: "The number of threads that should be used. Default is 1."
         default: 1
-        example: "-t 4"
+        example: "4"
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."

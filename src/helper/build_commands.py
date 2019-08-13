@@ -83,7 +83,9 @@ help_example += "\t  srp33/somatic_wgs:{} \\\n".format(tag)
 help_example += "\t  {} \\\n".format(command)
 for arg, meta in get_yaml_values(yaml_dict, "args"):
     if "example" in meta:
-        help_example += "\t    {} \\\n".format(meta["example"])
+        example_opt = meta["opts"].split(" | ")[0]
+        example_output = example_opt + " " + " \\\n        {} ".format(example_opt).join(meta["example"].split(" "))
+        help_example += "\t    {} \\\n".format(example_output)
 help_output += help_header_template.format("EXAMPLE", "", help_example.rstrip().rstrip("\\"))
 
 # Save help file

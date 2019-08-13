@@ -3,15 +3,15 @@ args:
     - INPUT_BAM_FILE:
         opts: "-i | --input"
         description: "Name of the input BAM file."
-        example: "-i SampleA.bam"
+        example: "SampleA.bam"
     - SPLIT_BAM_FILE:
         opts: "-s | --split_reads"
         description: "Name of the output BAM file with split reads."
-        example: "-s SampleA_Split.bam"
+        example: "SampleA_Split.bam"
     - DISCORDANT_BAM_FILE:
         opts: "-d | --discordant_reads"
         description: "Name of the output BAM file with discordant reads."
-        example: "-d SampleA_Discordant.bam"
+        example: "SampleA_Discordant.bam"
 volumes:
     - input_bam_dir:
         description: "Directory where the input BAM file is stored."

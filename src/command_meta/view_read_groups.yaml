@@ -3,7 +3,7 @@ args:
     - INPUT_BAM_FILE:
         opts: "-i | --input"
         description: "Path to a BAM file."
-        example: "-i SampleA.bam"
+        example: "SampleA.bam"
 volumes:
     - bam_dir:
         description: "Directory where the BAM file is stored."

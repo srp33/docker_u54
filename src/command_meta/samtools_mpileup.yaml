@@ -3,19 +3,19 @@ args:
     - FASTA_FILE:
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
-        example: "-r hg19.fa"
+        example: "hg19.fa"
     - TUMOR_BAM_FILE:
         opts: "-t | --tumor_bam_file"
         description: "Path to a BAM file with tumor data."
-        example: "-t SampleA_Tumor.bam"
+        example: "SampleA_Tumor.bam"
     - NORMAL_BAM_FILE:
         opts: "-n | --normal_bam_file"
         description: "Path to a BAM file with normal data."
-        example: "-n SampleA_Normal.bam"
+        example: "SampleA_Normal.bam"
     - OUTPUT_FILE:
         opts: "-o | --output"
         description: "Name of the output file."
-        example: "-o SampleA.pileup"
+        example: "SampleA.pileup"
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."

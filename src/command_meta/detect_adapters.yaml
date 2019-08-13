@@ -3,11 +3,11 @@ args:
     - FASTQ_FILE1:
         opts: "-f1 | --fastq1"
         description: "Name of the first FASTQ file."
-        example: "-f1 SampleA_1.fastq.gz"
+        example: "SampleA_1.fastq.gz"
     - FASTQ_FILE2:
         opts: "-f2 | --fastq2"
         description: "Name of the second FASTQ file."
-        example: "-f2 SampleA_2.fastq.gz"
+        example: "SampleA_2.fastq.gz"
 volumes:
     - fastq_dir:
         description: "Directory where the FASTQ files are stored."

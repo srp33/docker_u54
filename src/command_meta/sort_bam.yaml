@@ -3,7 +3,7 @@ args:
     - INPUT_BAM_FILE:
         opts: "-i | --input"
         description: "Path to an input BAM file."
-        example: "-i SampleA.bam"
+        example: "SampleA.bam"
     - BY_NAME:
         opts: "-n, --sort_by_name"
         description: "Sort by read name (rather than by coordinates). Default is False."
@@ -11,17 +11,17 @@ args:
             - False
             - True
         default: False
-        example: "-n True"
+        example: "True"
     - OUTPUT_BAM_FILE:
         opts: "-o | --output"
         description: "Name of the output BAM file. By default, the name of the output file will be the same as the input file."
         default: "Null"
-        example: "-o SampleA_regionA.bam"
+        example: "SampleA_regionA.bam"
     - THREADS:
         opts: "-t | --nthreads"
         description: "The number of threads that should be used. Default is 1."
         default: 1
-        example: "-t 4"
+        example: "4"
 volumes:
     - input_bam_dir:
         description: "Directory where the BAM file is stored."

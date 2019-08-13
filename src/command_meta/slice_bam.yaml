@@ -3,20 +3,20 @@ args:
     - INPUT_BAM_FILE:
         opts: "-i | --input"
         description: "Path to an input BAM file."
-        example: "-i SampleA.bam"
+        example: "SampleA.bam"
     - REGION:
         opts: "-r | --region"
         description: "Genomic region to slice (e.g. \"chr2\" or \"chr2:1000-2000\")"
-        example: "-r chr2:1000-2000"
+        example: "chr2:1000-2000"
     - OUTPUT_BAM_FILE:
         opts: "-o | --output"
         description: "Name of the output file."
-        example: "-o SampleA_regionA.bam"
+        example: "SampleA_regionA.bam"
     - THREADS:
         opts: "-t | --nthreads"
         description: "The number of threads that should be used. Default is 1."
         default: 1
-        example: "-t 4"
+        example: "4"
 volumes:
     - input_bam_dir:
         description: "Directory where the BAM file is stored."

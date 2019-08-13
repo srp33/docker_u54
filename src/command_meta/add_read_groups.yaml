@@ -3,24 +3,24 @@ args:
     - INPUT_BAM_FILE:
         opts: "-i | --input"
         description: "Name of the input BAM file."
-        example: "-b SampleA.bam"
+        example: "SampleA.bam"
     - SAMPLE:
         opts: "-s | --sample"
         description: "Name of the sample."
-        example: "-s SampleA"
+        example: "SampleA"
     - GROUP_ID:
         opts: "-id | --group_id"
         description: "Group identifier."
-        example: "-id SampleA_lane1"
+        example: "SampleA_lane1"
     - GROUP_LB:
         opts: "-lb | --library_identifier"
         description: "Library name (often the same as the group identifier)."
-        example: "-lb SampleA_lane1"
+        example: "SampleA_lane1"
     - OUTPUT_BAM_FILE:
         opts: "-o | --output"
         description: "Name of the output BAM file. If no value is specified, the output file will have the same name as the input file."
         default: "Null"
-        example: "-o SampleA.bam"
+        example: "SampleA.bam"
 volumes:
     - input_bam_dir:
         description: "Directory where the BAM file is stored."

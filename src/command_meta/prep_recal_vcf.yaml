@@ -3,16 +3,16 @@ args:
     - VCF_URL:
         opts: "-u | --vcf_url"
         description: "URL for a recalibration VCF file from the GATK VCF file."
-        example: "-u ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/hg38/dbsnp_146.hg38.vcf.gz"
+        example: "ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/hg38/dbsnp_146.hg38.vcf.gz"
     - FASTA_FILE:
         opts: "-r | --reference"
         description: "Name of the reference genome FASTA file."
-        example: "-r hg19.fa"
+        example: "hg19.fa"
     - OUTPUT_VCF_FILE:
         opts: "-o | --output"
         description: "Name of the output VCF file. If no value is specified, the name of the output file will be derived from the URL."
         default: "Null"
-        example: "-o dbsnp_146.hg38.vcf.gz"
+        example: "dbsnp_146.hg38.vcf.gz"
 volumes:
     - ref_dir:
         description: "Directory where the reference genome FASTA file and indices are stored."
