@@ -33,7 +33,7 @@ output += "\n\n"
 
 # Specify script settings and load functions.
 output += "set -o errexit\n"
-output += "source /starling/helper/check_functions\n\n"
+output += "source /jicama/helper/check_functions\n\n"
 
 # Generate help output dynamically
 help_header_template = "{}\n{}{}\n\n"
@@ -86,7 +86,7 @@ for volume, meta in get_yaml_values(yaml_dict, "volumes"):
     help_example += "\t  -v /my/local/path{}:/volumes/{} \\\n".format(count, volume)
 help_example += "\t  --user \$(id -u):\$(id -g) \\\n"
 help_example += "\t  --rm \\\n"
-help_example += "\t  srp33/somatic_wgs:{} \\\n".format(tag)
+help_example += "\t  srp33/jicama:{} \\\n".format(tag)
 help_example += "\t  {} \\\n".format(command)
 for arg, meta in get_yaml_values(yaml_dict, "args"):
     if "example" in meta and "default" not in meta:
@@ -107,7 +107,7 @@ with open(help_file_path, 'w') as help_file:
 
 # Print help function
 output += "function show_help {\n"
-output += "  cat /starling/docs/{}\n".format(os.path.basename(help_file_path))
+output += "  cat /jicama/docs/{}\n".format(os.path.basename(help_file_path))
 output += "}\n\n"
 
 # Declare a variable for each argument with its default value.
@@ -210,7 +210,7 @@ for volume, meta in get_yaml_values(yaml_dict, "volumes"):
     write_access = meta.get("write_access", False)
     required = meta.get("required", True)
 
-    output += "python /starling/helper/check_permissions.py " + volume + " " + str(write_access) + " " + str(required) + " || exit 1\n"
+    output += "python /jicama/helper/check_permissions.py " + volume + " " + str(write_access) + " " + str(required) + " || exit 1\n"
 
 output += "\n"
 

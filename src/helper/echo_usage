@@ -1,7 +1,7 @@
 #! /bin/bash
 
-echo "Additional details about this software can be found at https://github.com/srp33/somatic_wgs
+echo "Additional details about this software can be found at https://github.com/srp33/jicama
 
 Available commands:
 "
-ls /starling/bin | grep -v entrypoint | awk "{print $1;}"
+ls /jicama/bin | grep -v entrypoint | awk "{print $1;}"
