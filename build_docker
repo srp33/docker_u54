@@ -2,11 +2,12 @@
 
 set -o errexit
 
+image=srp33/$(basename $(pwd))
 tag=version$(cat VERSION)
 
 src/helper/build_commands $tag
 
-#docker build -t srp33/jicama:$tag .
+docker build -t $image:$tag .
 
-##docker login -u=srp33
+##docker login -u=$(dirname $image)
 #docker push srp33/jicama
